@@ -2,9 +2,9 @@
     x:Class="OsuPlayer.Windows.MainWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:OsuPlayer.Views.UserControls"
     xmlns:data="clr-namespace:OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels"
-    xmlns:controls="clr-namespace:OsuPlayer.Views.UserControls"
     Title="Osu Player"
     Width="998"
     Height="759"
@@ -12,106 +12,240 @@
     MinHeight="600"
     x:DataType="vm:MainWindowViewModel"
     Background="{DynamicResource TextureBrush3}"
-    WindowStartupLocation="CenterScreen"
+    ExtendClientAreaTitleBarHeightHint="40"
+    ExtendClientAreaToDecorationsHint="True"
+    Icon="avares://OsuPlayer/osuPlayer.ico"
     WindowDecorations="None"
-    ExtendClientAreaToDecorationsHint="True">
+    WindowStartupLocation="CenterScreen">
 
     <Design.DataContext>
         <vm:MainWindowViewModel />
     </Design.DataContext>
 
-    <Grid Margin="{Binding $parent[Window].WindowState, Converter={StaticResource WindowMarginConverter}}"
-          RowDefinitions="Auto,*">
+    <Grid Margin="{Binding $parent[Window].OffScreenMargin}" RowDefinitions="Auto,*">
         <controls:WindowTitleBar
             Grid.Row="0"
-            Background="#252526"
-            Title="Osu Player">
+            Background="#252526">
             <controls:WindowTitleBar.LeftContent>
-                <Border Width="18" Height="18" CornerRadius="4" Background="#FE4F7A" />
+                <Image
+                    Height="28"
+                    Margin="0,0,4,0"
+                    Source="{Binding IsNavigationCollapsed, Converter={StaticResource TitleIconConverter}}" />
             </controls:WindowTitleBar.LeftContent>
             <controls:WindowTitleBar.RightContent>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,4,0" Spacing="2">
-                    <Button Classes="titlebar-btn" Click="BtnSettings_Click" ToolTip.Tip="{DynamicResource ui-sets}">
-                        <Viewbox Width="14" Height="14">
-                            <Path Fill="White" Data="M8.6,0.8L10.3,2.3L12.5,1.8L13.2,4L15.3,4.8L14.8,7L16.3,8.7L14.8,10.4L15.3,12.6L13.2,13.4L12.5,15.6L10.3,15.1L8.6,16.6L6.9,15.1L4.7,15.6L4,13.4L1.9,12.6L2.4,10.4L0.9,8.7L2.4,7L1.9,4.8L4,4L4.7,1.8L6.9,2.3ZM8.6,5.3C6.73,5.3 5.2,6.83 5.2,8.7C5.2,10.57 6.73,12.1 8.6,12.1C10.47,12.1 12,10.57 12,8.7C12,6.83 10.47,5.3 8.6,5.3Z" />
-                        </Viewbox>
-                    </Button>
-                    <Button Classes="titlebar-btn" Click="BtnMini_Click" ToolTip.Tip="Mini">
-                        <Viewbox Width="14" Height="14">
-                            <Path Fill="White" Data="M2,2 H10 V4 H8 V8 H4 V10 H2 Z M5,5 H11 V11 H5 Z" />
-                        </Viewbox>
-                    </Button>
-                </StackPanel>
+                <Border
+                    Height="32"
+                    Margin="0,0,10,0"
+                    Padding="10,2"
+                    VerticalAlignment="Center"
+                    BorderBrush="#60DDDDDD"
+                    BorderThickness="0.3"
+                    CornerRadius="16">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <Button
+                            Width="25"
+                            Height="25"
+                            Classes="titlebar-btn"
+                            Click="BtnSettings_Click"
+                            ToolTip.Tip="{DynamicResource ui-sets}">
+                            <Viewbox Width="21" Height="21">
+                                <Path Data="{StaticResource Gear}" Fill="White" />
+                            </Viewbox>
+                        </Button>
+                        <Button
+                            Width="25"
+                            Height="25"
+                            Classes="titlebar-btn"
+                            Click="BtnMini_Click"
+                            ToolTip.Tip="Mini">
+                            <Viewbox Width="16" Height="16">
+                                <Path Data="{StaticResource Mini}" Fill="White" />
+                            </Viewbox>
+                        </Button>
+                    </StackPanel>
+                </Border>
             </controls:WindowTitleBar.RightContent>
         </controls:WindowTitleBar>
 
         <Grid Grid.Row="1" ColumnDefinitions="Auto,*">
-            <Border x:Name="SidebarHost" Grid.Column="0" Width="188" Background="#252526" Padding="8,12">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <Border
+                x:Name="SidebarHost"
+                Grid.Column="0"
+                Width="188"
+                Padding="8,12"
+                Background="#252526">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                     <StackPanel x:Name="NavPanel" Spacing="2">
-                        <Button x:Name="CollapseButton" Classes="nav-button" Click="OnCollapseClick">
+                        <Button
+                            x:Name="CollapseButton"
+                            Classes="nav-button"
+                            Click="OnCollapseClick">
                             <Grid ColumnDefinitions="20,*">
-                                <Viewbox Width="14" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <Path Fill="#F6F6F6" Data="M2,3 L12,3 12,5 2,5 Z M2,7 L12,7 12,9 2,9 Z M2,11 L12,11 12,13 2,13 Z" />
+                                <Viewbox
+                                    Width="14"
+                                    Height="14"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                                    <Path Data="M2,3 L12,3 12,5 2,5 Z M2,7 L12,7 12,9 2,9 Z M2,11 L12,11 12,13 2,13 Z" Fill="#F6F6F6" />
                                 </Viewbox>
-                                <TextBlock x:Name="CollapseButtonText" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" Text="{DynamicResource ui-nav-library}" />
+                                <TextBlock
+                                    x:Name="CollapseButtonText"
+                                    Grid.Column="1"
+                                    Margin="10,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Text="{DynamicResource ui-nav-library}" />
                             </Grid>
                         </Button>
 
-                        <TextBlock x:Name="LibraryHeader" Margin="10,10,0,4" FontSize="11" FontWeight="SemiBold" Foreground="#B8B8B8" Text="{DynamicResource ui-nav-library}" />
-                        <ToggleButton x:Name="SearchNavButton" Classes="nav-button" Click="OnNavClick" IsChecked="True" Tag="Search">
+                        <TextBlock
+                            x:Name="LibraryHeader"
+                            Margin="10,10,0,4"
+                            FontSize="11"
+                            FontWeight="SemiBold"
+                            Foreground="#B8B8B8"
+                            Text="{DynamicResource ui-nav-library}" />
+                        <ToggleButton
+                            x:Name="SearchNavButton"
+                            Classes="nav-button"
+                            Click="OnNavClick"
+                            IsChecked="True"
+                            Tag="Search">
                             <Grid ColumnDefinitions="20,*">
-                                <Viewbox Width="14" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <Path Fill="White" Data="M6.5,1.5A5,5 0 1 1 3.1,10.2L1,12.3L2.2,13.5L4.3,11.4A5,5 0 0 1 6.5,1.5M6.5,3A3.5,3.5 0 1 0 10,6.5A3.5,3.5 0 0 0 6.5,3Z" />
+                                <Viewbox
+                                    Width="14"
+                                    Height="14"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                                    <Path Data="M6.5,1.5A5,5 0 1 1 3.1,10.2L1,12.3L2.2,13.5L4.3,11.4A5,5 0 0 1 6.5,1.5M6.5,3A3.5,3.5 0 1 0 10,6.5A3.5,3.5 0 0 0 6.5,3Z" Fill="White" />
                                 </Viewbox>
-                                <TextBlock x:Name="SearchNavText" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" Text="{DynamicResource ui-nav-search}" />
+                                <TextBlock
+                                    x:Name="SearchNavText"
+                                    Grid.Column="1"
+                                    Margin="10,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Text="{DynamicResource ui-nav-search}" />
                             </Grid>
                         </ToggleButton>
-                        <ToggleButton x:Name="RecentNavButton" Classes="nav-button" Click="OnNavClick" Tag="Recent">
+                        <ToggleButton
+                            x:Name="RecentNavButton"
+                            Classes="nav-button"
+                            Click="OnNavClick"
+                            Tag="Recent">
                             <Grid ColumnDefinitions="20,*">
-                                <Viewbox Width="14" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <Path Fill="White" Data="M7.5,1A6.5,6.5 0 1 0 14,7.5H12.5A5,5 0 1 1 7.5,2.5V5L11,2L7.5,-1V1Z M7,4H8.5V8L11.5,9.8L10.8,11L7,8.7Z" />
+                                <Viewbox
+                                    Width="14"
+                                    Height="14"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                                    <Path Data="M7.5,1A6.5,6.5 0 1 0 14,7.5H12.5A5,5 0 1 1 7.5,2.5V5L11,2L7.5,-1V1Z M7,4H8.5V8L11.5,9.8L10.8,11L7,8.7Z" Fill="White" />
                                 </Viewbox>
-                                <TextBlock x:Name="RecentNavText" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" Text="{DynamicResource ui-nav-recent}" />
+                                <TextBlock
+                                    x:Name="RecentNavText"
+                                    Grid.Column="1"
+                                    Margin="10,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Text="{DynamicResource ui-nav-recent}" />
                             </Grid>
                         </ToggleButton>
-                        <ToggleButton x:Name="ExportNavButton" Classes="nav-button" Click="OnNavClick" Tag="Export">
+                        <ToggleButton
+                            x:Name="ExportNavButton"
+                            Classes="nav-button"
+                            Click="OnNavClick"
+                            Tag="Export">
                             <Grid ColumnDefinitions="20,*">
-                                <Viewbox Width="14" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <Path Fill="White" Data="M7,1 L12,6 H9V10H5V6H2Z M2,11H12V13H2Z" />
+                                <Viewbox
+                                    Width="14"
+                                    Height="14"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                                    <Path Data="M7,1 L12,6 H9V10H5V6H2Z M2,11H12V13H2Z" Fill="White" />
                                 </Viewbox>
-                                <TextBlock x:Name="ExportNavText" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" Text="{DynamicResource ui-nav-export}" />
+                                <TextBlock
+                                    x:Name="ExportNavText"
+                                    Grid.Column="1"
+                                    Margin="10,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Text="{DynamicResource ui-nav-export}" />
                             </Grid>
                         </ToggleButton>
 
-                        <TextBlock x:Name="MineHeader" Margin="10,12,0,4" FontSize="11" FontWeight="SemiBold" Foreground="#B8B8B8" Text="{DynamicResource ui-nav-mine}" />
-                        <ToggleButton x:Name="CollectionNavButton" Classes="nav-button" Click="OnNavClick" Tag="Collection">
+                        <TextBlock
+                            x:Name="MineHeader"
+                            Margin="10,12,0,4"
+                            FontSize="11"
+                            FontWeight="SemiBold"
+                            Foreground="#B8B8B8"
+                            Text="{DynamicResource ui-nav-mine}" />
+                        <ToggleButton
+                            x:Name="CollectionNavButton"
+                            Classes="nav-button"
+                            Click="OnNavClick"
+                            Tag="Collection">
                             <Grid ColumnDefinitions="20,*">
-                                <Viewbox Width="14" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <Path Fill="White" Data="M2,3H6L7.2,4.5H12.5V12.5H2Z M3.2,5.5V11.3H11.3V5.5Z" />
+                                <Viewbox
+                                    Width="14"
+                                    Height="14"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                                    <Path Data="M2,3H6L7.2,4.5H12.5V12.5H2Z M3.2,5.5V11.3H11.3V5.5Z" Fill="White" />
                                 </Viewbox>
-                                <TextBlock x:Name="CollectionNavText" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" Text="{DynamicResource ui-nav-collection}" />
+                                <TextBlock
+                                    x:Name="CollectionNavText"
+                                    Grid.Column="1"
+                                    Margin="10,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Text="{DynamicResource ui-nav-collection}" />
                             </Grid>
                         </ToggleButton>
-                        <ToggleButton x:Name="FindNavButton" Classes="nav-button" Click="OnNavClick" Tag="Find">
+                        <ToggleButton
+                            x:Name="FindNavButton"
+                            Classes="nav-button"
+                            Click="OnNavClick"
+                            Tag="Find">
                             <Grid ColumnDefinitions="20,*">
-                                <Viewbox Width="14" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <Path Fill="White" Data="M2,11 L2,4 L5,2 L9,2 L12,4 L12,11 Z M4,10H10V5L8.5,4H5.5L4,5Z" />
+                                <Viewbox
+                                    Width="14"
+                                    Height="14"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                                    <Path Data="M2,11 L2,4 L5,2 L9,2 L12,4 L12,11 Z M4,10H10V5L8.5,4H5.5L4,5Z" Fill="White" />
                                 </Viewbox>
-                                <TextBlock x:Name="FindNavText" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" Text="{DynamicResource ui-nav-music}" />
+                                <TextBlock
+                                    x:Name="FindNavText"
+                                    Grid.Column="1"
+                                    Margin="10,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Text="{DynamicResource ui-nav-music}" />
                             </Grid>
                         </ToggleButton>
 
-                        <TextBlock x:Name="CollectionHeader" Margin="10,12,0,4" FontSize="11" FontWeight="SemiBold" Foreground="#B8B8B8" Text="{DynamicResource ui-nav-collection}" />
+                        <TextBlock
+                            x:Name="CollectionHeader"
+                            Margin="10,12,0,4"
+                            FontSize="11"
+                            FontWeight="SemiBold"
+                            Foreground="#B8B8B8"
+                            Text="{DynamicResource ui-nav-collection}" />
                         <ItemsControl x:Name="CollectionList" ItemsSource="{Binding Collection}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="data:Collection">
-                                    <Button Classes="nav-button" Click="OnCollectionNavClick" Tag="{Binding Id}">
+                                    <Button
+                                        Classes="nav-button"
+                                        Click="OnCollectionNavClick"
+                                        Tag="{Binding Id}">
                                         <Grid ColumnDefinitions="20,*">
-                                            <Viewbox Width="14" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                <Path Fill="White" Data="M2,4H6L7.2,5.5H12V12H2Z" />
+                                            <Viewbox
+                                                Width="14"
+                                                Height="14"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center">
+                                                <Path Data="M2,4H6L7.2,5.5H12V12H2Z" Fill="White" />
                                             </Viewbox>
-                                            <TextBlock Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" Text="{Binding Name}" />
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                Margin="10,0,0,0"
+                                                VerticalAlignment="Center"
+                                                Text="{Binding Name}" />
                                         </Grid>
                                     </Button>
                                 </DataTemplate>
@@ -122,7 +256,10 @@
             </Border>
 
             <Grid Grid.Column="1" RowDefinitions="*,Auto">
-                <Border Grid.Row="0" Background="#B0FFFFFF" Padding="5">
+                <Border
+                    Grid.Row="0"
+                    Padding="5"
+                    Background="#B0FFFFFF">
                     <ContentControl x:Name="MainFrame" />
                 </Border>
                 <controls:PlayController x:Name="PlayBarController" Grid.Row="1" />

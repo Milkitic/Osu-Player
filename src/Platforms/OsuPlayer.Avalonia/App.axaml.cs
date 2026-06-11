@@ -66,7 +66,7 @@ public partial class App : Application
         WindowIcon? icon = null;
         try
         {
-            var iconUri = new Uri("avares://OsuPlayer/Resources/osuPlayer.ico");
+            var iconUri = new Uri("avares://OsuPlayer/osuPlayer.ico");
             using var stream = AssetLoader.Open(iconUri);
             icon = new WindowIcon(stream);
         }

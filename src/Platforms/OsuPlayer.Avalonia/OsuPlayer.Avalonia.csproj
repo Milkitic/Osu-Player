@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <Folder Include="Models\" />
+    <AvaloniaResource Include="osuPlayer.ico" />
     <AvaloniaResource Include="Assets\**" />
     <AvaloniaResource Include="Resources\**" />
     <AvaloniaResource Remove="Resources\xaml\**" />

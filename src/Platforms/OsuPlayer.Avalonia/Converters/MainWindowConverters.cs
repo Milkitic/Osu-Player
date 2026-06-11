@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data.Converters;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 
 namespace OsuPlayer.Converters;
 
@@ -25,8 +26,21 @@ public class TitleIconConverter : IValueConverter
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is bool isNavigationCollapsed)
-            return !isNavigationCollapsed;
-        return true;
+        {
+            try
+            {
+                var uri = isNavigationCollapsed
+                    ? "avares://OsuPlayer/Resources/title_sm.png"
+                    : "avares://OsuPlayer/Resources/title.png";
+                return new Bitmap(uri);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        return null;
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

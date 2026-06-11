@@ -198,6 +198,49 @@ xmlns:cfg="clr-namespace:Milki.Extensions.Configuration"
 
 在 `OsuPlayer.Avalonia.csproj` 中已启用 `<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>`,需为每个绑定根添加 `x:DataType`。
 
+### 3.5 标题栏 / WindowChrome 迁移
+
+`OsuPlayer` 的主窗口和设置窗口在 WPF 中都不是原生标题栏,而是 `WindowChrome + CaptionHeight + UseAeroCaptionButtons=False` 配合页面内自绘按钮实现。迁移到 Avalonia 时,这里必须保持“继续使用自绘标题栏”,不要退回系统标题栏,否则视觉和交互都会偏离原项目。
+
+**最低改动迁移规则**
+
+1. WPF 的 `WindowChrome` 迁移到 Avalonia 时,窗口级别统一使用:
+```xml
+WindowDecorations="None"
+ExtendClientAreaToDecorationsHint="True"
+```
+
+> 当前仓库锁定的是 Avalonia `12.0.4`,`ExtendClientAreaChromeHints` 并不可用;这里不要为了“概念完整”引入不存在的属性。对本项目而言,`WindowDecorations="None"` 已负责隐藏原生标题栏,`ExtendClientAreaToDecorationsHint="True"` 负责把自定义标题栏接入窗口拖拽/系统按钮语义。
+
+2. WPF 的 `CaptionHeight` 直接映射到 Avalonia 的:
+```xml
+ExtendClientAreaTitleBarHeightHint="40"   <!-- MainWindow -->
+ExtendClientAreaTitleBarHeightHint="32"   <!-- ConfigWindow / BeatmapInfoWindow -->
+```
+
+3. 自定义标题栏根节点必须标记:
+```xml
+WindowDecorationProperties.ElementRole="TitleBar"
+```
+否则拖拽、双击最大化、系统吸附(snap)等行为可能不完整。
+
+4. 最小化 / 最大化 / 关闭按钮必须分别标记:
+```xml
+WindowDecorationProperties.ElementRole="MinimizeButton"
+WindowDecorationProperties.ElementRole="MaximizeButton"
+WindowDecorationProperties.ElementRole="CloseButton"
+```
+这样可最大程度复用系统行为,避免自己重写整套非客户区逻辑。
+
+5. WPF 旧实现里最大化后内容区会留出 7px 安全边距;Avalonia 端优先直接绑定 `Window.OffScreenMargin`,不要继续写死魔法数,这样能更接近系统实际边界。
+
+6. 标题栏视觉尽量保留原资源:
+   - `MainWindow` 左上角继续使用 `title.png / title_sm.png`
+   - `ConfigWindow` 继续使用纯文本标题 + 关闭按钮
+   - 额外功能按钮(设置 / mini)继续放在系统按钮左侧,不要拆到内容区
+
+> 结论:对 `OsuPlayer` 这种原本就有自绘标题栏的 WPF 项目,`Avalonia Window + 自定义 WindowTitleBar 控件` 是最低风险、最低改动的迁移路径;重点不是“重设计”,而是把 WPF `WindowChrome` 的职责逐项映射完整。
+
 ### 3.4 常用代码命名空间
 
 | WPF | Avalonia |
