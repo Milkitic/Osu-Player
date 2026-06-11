@@ -44,60 +44,66 @@
         </Style>
     </UserControl.Styles>
 
-    <Border Background="{Binding #Root.Background}"
+    <Grid Background="{Binding #Root.Background}" ColumnDefinitions="*,Auto">
+        <!--  Draggable title area only covers the non-interactive region.  -->
+        <StackPanel
+            Grid.Column="0"
+            Margin="{Binding #Root.LeftAreaMargin}"
+            Orientation="Horizontal"
+            Spacing="8"
+            VerticalAlignment="Center"
             WindowDecorationProperties.ElementRole="TitleBar">
-        <DockPanel LastChildFill="True">
-            <!--  Right: system buttons (rendered first so they dock to the right)  -->
-            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-                <ContentPresenter
-                    x:Name="PART_RightContent"
-                    VerticalContentAlignment="Center"
-                    Content="{Binding #Root.RightContent}" />
-                <Button
-                    x:Name="PART_MinButton"
-                    Classes="titlebar-btn"
-                    IsVisible="{Binding #Root.ShowMinimize}"
-                    WindowDecorationProperties.ElementRole="MinimizeButton"
-                    Click="OnMinimizeClick">
-                    <Viewbox Width="12" Height="12">
-                        <Path Fill="White" Data="M1,10 L11,10 11,11 1,11 Z" />
-                    </Viewbox>
-                </Button>
-                <Button
-                    x:Name="PART_MaxButton"
-                    Classes="titlebar-btn"
-                    IsVisible="{Binding #Root.ShowMaximize}"
-                    WindowDecorationProperties.ElementRole="MaximizeButton"
-                    Click="OnMaximizeClick">
-                    <Viewbox Width="12" Height="12">
-                        <Path x:Name="PART_MaxIcon" Fill="White" Data="M1,1 L11,1 11,11 1,11 Z M2,2 L2,10 10,10 10,2 Z" />
-                    </Viewbox>
-                </Button>
-                <Button
-                    x:Name="PART_CloseButton"
-                    Classes="titlebar-btn close"
-                    IsVisible="{Binding #Root.ShowClose}"
-                    WindowDecorationProperties.ElementRole="CloseButton"
-                    Click="OnCloseClick">
-                    <Viewbox Width="12" Height="12">
-                        <Path Fill="White" Data="M2.1,1 L6,4.9 L9.9,1 L11,2.1 L7.1,6 L11,9.9 L9.9,11 L6,7.1 L2.1,11 L1,9.9 L4.9,6 L1,2.1 Z" />
-                    </Viewbox>
-                </Button>
-            </StackPanel>
+            <ContentPresenter
+                x:Name="PART_LeftContent"
+                VerticalContentAlignment="Center"
+                Content="{Binding #Root.LeftContent}" />
+            <TextBlock
+                x:Name="PART_Title"
+                VerticalAlignment="Center"
+                FontWeight="SemiBold"
+                Foreground="White"
+                Text="{Binding #Root.Title}" />
+        </StackPanel>
 
-            <!--  Left: title text + optional content  -->
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0" Spacing="8">
-                <ContentPresenter
-                    x:Name="PART_LeftContent"
-                    VerticalContentAlignment="Center"
-                    Content="{Binding #Root.LeftContent}" />
-                <TextBlock
-                    x:Name="PART_Title"
-                    VerticalAlignment="Center"
-                    FontWeight="SemiBold"
-                    Foreground="White"
-                    Text="{Binding #Root.Title}" />
-            </StackPanel>
-        </DockPanel>
-    </Border>
+        <StackPanel
+            Grid.Column="1"
+            Margin="{Binding #Root.RightAreaMargin}"
+            Orientation="Horizontal"
+            VerticalAlignment="Center">
+            <ContentPresenter
+                x:Name="PART_RightContent"
+                VerticalContentAlignment="Center"
+                Content="{Binding #Root.RightContent}" />
+            <Button
+                x:Name="PART_MinButton"
+                Classes="titlebar-btn"
+                IsVisible="{Binding #Root.ShowMinimize}"
+                WindowDecorationProperties.ElementRole="MinimizeButton"
+                Click="OnMinimizeClick">
+                <Viewbox Width="12" Height="12">
+                    <Path Fill="White" Data="M1,10 L11,10 11,11 1,11 Z" />
+                </Viewbox>
+            </Button>
+            <Button
+                x:Name="PART_MaxButton"
+                Classes="titlebar-btn"
+                IsVisible="{Binding #Root.ShowMaximize}"
+                WindowDecorationProperties.ElementRole="MaximizeButton"
+                Click="OnMaximizeClick">
+                <Viewbox Width="12" Height="12">
+                    <Path x:Name="PART_MaxIcon" Fill="White" Data="M1,1 L11,1 11,11 1,11 Z M2,2 L2,10 10,10 10,2 Z" />
+                </Viewbox>
+            </Button>
+            <Button
+                x:Name="PART_CloseButton"
+                Classes="titlebar-btn close"
+                IsVisible="{Binding #Root.ShowClose}"
+                WindowDecorationProperties.ElementRole="CloseButton"
+                Click="OnCloseClick">
+                <Viewbox Width="12" Height="12">
+                    <Path Fill="White" Data="M2.1,1 L6,4.9 L9.9,1 L11,2.1 L7.1,6 L11,9.9 L9.9,11 L6,7.1 L2.1,11 L1,9.9 L4.9,6 L1,2.1 Z" />
+                </Viewbox>
+            </Button>
+        </StackPanel>
+    </Grid>
 </UserControl>

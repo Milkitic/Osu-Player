@@ -1,14 +1,12 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!--  Texture brushes  -->
-    <DrawingImage x:Key="TextureSource1">
-        <DrawingImage.Drawing>
-            <DrawingGroup />
-        </DrawingImage.Drawing>
-    </DrawingImage>
+    <Bitmap x:Key="TextureSource1">avares://OsuPlayer/Resources/osu_texture.png</Bitmap>
+    <Bitmap x:Key="TextureSource2">avares://OsuPlayer/Resources/osu_texture2.png</Bitmap>
+    <Bitmap x:Key="TextureSource3">avares://OsuPlayer/Resources/store.jpg</Bitmap>
 
-    <SolidColorBrush x:Key="TextureBrush" Color="#1E1E1E" />
-    <SolidColorBrush x:Key="TextureBrush2" Color="#252526" />
-    <SolidColorBrush x:Key="TextureBrush3" Color="#2D2D30" />
+    <ImageBrush x:Key="TextureBrush" Source="{StaticResource TextureSource1}" Stretch="None" />
+    <ImageBrush x:Key="TextureBrush2" Source="{StaticResource TextureSource2}" Stretch="None" />
+    <ImageBrush x:Key="TextureBrush3" Source="{StaticResource TextureSource3}" Stretch="UniformToFill" />
 
     <SolidColorBrush x:Key="DarkGreyBrush30" Color="#303030" />
 

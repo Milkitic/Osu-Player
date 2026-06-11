@@ -17,6 +17,12 @@ public partial class WindowTitleBar : UserControl
     public static readonly StyledProperty<object?> RightContentProperty =
         AvaloniaProperty.Register<WindowTitleBar, object?>(nameof(RightContent));
 
+    public static readonly StyledProperty<Thickness> LeftAreaMarginProperty =
+        AvaloniaProperty.Register<WindowTitleBar, Thickness>(nameof(LeftAreaMargin), new Thickness(8, 0, 0, 0));
+
+    public static readonly StyledProperty<Thickness> RightAreaMarginProperty =
+        AvaloniaProperty.Register<WindowTitleBar, Thickness>(nameof(RightAreaMargin), new Thickness(0, 0, 1, 0));
+
     public static readonly StyledProperty<bool> ShowMinimizeProperty =
         AvaloniaProperty.Register<WindowTitleBar, bool>(nameof(ShowMinimize), true);
 
@@ -53,6 +59,18 @@ public partial class WindowTitleBar : UserControl
     {
         get => GetValue(RightContentProperty);
         set => SetValue(RightContentProperty, value);
+    }
+
+    public Thickness LeftAreaMargin
+    {
+        get => GetValue(LeftAreaMarginProperty);
+        set => SetValue(LeftAreaMarginProperty, value);
+    }
+
+    public Thickness RightAreaMargin
+    {
+        get => GetValue(RightAreaMarginProperty);
+        set => SetValue(RightAreaMarginProperty, value);
     }
 
     public bool ShowMinimize

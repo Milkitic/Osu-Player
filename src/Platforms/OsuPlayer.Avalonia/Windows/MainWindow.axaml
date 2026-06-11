@@ -11,7 +11,7 @@
     MinWidth="800"
     MinHeight="600"
     x:DataType="vm:MainWindowViewModel"
-    Background="{DynamicResource TextureBrush3}"
+    Background="{DynamicResource TextureBrush}"
     ExtendClientAreaTitleBarHeightHint="40"
     ExtendClientAreaToDecorationsHint="True"
     Icon="avares://OsuPlayer/osuPlayer.ico"
@@ -25,11 +25,12 @@
     <Grid Margin="{Binding $parent[Window].OffScreenMargin}" RowDefinitions="Auto,*">
         <controls:WindowTitleBar
             Grid.Row="0"
-            Background="#252526">
+            Background="Transparent"
+            LeftAreaMargin="10,0,0,0"
+            RightAreaMargin="0,0,5,0">
             <controls:WindowTitleBar.LeftContent>
                 <Image
                     Height="28"
-                    Margin="0,0,4,0"
                     Source="{Binding IsNavigationCollapsed, Converter={StaticResource TitleIconConverter}}" />
             </controls:WindowTitleBar.LeftContent>
             <controls:WindowTitleBar.RightContent>
@@ -41,12 +42,13 @@
                     BorderBrush="#60DDDDDD"
                     BorderThickness="0.3"
                     CornerRadius="16">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
+                    <StackPanel Orientation="Horizontal">
                         <Button
                             Width="25"
                             Height="25"
                             Classes="titlebar-btn"
                             Click="BtnSettings_Click"
+                            Margin="3,0"
                             ToolTip.Tip="{DynamicResource ui-sets}">
                             <Viewbox Width="21" Height="21">
                                 <Path Data="{StaticResource Gear}" Fill="White" />
@@ -57,9 +59,17 @@
                             Height="25"
                             Classes="titlebar-btn"
                             Click="BtnMini_Click"
+                            Margin="3,0"
                             ToolTip.Tip="Mini">
                             <Viewbox Width="16" Height="16">
-                                <Path Data="{StaticResource Mini}" Fill="White" />
+                                <Canvas Width="1024" Height="1024">
+                                    <Path
+                                        Data="M0.739556 233.130667a232.391111 232.391111 0 0 1 232.391111-232.391111h557.738666a232.391111 232.391111 0 0 1 232.391111 232.391111v557.738666a232.391111 232.391111 0 0 1-232.391111 232.391111H233.130667a232.391111 232.391111 0 0 1-232.391111-232.391111V233.130667z m232.391111-139.434667a139.434667 139.434667 0 0 0-139.434667 139.434667v557.738666a139.434667 139.434667 0 0 0 139.434667 139.434667h557.738666a139.434667 139.434667 0 0 0 139.434667-139.434667V233.130667a139.434667 139.434667 0 0 0-139.434667-139.434667H233.130667z"
+                                        Fill="White" />
+                                    <Path
+                                        Data="M601.088 186.652444c25.685333 0 46.506667 20.792889 46.506667 46.478223v96.796444c0 25.685333 20.792889 46.478222 46.478222 46.478222h96.796444a46.478222 46.478222 0 1 1 0 92.984889h-96.796444a139.434667 139.434667 0 0 1-139.463111-139.463111V233.130667c0-25.685333 20.821333-46.478222 46.478222-46.478223z m-414.435556 414.435556c0-25.656889 20.792889-46.478222 46.478223-46.478222h96.796444a139.434667 139.434667 0 0 1 139.463111 139.463111v96.796444a46.478222 46.478222 0 0 1-92.984889 0v-96.796444c0-25.685333-20.792889-46.478222-46.478222-46.478222H233.130667a46.478222 46.478222 0 0 1-46.478223-46.506667z"
+                                        Fill="White" />
+                                </Canvas>
                             </Viewbox>
                         </Button>
                     </StackPanel>
