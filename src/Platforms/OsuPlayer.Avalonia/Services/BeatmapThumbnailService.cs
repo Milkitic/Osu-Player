@@ -98,8 +98,7 @@ public sealed class BeatmapThumbnailService : IBeatmapThumbnailService
         }
 
         using var resizedBitmap = width > 0 || height > 0
-            ? ResizeBitmap(sourceBitmap, width > 0 ? width : sourceBitmap.Width,
-                height > 0 ? height : sourceBitmap.Height)
+            ? ResizeBitmap(sourceBitmap, width, height)
             : sourceBitmap.Copy();
 
         using var image = SKImage.FromBitmap(resizedBitmap);
@@ -115,8 +114,13 @@ public sealed class BeatmapThumbnailService : IBeatmapThumbnailService
         encoded.SaveTo(stream);
     }
 
-    private static SKBitmap ResizeBitmap(SKBitmap sourceBitmap, int targetWidth, int targetHeight)
+    private static SKBitmap ResizeBitmap(SKBitmap sourceBitmap, int requestedWidth, int requestedHeight)
     {
+        var (targetWidth, targetHeight) = GetTargetSize(
+            sourceBitmap.Width,
+            sourceBitmap.Height,
+            requestedWidth,
+            requestedHeight);
         var targetInfo = new SKImageInfo(targetWidth, targetHeight, sourceBitmap.ColorType, sourceBitmap.AlphaType);
         var targetBitmap = new SKBitmap(targetInfo);
         var samplingOptions = new SKSamplingOptions(SKCubicResampler.Mitchell);
@@ -128,5 +132,31 @@ public sealed class BeatmapThumbnailService : IBeatmapThumbnailService
         }
 
         return targetBitmap;
+    }
+
+    private static (int Width, int Height) GetTargetSize(
+        int sourceWidth,
+        int sourceHeight,
+        int requestedWidth,
+        int requestedHeight)
+    {
+        if (requestedWidth > 0 && requestedHeight > 0)
+        {
+            return (requestedWidth, requestedHeight);
+        }
+
+        if (requestedWidth > 0)
+        {
+            var targetHeight = (int)Math.Round(sourceHeight * requestedWidth / (double)sourceWidth);
+            return (requestedWidth, Math.Max(1, targetHeight));
+        }
+
+        if (requestedHeight > 0)
+        {
+            var targetWidth = (int)Math.Round(sourceWidth * requestedHeight / (double)sourceHeight);
+            return (Math.Max(1, targetWidth), requestedHeight);
+        }
+
+        return (sourceWidth, sourceHeight);
     }
 }

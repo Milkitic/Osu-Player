@@ -100,6 +100,37 @@ public partial class SearchPage : UserControl
         }
     }
 
+    private async void PlayWithDifficulty_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Control { Tag: BeatmapDataModel map } && DataContext is SearchPageViewModel viewModel)
+        {
+            await viewModel.PlayCommand.ExecuteAsync(map);
+        }
+    }
+
+    private void SearchByCondition_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not MenuItem { Tag: BeatmapDataModel map, CommandParameter: string field } ||
+            DataContext is not SearchPageViewModel viewModel)
+        {
+            return;
+        }
+
+        var keyword = field switch
+        {
+            "Title" => map.AutoTitle,
+            "Artist" => map.AutoArtist,
+            "Source" => map.SongSource,
+            "Creator" => map.Creator,
+            _ => string.Empty
+        };
+
+        if (!string.IsNullOrWhiteSpace(keyword))
+        {
+            viewModel.SearchByConditionCommand.Execute(keyword);
+        }
+    }
+
     private async void SaveCollection_Click(object? sender, RoutedEventArgs e)
     {
         if (sender is Control { Tag: BeatmapDataModel map } && DataContext is SearchPageViewModel viewModel)
@@ -124,11 +155,35 @@ public partial class SearchPage : UserControl
         }
     }
 
+    private async void OpenScorePage_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Control { Tag: BeatmapDataModel map } && DataContext is SearchPageViewModel viewModel)
+        {
+            await viewModel.OpenScorePageCommand.ExecuteAsync(map);
+        }
+    }
+
     private void PageBtn_Click(object? sender, RoutedEventArgs e)
     {
         if (sender is Control { Tag: int index } && DataContext is SearchPageViewModel viewModel)
         {
             viewModel.SwitchCommand.Execute(index);
+        }
+    }
+
+    private void PreviousPage_Click(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is SearchPageViewModel viewModel)
+        {
+            viewModel.SwitchCommand.Execute(false);
+        }
+    }
+
+    private void NextPage_Click(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is SearchPageViewModel viewModel)
+        {
+            viewModel.SwitchCommand.Execute(true);
         }
     }
 }
