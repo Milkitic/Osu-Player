@@ -100,7 +100,6 @@
         </Style>
         <Style Selector="controls|CommonButton.playbar-icon">
             <Setter Property="Padding" Value="0" />
-            <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Foreground" Value="White" />
@@ -300,6 +299,7 @@
                         Width="24"
                         Height="24"
                         Margin="8"
+                        Background="Transparent"
                         Classes="playbar-icon"
                         Click="ModeButton_Click"
                         IconSize="25"
@@ -310,6 +310,7 @@
                         Height="23"
                         Margin="6"
                         VerticalAlignment="Center"
+                        Background="Transparent"
                         Classes="playbar-icon"
                         Click="LikeButton_Click"
                         IconSize="24"
