@@ -7,8 +7,7 @@ using Microsoft.Extensions.Logging;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Shared;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
+using SkiaSharp;
 
 namespace OsuPlayer.Services;
 
@@ -92,19 +91,42 @@ public sealed class BeatmapThumbnailService : IBeatmapThumbnailService
 
     private static void ResizeImageAndSave(string sourcePath, string targetName, int width = 0, int height = 0)
     {
-        using var image = Image.Load(sourcePath);
-        if (width > 0 || height > 0)
+        using var sourceBitmap = SKBitmap.Decode(sourcePath);
+        if (sourceBitmap == null)
         {
-            var targetWidth = width > 0 ? width : image.Width;
-            var targetHeight = height > 0 ? height : image.Height;
-            image.Mutate(x => x.Resize(new ResizeOptions
-            {
-                Size = new SixLabors.ImageSharp.Size(targetWidth, targetHeight),
-                Mode = ResizeMode.Stretch
-            }));
+            throw new InvalidOperationException($"Unable to decode image: {sourcePath}");
         }
+
+        using var resizedBitmap = width > 0 || height > 0
+            ? ResizeBitmap(sourceBitmap, width > 0 ? width : sourceBitmap.Width,
+                height > 0 ? height : sourceBitmap.Height)
+            : sourceBitmap.Copy();
+
+        using var image = SKImage.FromBitmap(resizedBitmap);
+        using var encoded = image.Encode(SKEncodedImageFormat.Jpeg, 90);
+        if (encoded == null)
+        {
+            throw new InvalidOperationException($"Unable to encode thumbnail: {sourcePath}");
+        }
+
         var target = Path.Combine(AppPaths.Current.ThumbCachePath, $"{targetName}.jpg");
         Directory.CreateDirectory(Path.GetDirectoryName(target)!);
-        image.SaveAsJpeg(target);
+        using var stream = File.Open(target, FileMode.Create, FileAccess.Write, FileShare.None);
+        encoded.SaveTo(stream);
+    }
+
+    private static SKBitmap ResizeBitmap(SKBitmap sourceBitmap, int targetWidth, int targetHeight)
+    {
+        var targetInfo = new SKImageInfo(targetWidth, targetHeight, sourceBitmap.ColorType, sourceBitmap.AlphaType);
+        var targetBitmap = new SKBitmap(targetInfo);
+        var samplingOptions = new SKSamplingOptions(SKCubicResampler.Mitchell);
+
+        if (!sourceBitmap.ScalePixels(targetBitmap, samplingOptions))
+        {
+            targetBitmap.Dispose();
+            throw new InvalidOperationException("Unable to resize thumbnail image.");
+        }
+
+        return targetBitmap;
     }
 }
