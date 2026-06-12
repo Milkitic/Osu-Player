@@ -166,8 +166,7 @@
                     Width="32"
                     Height="32"
                     Margin="8"
-                    Command="{Binding PlayCommand}"
-                    CornerRadius="16">
+                    Command="{Binding PlayCommand}">
                     <controls:CommonButton.IconTemplate>
                         <MultiBinding Converter="{StaticResource PlayingConverter}">
                             <Binding Path="Shared.IsPlaying" />

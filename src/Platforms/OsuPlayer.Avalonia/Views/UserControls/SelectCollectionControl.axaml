@@ -24,7 +24,8 @@
             Click="BtnAddCollection_Click"
             Content="{DynamicResource ui-addNewCollection}"
             IconMargin="5"
-            IconSize="18" />
+            IconSize="18"
+            IconTemplate="{StaticResource NavAddCollectionTempl}" />
         <ListBox
             Grid.Row="1"
             Margin="0,0,1,0"

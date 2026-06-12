@@ -8,6 +8,36 @@
     <UserControl.DataContext>
         <vm:VolumeControlVm />
     </UserControl.DataContext>
+    <UserControl.Styles>
+        <Style Selector="Button.collection-btn">
+            <Setter Property="Background" Value="#EEEEEE" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="BorderBrush" Value="#BBBBBB" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}">
+                        <ContentPresenter
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            Content="{TemplateBinding Content}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="Button.collection-btn:pointerover">
+            <Setter Property="Background" Value="#F8F8F8" />
+        </Style>
+    </UserControl.Styles>
     <Grid>
         <Border Margin="10" CornerRadius="4" BoxShadow="0 0 10 0 #80000000" Background="{DynamicResource TextureBrush2}" Opacity="0.7" />
         <Border Margin="10" Background="#A0FFFFFF" CornerRadius="4">
@@ -182,26 +212,31 @@
                         Grid.Column="0"
                         Click="BtnPlayMod_OnClick"
                         Content="NM"
+                        Classes="collection-btn"
                         Tag="{x:Static models:PlayModifier.None}" />
                     <Button
                         Grid.Column="1"
                         Click="BtnPlayMod_OnClick"
                         Content="DT"
+                        Classes="collection-btn"
                         Tag="{x:Static models:PlayModifier.DoubleTime}" />
                     <Button
                         Grid.Column="2"
                         Click="BtnPlayMod_OnClick"
                         Content="NC"
+                        Classes="collection-btn"
                         Tag="{x:Static models:PlayModifier.NightCore}" />
                     <Button
                         Grid.Column="3"
                         Click="BtnPlayMod_OnClick"
                         Content="HT"
+                        Classes="collection-btn"
                         Tag="{x:Static models:PlayModifier.HalfTime}" />
                     <Button
                         Grid.Column="4"
                         Click="BtnPlayMod_OnClick"
                         Content="DC"
+                        Classes="collection-btn"
                         Tag="{x:Static models:PlayModifier.DayCore}" />
                 </Grid>
             </Grid>

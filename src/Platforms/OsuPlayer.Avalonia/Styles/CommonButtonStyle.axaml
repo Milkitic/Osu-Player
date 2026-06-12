@@ -28,7 +28,8 @@
                     CornerRadius="{TemplateBinding CornerRadius}"
                     Width="{TemplateBinding Width}"
                     Height="{TemplateBinding Height}"
-                    Padding="{TemplateBinding Padding}">
+                    Padding="{TemplateBinding Padding}"
+                    BoxShadow="{TemplateBinding BoxShadow}">
                     <StackPanel
                         HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                         VerticalAlignment="{TemplateBinding VerticalContentAlignment}"

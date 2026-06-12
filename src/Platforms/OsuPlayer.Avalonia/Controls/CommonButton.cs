@@ -45,6 +45,51 @@ public class CommonButton : Button
     public static readonly StyledProperty<double> ShadowOpacityProperty =
         AvaloniaProperty.Register<CommonButton, double>(nameof(ShadowOpacity), 0d);
 
+    public static readonly StyledProperty<BoxShadows> BoxShadowProperty =
+        AvaloniaProperty.Register<CommonButton, BoxShadows>(nameof(BoxShadow), new BoxShadows());
+
+    public BoxShadows BoxShadow
+    {
+        get => GetValue(BoxShadowProperty);
+        set => SetValue(BoxShadowProperty, value);
+    }
+
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+
+        if (change.Property == ShadowColorProperty || change.Property == ShadowOpacityProperty)
+        {
+            UpdateBoxShadow();
+        }
+    }
+
+    public CommonButton()
+    {
+        UpdateBoxShadow();
+    }
+
+    private void UpdateBoxShadow()
+    {
+        var opacity = ShadowOpacity;
+        if (opacity <= 0)
+        {
+            BoxShadow = new BoxShadows();
+        }
+        else
+        {
+            var color = ShadowColor;
+            var alphaColor = Color.FromArgb((byte)(opacity * 255), color.R, color.G, color.B);
+            BoxShadow = new BoxShadows(new BoxShadow
+            {
+                Blur = 10,
+                Color = alphaColor,
+                OffsetX = 0,
+                OffsetY = 1
+            });
+        }
+    }
+
     public IControlTemplate? IconTemplate
     {
         get => GetValue(IconTemplateProperty);

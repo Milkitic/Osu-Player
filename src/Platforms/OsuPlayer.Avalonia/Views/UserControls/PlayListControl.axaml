@@ -68,6 +68,7 @@
                         Click="CloseButton_Click"
                         IconMargin="0"
                         IconSize="15"
+                        IconTemplate="{StaticResource CloseTempl}"
                         MouseDownBackground="#D0D0D0"
                         MouseOverBackground="#D4D4D4" />
                 </StackPanel>
