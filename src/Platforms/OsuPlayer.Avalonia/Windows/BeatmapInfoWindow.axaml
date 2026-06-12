@@ -1,0 +1,123 @@
+<Window
+    x:Class="OsuPlayer.Windows.BeatmapInfoWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:OsuPlayer.Views.UserControls"
+    xmlns:playlist="clr-namespace:OsuPlayer.Playback.Playlist;assembly=OsuPlayer.Media.Audio"
+    Title="当前歌曲信息"
+    Width="400"
+    Height="340"
+    MinWidth="400"
+    MaxWidth="400"
+    CanResize="False"
+    WindowDecorations="None"
+    ExtendClientAreaToDecorationsHint="True"
+    ExtendClientAreaTitleBarHeightHint="32"
+    WindowStartupLocation="CenterScreen"
+    Background="#323232"
+    x:DataType="playlist:BeatmapContext">
+
+    <Design.DataContext>
+        <playlist:BeatmapContext />
+    </Design.DataContext>
+
+    <Window.Styles>
+        <Style Selector="TextBox.readonly">
+            <Setter Property="IsReadOnly" Value="True" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
+        <Style Selector="Button.link-button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="#1E9FFF" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
+    </Window.Styles>
+
+    <Grid RowDefinitions="Auto,*">
+        <controls:WindowTitleBar
+            Height="32"
+            Title="当前歌曲信息"
+            ShowMaximize="False"
+            ShowMinimize="False" />
+
+        <ScrollViewer
+            Grid.Row="1"
+            Margin="1"
+            HorizontalScrollBarVisibility="Auto"
+            VerticalScrollBarVisibility="Disabled">
+            <StackPanel Background="#F0F0F0">
+                <StackPanel Margin="0,4,10,2" Orientation="Horizontal">
+                    <Label Width="110" HorizontalContentAlignment="Right" Content="艺术家：" />
+                    <TextBox Classes="readonly" Text="{Binding BeatmapDetail.Metadata.ArtistUnicode, Mode=OneWay}" />
+                </StackPanel>
+                <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
+                    <Label Width="110" HorizontalContentAlignment="Right" Content="（原始）艺术家：" />
+                    <TextBox Classes="readonly" Text="{Binding BeatmapDetail.Metadata.ArtistAscii, Mode=OneWay}" />
+                </StackPanel>
+                <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
+                    <Label Width="110" HorizontalContentAlignment="Right" Content="标题：" />
+                    <TextBox Classes="readonly" Text="{Binding BeatmapDetail.Metadata.TitleUnicode, Mode=OneWay}" />
+                </StackPanel>
+                <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
+                    <Label Width="110" HorizontalContentAlignment="Right" Content="（原始）标题：" />
+                    <TextBox Classes="readonly" Text="{Binding BeatmapDetail.Metadata.TitleAscii, Mode=OneWay}" />
+                </StackPanel>
+                <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
+                    <Label Width="110" HorizontalContentAlignment="Right" Content="地图作者：" />
+                    <TextBox Classes="readonly" Text="{Binding BeatmapDetail.Metadata.Creator, Mode=OneWay}" />
+                </StackPanel>
+                <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
+                    <Label Width="110" HorizontalContentAlignment="Right" Content="来源：" />
+                    <TextBox Classes="readonly" Text="{Binding BeatmapDetail.Metadata.Source, Mode=OneWay}" />
+                </StackPanel>
+                <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
+                    <Label Width="110" HorizontalContentAlignment="Right" Content="标签：" />
+                    <TextBox
+                        MaxWidth="270"
+                        Classes="readonly"
+                        Text="{Binding BeatmapDetail.Metadata.TagString, Mode=OneWay}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+                <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
+                    <Label Width="110" HorizontalContentAlignment="Right" Content="地图链接：" />
+                    <Button Classes="link-button" Click="SLink_Click">
+                        <TextBlock>
+                            <Run Text="s/" />
+                            <Run Text="{Binding BeatmapDetail.Metadata.BeatmapsetId, Mode=OneWay}" />
+                        </TextBlock>
+                    </Button>
+                    <Button Classes="link-button" Margin="10,0" Click="BLink_Click">
+                        <TextBlock>
+                            <Run Text="b/" />
+                            <Run Text="{Binding BeatmapDetail.Metadata.BeatmapId, Mode=OneWay}" />
+                        </TextBlock>
+                    </Button>
+                </StackPanel>
+                <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
+                    <Label Width="110" HorizontalContentAlignment="Right" Content="星级：" />
+                    <TextBox Classes="readonly" Text="{Binding BeatmapDetail.Stars, Mode=OneWay}" />
+                </StackPanel>
+                <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
+                    <Label Width="110" HorizontalContentAlignment="Right" Content="四围：" />
+                    <TextBlock VerticalAlignment="Center">
+                        <Run Text="HP:" />
+                        <Run Text="{Binding BeatmapDetail.Metadata.HP, Mode=OneWay}" />
+                        <Run Text="CS:" />
+                        <Run Text="{Binding BeatmapDetail.Metadata.CS, Mode=OneWay}" />
+                        <Run Text="AR:" />
+                        <Run Text="{Binding BeatmapDetail.Metadata.AR, Mode=OneWay}" />
+                        <Run Text="OD:" />
+                        <Run Text="{Binding BeatmapDetail.Metadata.OD, Mode=OneWay}" />
+                    </TextBlock>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

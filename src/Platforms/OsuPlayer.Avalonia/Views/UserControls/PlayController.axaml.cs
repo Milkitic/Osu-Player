@@ -1,18 +1,17 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.Versioning;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using KeyAsio.Core.Audio;
 using Microsoft.Extensions.DependencyInjection;
 using NAudio.Wave;
 using OsuPlayer.Core;
@@ -20,7 +19,7 @@ using OsuPlayer.Media.Audio;
 using OsuPlayer.Playback;
 using OsuPlayer.Playback.Playlist;
 using OsuPlayer.Services;
-using System.Runtime.Versioning;
+using OsuPlayer.Windows;
 
 namespace OsuPlayer.Views.UserControls;
 
@@ -89,7 +88,14 @@ public partial class PlayControllerVm : ObservableObject
         {
             if (beatmapCtx.BeatmapDetail?.BackgroundPath is { } path && File.Exists(path))
             {
-                try { ThumbSource = new Bitmap(path); } catch { ThumbSource = null; }
+                try
+                {
+                    ThumbSource = new Bitmap(path);
+                }
+                catch
+                {
+                    ThumbSource = null;
+                }
             }
             else
             {
@@ -195,8 +201,11 @@ public partial class PlayController : UserControl
     {
         InitializeComponent();
 
-        PlayProgress.AddHandler(Slider.PointerPressedEvent, (_, _) => PlayProgress_DragStarted(), Avalonia.Interactivity.RoutingStrategies.Tunnel | Avalonia.Interactivity.RoutingStrategies.Bubble, true);
-        PlayProgress.AddHandler(Slider.PointerReleasedEvent, (_, _) => PlayProgress_DragCompleted(this, EventArgs.Empty), Avalonia.Interactivity.RoutingStrategies.Tunnel | Avalonia.Interactivity.RoutingStrategies.Bubble, true);
+        PlayProgress.AddHandler(Slider.PointerPressedEvent, (_, _) => PlayProgress_DragStarted(),
+            Avalonia.Interactivity.RoutingStrategies.Tunnel | Avalonia.Interactivity.RoutingStrategies.Bubble, true);
+        PlayProgress.AddHandler(Slider.PointerReleasedEvent,
+            (_, _) => PlayProgress_DragCompleted(this, EventArgs.Empty),
+            Avalonia.Interactivity.RoutingStrategies.Tunnel | Avalonia.Interactivity.RoutingStrategies.Bubble, true);
     }
 
     protected override void OnInitialized()
@@ -262,8 +271,24 @@ public partial class PlayController : UserControl
         PopPlayList.IsOpen = false;
     }
 
-    private void TitleArtist_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void PlayModeControl_CloseRequested(object? sender, EventArgs e)
     {
-        AppNotificationService.Instance.Push("Title/Artist");
+        PopMode.IsOpen = false;
+    }
+
+    private async void TitleArtist_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (DataContext is not PlayControllerVm vm || vm.Controller?.PlayList?.CurrentInfo == null)
+        {
+            return;
+        }
+
+        if (TopLevel.GetTopLevel(this) is not Window owner)
+        {
+            return;
+        }
+
+        var dialog = new BeatmapInfoWindow(vm.Controller.PlayList.CurrentInfo);
+        await dialog.ShowDialog(owner);
     }
 }
