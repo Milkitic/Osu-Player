@@ -1,10 +1,16 @@
 <Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
         <Border Padding="15">
-            <Slider
-                Classes="osu-slider"
-                Maximum="100"
-                Minimum="0" />
+            <StackPanel>
+                <Slider
+                    Classes="osu-slider"
+                    Maximum="100"
+                    Minimum="0" />
+                <Slider
+                    Classes="osu-slider-white"
+                    Maximum="100"
+                    Minimum="0" />
+            </StackPanel>
         </Border>
     </Design.PreviewWith>
 
@@ -12,14 +18,12 @@
         <Setter Property="Focusable" Value="False" />
         <Setter Property="Foreground" Value="{DynamicResource SliderBackground}" />
         <Setter Property="Background" Value="#EAEAEA" />
-        <Setter Property="Height" Value="20" />
-        <Setter Property="MinHeight" Value="20" />
+        <Setter Property="Padding" Value="3,0" />
+        <Setter Property="MinHeight" Value="35" />
         <Setter Property="MinWidth" Value="40" />
-        <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
     <Style Selector="Slider.osu-slider /template/ Track">
-        <Setter Property="Height" Value="5" />
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
@@ -34,20 +38,34 @@
     </Style>
 
     <Style Selector="Slider.osu-slider /template/ Thumb">
-        <Setter Property="Width" Value="15" />
-        <Setter Property="Height" Value="15" />
         <Setter Property="Background" Value="{DynamicResource SliderBackground}" />
         <Setter Property="BorderBrush" Value="{DynamicResource WhiteBrush}" />
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="CornerRadius" Value="7.5" />
+        <Setter Property="Margin" Value="-3,0" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+                    <Border
+                        Width="15"
+                        Height="15"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        BoxShadow="0 1 5 0 #4DFC59A3"
+                        CornerRadius="{TemplateBinding CornerRadius}" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
     </Style>
 
     <Style Selector="Slider.osu-slider-white">
         <Setter Property="Focusable" Value="False" />
         <Setter Property="Foreground" Value="{DynamicResource PinkBrushOsu}" />
         <Setter Property="Background" Value="#80B0B0B0" />
-        <Setter Property="MinHeight" Value="20" />
-        <Setter Property="MinWidth" Value="20" />
+        <Setter Property="Padding" Value="5,0" />
+        <Setter Property="MinHeight" Value="21" />
+        <Setter Property="MinWidth" Value="21" />
     </Style>
 
     <Style Selector="Slider.osu-slider-white:horizontal /template/ Track">
@@ -89,11 +107,24 @@
     </Style>
 
     <Style Selector="Slider.osu-slider-white /template/ Thumb">
-        <Setter Property="Width" Value="11" />
-        <Setter Property="Height" Value="11" />
         <Setter Property="Background" Value="{DynamicResource PinkBrushOsu}" />
         <Setter Property="BorderBrush" Value="{DynamicResource WhiteBrush}" />
         <Setter Property="BorderThickness" Value="3" />
         <Setter Property="CornerRadius" Value="5.5" />
+        <Setter Property="Margin" Value="-5,0" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+                    <Border
+                        Width="11"
+                        Height="11"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        BoxShadow="0 1 5 0 #4DFD629A"
+                        CornerRadius="{TemplateBinding CornerRadius}" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
     </Style>
 </Styles>

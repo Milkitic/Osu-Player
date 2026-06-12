@@ -270,7 +270,7 @@
                     <Slider
                         x:Name="PlayProgress"
                         Grid.Row="1"
-                        Margin="3,0"
+                        Margin="-3,-13,-3,-17"
                         VerticalAlignment="Center"
                         Classes="osu-slider"
                         Maximum="{Binding TotalTimeMs}"
