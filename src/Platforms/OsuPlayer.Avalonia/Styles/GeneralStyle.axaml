@@ -5,15 +5,10 @@
     <Bitmap x:Key="TextureSource3">avares://OsuPlayer/Resources/store.jpg</Bitmap>
     <Bitmap x:Key="OsuTextureBlue">avares://OsuPlayer/Resources/osu_texture_blue.png</Bitmap>
 
-    <!--
-        Avalonia ImageBrush 平铺:
-        - Stretch=None: 图片保持原始尺寸 (等效 WPF Viewport=0,0,{imgW},{imgH} AbsolutePixels)
-        - TileMode=Tile: 平铺填充整个背景
-    -->
-    <ImageBrush x:Key="TextureBrush" Source="{StaticResource TextureSource1}" Stretch="None" TileMode="Tile" />
+    <ImageBrush x:Key="TextureBrush" Source="{StaticResource TextureSource1}" Stretch="Fill" />
     <ImageBrush x:Key="TextureBrush2" Source="{StaticResource TextureSource2}" Stretch="None" TileMode="Tile" />
     <ImageBrush x:Key="TextureBrush3" Source="{StaticResource TextureSource3}" Stretch="UniformToFill" />
-    <ImageBrush x:Key="OsuTextureBlueBrush" Source="{StaticResource OsuTextureBlue}" Stretch="None" TileMode="Tile" />
+    <ImageBrush x:Key="OsuTextureBlueBrush" Source="{StaticResource OsuTextureBlue}" Stretch="Fill" />
 
     <SolidColorBrush x:Key="DarkGreyBrush30" Color="#303030" />
 
