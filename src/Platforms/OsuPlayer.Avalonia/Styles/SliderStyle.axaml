@@ -33,4 +33,59 @@
         <Setter Property="CornerRadius" Value="7.5" />
         <Setter Property="Margin" Value="-5" />
     </Style>
+
+    <Style Selector="Slider.osu-slider-white">
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Foreground" Value="{DynamicResource PinkBrushOsu}" />
+        <Setter Property="Background" Value="#80B0B0B0" />
+        <Setter Property="MinHeight" Value="20" />
+        <Setter Property="MinWidth" Value="20" />
+    </Style>
+
+    <Style Selector="Slider.osu-slider-white:horizontal /template/ Track">
+        <Setter Property="Height" Value="20" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="Slider.osu-slider-white:vertical /template/ Track">
+        <Setter Property="Width" Value="20" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="Slider.osu-slider-white:horizontal /template/ RepeatButton#PART_DecreaseButton">
+        <Setter Property="Background" Value="{DynamicResource PinkBrushOsu}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Height" Value="4" />
+        <Setter Property="CornerRadius" Value="2" />
+    </Style>
+
+    <Style Selector="Slider.osu-slider-white:horizontal /template/ RepeatButton#PART_IncreaseButton">
+        <Setter Property="Background" Value="#80B0B0B0" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Height" Value="3" />
+        <Setter Property="CornerRadius" Value="2" />
+    </Style>
+
+    <Style Selector="Slider.osu-slider-white:vertical /template/ RepeatButton#PART_DecreaseButton">
+        <Setter Property="Background" Value="{DynamicResource PinkBrushOsu}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Width" Value="4" />
+        <Setter Property="CornerRadius" Value="2" />
+    </Style>
+
+    <Style Selector="Slider.osu-slider-white:vertical /template/ RepeatButton#PART_IncreaseButton">
+        <Setter Property="Background" Value="#80B0B0B0" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Width" Value="3" />
+        <Setter Property="CornerRadius" Value="2" />
+    </Style>
+
+    <Style Selector="Slider.osu-slider-white /template/ Thumb">
+        <Setter Property="Width" Value="11" />
+        <Setter Property="Height" Value="11" />
+        <Setter Property="Background" Value="{DynamicResource PinkBrushOsu}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource WhiteBrush}" />
+        <Setter Property="BorderThickness" Value="3" />
+        <Setter Property="CornerRadius" Value="5.5" />
+    </Style>
 </Styles>

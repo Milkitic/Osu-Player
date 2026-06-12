@@ -29,8 +29,19 @@ public partial class PlayModeControl : UserControl
     {
         base.OnLoaded(e);
         if (_controller == null) return;
+        _controller.PlayList.PropertyChanged -= Player_PropertyChanged;
         _controller.PlayList.PropertyChanged += Player_PropertyChanged;
         SwitchOption(_controller.PlayList.Mode);
+    }
+
+    protected override void OnUnloaded(RoutedEventArgs e)
+    {
+        if (_controller != null)
+        {
+            _controller.PlayList.PropertyChanged -= Player_PropertyChanged;
+        }
+
+        base.OnUnloaded(e);
     }
 
     private void Player_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
