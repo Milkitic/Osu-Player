@@ -35,15 +35,17 @@
                     </Setter>
                 </Style>
             </Border.Styles>
-            <Viewbox Width="256" Height="256">
-                <controls:CommonButton
-                    Width="28"
-                    Height="28"
-                    Margin="8"
-                    Classes="transport-accent"
-                    CornerRadius="14"
-                    IconTemplate="{StaticResource OpenTempl}" />
-            </Viewbox>
+            <StackPanel>
+                <Viewbox Width="256" Height="256">
+                    <controls:CommonButton
+                        Width="28"
+                        Height="28"
+                        Margin="8"
+                        Classes="transport-accent"
+                        CornerRadius="14"
+                        IconTemplate="{StaticResource OpenTempl}" />
+                </Viewbox>
+            </StackPanel>
         </Border>
     </Design.PreviewWith>
 

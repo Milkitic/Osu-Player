@@ -98,6 +98,18 @@
             <Setter Property="MouseOverBackground" Value="#80F8F8F8" />
             <Setter Property="MouseDownBackground" Value="#80E8E8E8" />
         </Style>
+        <Style Selector="controls|CommonButton.playbar-icon">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Height" Value="NaN" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="IconMargin" Value="0" />
+        </Style>
         <Style Selector="Button#ThumbButton">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
@@ -288,24 +300,20 @@
                         Width="24"
                         Height="24"
                         Margin="8"
-                        Classes="chromeless"
+                        Classes="playbar-icon"
                         Click="ModeButton_Click"
-                        IconMargin="0"
                         IconSize="25"
                         IconTemplate="{Binding Controller.PlayList.Mode, Converter={StaticResource PlayModeConverter}}"
-                        MouseDownBackground="Transparent"
                         MouseOverBackground="Transparent" />
                     <controls:CommonButton
                         Width="23"
                         Height="23"
                         Margin="6"
                         VerticalAlignment="Center"
-                        Classes="chromeless"
+                        Classes="playbar-icon"
                         Click="LikeButton_Click"
-                        IconMargin="0"
                         IconSize="24"
-                        IconTemplate="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.IsFavorite, Converter={StaticResource BoolIsFavToSvgConverter}}"
-                        MouseDownBackground="Transparent"
+                        IconTemplate="{Binding Controller.PlayList.CurrentInfo?.BeatmapDetail.Metadata.IsFavorite, Converter={StaticResource BoolIsFavToSvgConverter}, FallbackValue={StaticResource HeartDisabledTempl}, TargetNullValue={StaticResource HeartDisabledTempl}}"
                         MouseOverBackground="Transparent" />
                     <controls:CommonButton
                         x:Name="VolumeButton"
@@ -313,9 +321,9 @@
                         Height="23"
                         Margin="6"
                         VerticalAlignment="Center"
-                        Classes="chromeless"
+                        Background="#F0F0F0"
+                        Classes="playbar-icon"
                         Click="VolumeButton_Click"
-                        IconMargin="0"
                         IconSize="20"
                         IconTemplate="{StaticResource VolumeTempl}" />
                     <controls:CommonButton
@@ -324,9 +332,9 @@
                         Height="23"
                         Margin="6"
                         VerticalAlignment="Center"
-                        Classes="chromeless"
+                        Background="#F0F0F0"
+                        Classes="playbar-icon"
                         Click="PlayListButton_Click"
-                        IconMargin="0"
                         IconSize="18"
                         IconTemplate="{StaticResource PlayListTempl}" />
                 </StackPanel>
