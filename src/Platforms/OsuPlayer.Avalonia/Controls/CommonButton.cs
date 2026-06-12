@@ -1,6 +1,5 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -39,55 +38,13 @@ public class CommonButton : Button
     public static readonly StyledProperty<IBrush?> CheckedForegroundProperty =
         AvaloniaProperty.Register<CommonButton, IBrush?>(nameof(CheckedForeground));
 
-    public static readonly StyledProperty<Color> ShadowColorProperty =
-        AvaloniaProperty.Register<CommonButton, Color>(nameof(ShadowColor), Color.FromRgb(0xCD, 0x1E, 0x5D));
-
-    public static readonly StyledProperty<double> ShadowOpacityProperty =
-        AvaloniaProperty.Register<CommonButton, double>(nameof(ShadowOpacity), 0d);
-
     public static readonly StyledProperty<BoxShadows> BoxShadowProperty =
-        AvaloniaProperty.Register<CommonButton, BoxShadows>(nameof(BoxShadow), new BoxShadows());
+        AvaloniaProperty.Register<CommonButton, BoxShadows>(nameof(BoxShadow));
 
     public BoxShadows BoxShadow
     {
         get => GetValue(BoxShadowProperty);
         set => SetValue(BoxShadowProperty, value);
-    }
-
-    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
-    {
-        base.OnPropertyChanged(change);
-
-        if (change.Property == ShadowColorProperty || change.Property == ShadowOpacityProperty)
-        {
-            UpdateBoxShadow();
-        }
-    }
-
-    public CommonButton()
-    {
-        UpdateBoxShadow();
-    }
-
-    private void UpdateBoxShadow()
-    {
-        var opacity = ShadowOpacity;
-        if (opacity <= 0)
-        {
-            BoxShadow = new BoxShadows();
-        }
-        else
-        {
-            var color = ShadowColor;
-            var alphaColor = Color.FromArgb((byte)(opacity * 255), color.R, color.G, color.B);
-            BoxShadow = new BoxShadows(new BoxShadow
-            {
-                Blur = 10,
-                Color = alphaColor,
-                OffsetX = 0,
-                OffsetY = 1
-            });
-        }
     }
 
     public IControlTemplate? IconTemplate
@@ -148,17 +105,5 @@ public class CommonButton : Button
     {
         get => GetValue(CheckedForegroundProperty);
         set => SetValue(CheckedForegroundProperty, value);
-    }
-
-    public Color ShadowColor
-    {
-        get => GetValue(ShadowColorProperty);
-        set => SetValue(ShadowColorProperty, value);
-    }
-
-    public double ShadowOpacity
-    {
-        get => GetValue(ShadowOpacityProperty);
-        set => SetValue(ShadowOpacityProperty, value);
     }
 }

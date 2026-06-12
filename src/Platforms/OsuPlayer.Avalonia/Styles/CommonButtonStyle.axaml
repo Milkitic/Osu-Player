@@ -1,6 +1,51 @@
-<Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:controls="clr-namespace:OsuPlayer.Controls">
+<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:OsuPlayer.Controls">
+
+    <Design.PreviewWith>
+
+        <Border Padding="15">
+            <Border.Styles>
+                <Style Selector="controls|CommonButton.transport-accent">
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="Background" Value="{DynamicResource OsuTextureBlueBrush}" />
+                    <Setter Property="BorderBrush" Value="White" />
+                    <Setter Property="BorderThickness" Value="1" />
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="MinWidth" Value="0" />
+                    <Setter Property="MinHeight" Value="0" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="BoxShadow" Value="0 1 10 0 #E65D9CEC" />
+                    <Setter Property="IconMargin" Value="0" />
+                    <Setter Property="IconSize" Value="24" />
+                    <Setter Property="MouseOverForeground" Value="White" />
+                    <Setter Property="MouseDownForeground" Value="White" />
+                    <Setter Property="MouseOverBackground">
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                            <GradientStop Offset="0" Color="#5D9CEC" />
+                            <GradientStop Offset="1" Color="#4D8CDC" />
+                        </LinearGradientBrush>
+                    </Setter>
+                    <Setter Property="MouseDownBackground">
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                            <GradientStop Offset="0" Color="#3D7CCC" />
+                            <GradientStop Offset="1" Color="#4D8CDC" />
+                        </LinearGradientBrush>
+                    </Setter>
+                </Style>
+            </Border.Styles>
+            <Viewbox Width="256" Height="256">
+                <controls:CommonButton
+                    Width="28"
+                    Height="28"
+                    Margin="8"
+                    Classes="transport-accent"
+                    CornerRadius="14"
+                    IconTemplate="{StaticResource OpenTempl}" />
+            </Viewbox>
+        </Border>
+    </Design.PreviewWith>
 
     <Style Selector="controls|CommonButton">
         <Setter Property="Background" Value="#F0F0F0" />
@@ -18,28 +63,29 @@
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="VerticalAlignment" Value="Bottom" />
         <Setter Property="CornerRadius" Value="2" />
+        <Setter Property="ClipToBounds" Value="False" />
         <Setter Property="Template">
             <ControlTemplate>
                 <Border
                     x:Name="PART_Border"
-                    Background="{TemplateBinding Background}"
-                    BorderBrush="{TemplateBinding BorderBrush}"
-                    BorderThickness="{TemplateBinding BorderThickness}"
-                    CornerRadius="{TemplateBinding CornerRadius}"
                     Width="{TemplateBinding Width}"
                     Height="{TemplateBinding Height}"
                     Padding="{TemplateBinding Padding}"
-                    BoxShadow="{TemplateBinding BoxShadow}">
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    BoxShadow="{TemplateBinding BoxShadow}"
+                    CornerRadius="{TemplateBinding CornerRadius}">
                     <StackPanel
                         HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                         VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                         Orientation="{TemplateBinding controls:CommonButton.IconOrientation}">
                         <Viewbox
-                            IsVisible="{Binding $parent[controls:CommonButton].IconTemplate, Converter={StaticResource NullToBoolFalseConverter}}"
                             Width="{TemplateBinding controls:CommonButton.IconSize}"
                             Height="{TemplateBinding controls:CommonButton.IconSize}"
                             Margin="{TemplateBinding controls:CommonButton.IconMargin}"
                             VerticalAlignment="Center"
+                            IsVisible="{Binding $parent[controls:CommonButton].IconTemplate, Converter={StaticResource NullToBoolFalseConverter}}"
                             Stretch="Uniform">
                             <ContentControl
                                 x:Name="PART_Icon"
@@ -93,8 +139,8 @@
             <ControlTemplate>
                 <Border
                     x:Name="PART_Border"
-                    Background="{TemplateBinding Background}"
                     Padding="{TemplateBinding Padding}"
+                    Background="{TemplateBinding Background}"
                     ClipToBounds="True">
                     <StackPanel
                         HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -123,7 +169,7 @@
         </Setter>
     </Style>
 
-    <!-- Default icon color (must be a style, not template-local, so state styles can override) -->
+    <!--  Default icon color (must be a style, not template-local, so state styles can override)  -->
     <Style Selector="controls|IconRadioButton /template/ ContentControl#PART_Icon">
         <Setter Property="Foreground">
             <MultiBinding Converter="{StaticResource IconColorConverter}">

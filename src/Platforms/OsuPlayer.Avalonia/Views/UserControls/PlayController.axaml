@@ -25,7 +25,7 @@
             <Setter Property="MinWidth" Value="0" />
             <Setter Property="MinHeight" Value="0" />
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="ShadowOpacity" Value="0.2" />
+            <Setter Property="BoxShadow" Value="0 1 10 0 #33000000" />
             <Setter Property="IconMargin" Value="0" />
             <Setter Property="IconSize" Value="24" />
             <Setter Property="CornerRadius" Value="7" />
@@ -47,14 +47,13 @@
         <Style Selector="controls|CommonButton.transport-accent">
             <Setter Property="Padding" Value="0" />
             <Setter Property="Background" Value="{DynamicResource OsuTextureBlueBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource OsuTextureBlueBrush}" />
-            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Foreground" Value="White" />
             <Setter Property="MinWidth" Value="0" />
             <Setter Property="MinHeight" Value="0" />
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="ShadowOpacity" Value="0.2" />
-            <Setter Property="ShadowColor" Value="#5D9CEC" />
+            <Setter Property="BoxShadow" Value="0 1 10 0 #335D9CEC" />
             <Setter Property="IconMargin" Value="0" />
             <Setter Property="IconSize" Value="24" />
             <Setter Property="MouseOverForeground" Value="White" />
