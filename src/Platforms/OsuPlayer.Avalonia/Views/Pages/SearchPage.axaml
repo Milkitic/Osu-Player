@@ -96,7 +96,7 @@
                                 </Border.ContextMenu>
                                 <StackPanel Spacing="8">
                                     <Border Height="120" Background="#ECECEC" CornerRadius="4">
-                                        <Image Source="{Binding ThumbPath}" Stretch="UniformToFill" />
+                                        <Image Source="{Binding ThumbPath, Converter={StaticResource PathToBitmapConverter}}" Stretch="UniformToFill" />
                                     </Border>
                                     <TextBlock FontWeight="SemiBold" Text="{Binding AutoTitle}" TextTrimming="CharacterEllipsis" />
                                     <TextBlock Foreground="#7A7A7A" Text="{Binding AutoArtist}" TextTrimming="CharacterEllipsis" />

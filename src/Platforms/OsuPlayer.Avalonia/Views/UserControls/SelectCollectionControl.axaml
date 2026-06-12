@@ -56,7 +56,7 @@
                                 <Image
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Source="{Binding ImagePath}"
+                                    Source="{Binding ImagePath, Converter={StaticResource PathToBitmapConverter}}"
                                     Stretch="UniformToFill" />
                             </Border>
                             <TextBlock

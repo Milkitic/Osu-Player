@@ -75,7 +75,7 @@
                     <Image
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        Source="{Binding CoverPath}"
+                        Source="{Binding CoverPath, Converter={StaticResource PathToBitmapConverter}}"
                         Stretch="UniformToFill" />
                 </Grid>
                 <controls:CommonButton

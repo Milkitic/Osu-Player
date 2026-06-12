@@ -222,11 +222,11 @@
                             Margin="3,0"
                             Classes="title-link"
                             Click="TitleArtist_Click">
-                            <TextBlock>
-                                <Run Foreground="#777777" Text="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.TitleAuto, Mode=OneWay}" />
-                                <Run Text="-" />
-                                <Run Foreground="#AAAAAA" Text="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.ArtistAuto, Mode=OneWay}" />
-                            </TextBlock>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Foreground="#777777" Text="{Binding Controller.PlayList.CurrentInfo?.BeatmapDetail.Metadata.TitleAuto, FallbackValue=Unknown Title, Mode=OneWay}" />
+                                <TextBlock Text=" - " />
+                                <TextBlock Foreground="#AAAAAA" Text="{Binding Controller.PlayList.CurrentInfo?.BeatmapDetail.Metadata.ArtistAuto, FallbackValue=Unknown Artist, Mode=OneWay}" />
+                            </StackPanel>
                         </controls:CommonButton>
                         <controls:CommonButton
                             x:Name="BtnAsio"

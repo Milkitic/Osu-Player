@@ -30,7 +30,7 @@
                     <Image
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        Source="{Binding CollectionInfo.ImagePath}"
+                        Source="{Binding CollectionInfo.ImagePath, Converter={StaticResource PathToBitmapConverter}}"
                         Stretch="UniformToFill" />
                     <TextBlock
                         HorizontalAlignment="Center"
@@ -140,7 +140,7 @@
                             <Border Width="220" Margin="8" Padding="8" Background="#FAFAFA" BorderBrush="#E5E5E5" BorderThickness="1" CornerRadius="4">
                                 <StackPanel Spacing="8">
                                     <Border Height="120" Background="#ECECEC" CornerRadius="4">
-                                        <Image Source="{Binding ThumbPath}" Stretch="UniformToFill" />
+                                        <Image Source="{Binding ThumbPath, Converter={StaticResource PathToBitmapConverter}}" Stretch="UniformToFill" />
                                     </Border>
                                     <TextBlock FontWeight="SemiBold" Text="{Binding AutoTitle}" TextTrimming="CharacterEllipsis" />
                                     <TextBlock Foreground="#7A7A7A" Text="{Binding AutoArtist}" TextTrimming="CharacterEllipsis" />
