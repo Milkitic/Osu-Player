@@ -75,6 +75,7 @@
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Foreground" Value="White" />
+            <Setter Property="Height" Value="NaN" />
             <Setter Property="MinWidth" Value="0" />
             <Setter Property="MinHeight" Value="0" />
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -85,6 +86,7 @@
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Height" Value="NaN" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="Foreground" Value="#777777" />
             <Setter Property="MinWidth" Value="0" />
