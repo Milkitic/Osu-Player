@@ -1,4 +1,13 @@
 <Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="15">
+            <Slider
+                Classes="osu-slider"
+                Maximum="100"
+                Minimum="0" />
+        </Border>
+    </Design.PreviewWith>
+
     <Style Selector="Slider.osu-slider">
         <Setter Property="Focusable" Value="False" />
         <Setter Property="Foreground" Value="{DynamicResource SliderBackground}" />
@@ -31,7 +40,6 @@
         <Setter Property="BorderBrush" Value="{DynamicResource WhiteBrush}" />
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="CornerRadius" Value="7.5" />
-        <Setter Property="Margin" Value="-5" />
     </Style>
 
     <Style Selector="Slider.osu-slider-white">

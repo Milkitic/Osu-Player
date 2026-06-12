@@ -85,11 +85,12 @@
             <Setter Property="MouseDownBackground" Value="#80E8E8E8" />
         </Style>
         <Style Selector="controls|CommonButton.title-link">
+            <Setter Property="Padding" Value="0" />
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Height" Value="NaN" />
-            <Setter Property="Padding" Value="0" />
+            <Setter Property="IconSize" Value="0" />
             <Setter Property="Foreground" Value="#777777" />
             <Setter Property="MinWidth" Value="0" />
             <Setter Property="MinHeight" Value="0" />
@@ -159,7 +160,7 @@
             </Button>
             <StackPanel
                 Grid.Column="1"
-                Margin="10,0,10,0"
+                Margin="10,0,0,0"
                 VerticalAlignment="Center"
                 Orientation="Horizontal">
                 <controls:CommonButton
@@ -210,75 +211,73 @@
                     CornerRadius="14"
                     IconTemplate="{StaticResource OpenTempl}" />
             </StackPanel>
-            <Grid
-                Grid.Column="2"
-                VerticalAlignment="Center"
-                RowDefinitions="Auto,Auto">
+            <Border Grid.Column="2" Padding="10,0,0,0">
                 <Grid
-                    Grid.Row="0"
-                    Margin="0,1,0,-3"
-                    ColumnDefinitions="Auto,*,Auto">
-                    <controls:CommonButton
-                        Grid.Column="0"
-                        Margin="3,0"
-                        Padding="0"
-                        Classes="title-link"
-                        Click="TitleArtist_Click"
-                        IconSize="0">
-                        <TextBlock>
-                            <Run Foreground="#777777" Text="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.TitleAuto, Mode=OneWay}" />
-                            <Run Text="-" />
-                            <Run Foreground="#AAAAAA" Text="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.ArtistAuto, Mode=OneWay}" />
-                        </TextBlock>
-                    </controls:CommonButton>
-                    <controls:CommonButton
-                        x:Name="BtnAsio"
-                        Grid.Column="1"
-                        Height="20"
-                        Margin="3,0"
-                        Padding="4,0"
-                        HorizontalAlignment="Right"
-                        Classes="chromeless"
-                        Command="{Binding AsioCommand}"
-                        IconSize="45"
-                        IconTemplate="{StaticResource AsioTempl}"
-                        IsVisible="{Binding AsioVisible}">
-                        <controls:CommonButton.Foreground>
-                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
-                                <GradientStop Offset="0" Color="#646464" />
-                                <GradientStop Offset="1" Color="#484848" />
-                            </LinearGradientBrush>
-                        </controls:CommonButton.Foreground>
-                    </controls:CommonButton>
-                    <StackPanel
-                        x:Name="LblProgress"
-                        Grid.Column="2"
-                        Orientation="Horizontal">
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            Foreground="#777"
-                            Text="{Binding CurrentTimeText}" />
-                        <TextBlock
-                            Margin="4,0"
-                            VerticalAlignment="Center"
-                            Foreground="#858585"
-                            Text="/" />
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            Foreground="#AAA"
-                            Text="{Binding TotalTimeText}" />
-                    </StackPanel>
-                </Grid>
-                <Slider
-                    x:Name="PlayProgress"
-                    Grid.Row="1"
-                    Margin="3"
                     VerticalAlignment="Center"
-                    Classes="osu-slider"
-                    Maximum="{Binding TotalTimeMs}"
-                    Minimum="0"
-                    Value="{Binding CurrentTimeMs, Mode=TwoWay}" />
-            </Grid>
+                    RowDefinitions="Auto,Auto"
+                    RowSpacing="-3">
+                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto">
+                        <controls:CommonButton
+                            Grid.Column="0"
+                            Margin="3,0"
+                            Classes="title-link"
+                            Click="TitleArtist_Click">
+                            <TextBlock>
+                                <Run Foreground="#777777" Text="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.TitleAuto, Mode=OneWay}" />
+                                <Run Text="-" />
+                                <Run Foreground="#AAAAAA" Text="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.ArtistAuto, Mode=OneWay}" />
+                            </TextBlock>
+                        </controls:CommonButton>
+                        <controls:CommonButton
+                            x:Name="BtnAsio"
+                            Grid.Column="1"
+                            Height="20"
+                            Margin="3,0"
+                            Padding="4,0"
+                            HorizontalAlignment="Right"
+                            Classes="chromeless"
+                            Command="{Binding AsioCommand}"
+                            IconSize="45"
+                            IconTemplate="{StaticResource AsioTempl}"
+                            IsVisible="{Binding AsioVisible}">
+                            <controls:CommonButton.Foreground>
+                                <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                    <GradientStop Offset="0" Color="#646464" />
+                                    <GradientStop Offset="1" Color="#484848" />
+                                </LinearGradientBrush>
+                            </controls:CommonButton.Foreground>
+                        </controls:CommonButton>
+                        <StackPanel
+                            x:Name="LblProgress"
+                            Grid.Column="2"
+                            Orientation="Horizontal">
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="#777"
+                                Text="{Binding CurrentTimeText}" />
+                            <TextBlock
+                                Margin="4,0"
+                                VerticalAlignment="Center"
+                                Foreground="#858585"
+                                Text="/" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="#AAA"
+                                Text="{Binding TotalTimeText}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Slider
+                        x:Name="PlayProgress"
+                        Grid.Row="1"
+                        Margin="3,0"
+                        VerticalAlignment="Center"
+                        Classes="osu-slider"
+                        Maximum="{Binding TotalTimeMs}"
+                        Minimum="0"
+                        Value="{Binding CurrentTimeMs, Mode=TwoWay}" />
+                </Grid>
+            </Border>
             <Grid Grid.Column="3">
                 <StackPanel
                     Margin="10,0,10,0"
