@@ -5,6 +5,9 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
 using Microsoft.Extensions.DependencyInjection;
+using OsuPlayer.Core;
+using OsuPlayer.Media.Audio;
+using OsuPlayer.Playback;
 using OsuPlayer.Video;
 using OsuPlayer.ViewModels;
 using OsuPlayer.Windows;
@@ -43,6 +46,12 @@ public partial class App : Application
 
             // 初始化 FFmpeg(视频播放)
             VideoPlayerInitializer.Initialize();
+
+            var controller = Services.GetRequiredService<ObservablePlayController>();
+            controller.PlayStatusChanged += status =>
+            {
+                SharedVm.Default.IsPlaying = status == PlayStatus.Playing;
+            };
 
             s_mainWindow = Services.GetRequiredService<MainWindow>();
             desktop.MainWindow = s_mainWindow;

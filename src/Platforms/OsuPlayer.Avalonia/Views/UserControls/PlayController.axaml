@@ -235,9 +235,9 @@
                             Classes="title-link"
                             Click="TitleArtist_Click">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Foreground="#777777" Text="{Binding Controller.PlayList.CurrentInfo?.BeatmapDetail.Metadata.TitleAuto, FallbackValue=Unknown Title, Mode=OneWay}" />
+                                <TextBlock Foreground="#777777" Text="{Binding Controller.PlayList.CurrentInfo?.BeatmapDetail?.Metadata.TitleAuto, FallbackValue=Unknown Title, Mode=OneWay}" />
                                 <TextBlock Text=" - " />
-                                <TextBlock Foreground="#AAAAAA" Text="{Binding Controller.PlayList.CurrentInfo?.BeatmapDetail.Metadata.ArtistAuto, FallbackValue=Unknown Artist, Mode=OneWay}" />
+                                <TextBlock Foreground="#AAAAAA" Text="{Binding Controller.PlayList.CurrentInfo?.BeatmapDetail?.Metadata.ArtistAuto, FallbackValue=Unknown Artist, Mode=OneWay}" />
                             </StackPanel>
                         </controls:CommonButton>
                         <controls:CommonButton
@@ -313,7 +313,7 @@
                         Classes="playbar-icon"
                         Click="LikeButton_Click"
                         IconSize="24"
-                        IconTemplate="{Binding Controller.PlayList.CurrentInfo?.BeatmapDetail.Metadata.IsFavorite, Converter={StaticResource BoolIsFavToSvgConverter}, FallbackValue={StaticResource HeartDisabledTempl}, TargetNullValue={StaticResource HeartDisabledTempl}}"
+                        IconTemplate="{Binding Controller.PlayList.CurrentInfo?.BeatmapDetail?.Metadata.IsFavorite, Converter={StaticResource BoolIsFavToSvgConverter}, FallbackValue={StaticResource HeartDisabledTempl}, TargetNullValue={StaticResource HeartDisabledTempl}}"
                         MouseOverBackground="Transparent" />
                     <controls:CommonButton
                         x:Name="VolumeButton"
@@ -321,7 +321,6 @@
                         Height="23"
                         Margin="6"
                         VerticalAlignment="Center"
-                        Background="#F0F0F0"
                         Classes="playbar-icon"
                         Click="VolumeButton_Click"
                         IconSize="20"
@@ -332,7 +331,6 @@
                         Height="23"
                         Margin="6"
                         VerticalAlignment="Center"
-                        Background="#F0F0F0"
                         Classes="playbar-icon"
                         Click="PlayListButton_Click"
                         IconSize="18"
