@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:OsuPlayer"
     xmlns:smoothScroll="clr-namespace:SmoothScroll.Avalonia.Controls;assembly=SmoothScroll.Avalonia.Controls"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
     RequestedThemeVariant="Light">
 
     <Application.DataTemplates>
@@ -47,6 +48,7 @@
         <StyleInclude Source="avares://OsuPlayer/Styles/ConfigStyle.axaml" />
 
         <smoothScroll:ScrollViewerSmoothTheme />
+        <materialIcons:MaterialIconStyles />
     </Application.Styles>
 
     <!-- 托盘图标在 App.axaml.cs 中通过 TrayIcons 集合程序化创建并附加。

@@ -30,6 +30,8 @@
             <Setter Property="Content" Value="{DynamicResource ui-btn-playAll}" />
             <Setter Property="Foreground" Value="White" />
             <Setter Property="IconTemplate" Value="{StaticResource SettingsPlayTempl}" />
+            <Setter Property="IconSize" Value="18" />
+            <Setter Property="IconMargin" Value="-5,0,5,0" />
             <Setter Property="Background" Value="#5D9CEC" />
             <Setter Property="MouseDownBackground" Value="#4D8CDC" />
             <Setter Property="MouseDownForeground" Value="#E8E8E8" />
@@ -100,25 +102,18 @@
     </UserControl.Styles>
 
     <Grid RowDefinitions="Auto,Auto,*,Auto">
-        <Border
-            Grid.Row="0"
-            Height="40"
-            Margin="30,20,30,20"
-            VerticalAlignment="Top"
-            Background="White"
-            BorderBrush="#DDDDDD"
-            BorderThickness="1" />
         <TextBox
             Grid.Row="0"
-            Height="40"
-            Margin="40,20,40,0"
+            Height="40" 
+            Margin="30,20,30,20"
             VerticalAlignment="Top"
             VerticalContentAlignment="Center"
-            Background="Transparent"
-            BorderThickness="0"
-            FontSize="15"
+            Background="White"
+            BorderBrush="#DDDDDD"
+            BorderThickness="1" CornerRadius="0"
+            FontSize="15" Cursor="IBeam"
             Foreground="#555555"
-            Padding="0"
+            Padding="10,0"
             PlaceholderText="{DynamicResource ui-hint-searchPageBox}"
             Text="{Binding SearchText, Mode=TwoWay}" />
 

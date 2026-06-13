@@ -1,6 +1,7 @@
 <ResourceDictionary
     xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
 
     <StreamGeometry x:Key="PageArrowL">M294.13376 512c0-13.70112 5.23264-27.40224 15.6672-37.84704l328.704-328.69376c20.91008-20.91008 54.80448-20.91008 75.70432 0 20.89984 20.89984 20.89984 54.79424 0 75.70432L423.36256 512l290.83648 290.83648c20.89984 20.89984 20.89984 54.80448 0 75.70432-20.89984 20.91008-54.79424 20.91008-75.70432 0l-328.704-328.69376C299.35616 539.40224 294.13376 525.70112 294.13376 512z</StreamGeometry>
     <StreamGeometry x:Key="PageArrowR">m 729.88416 512 c 0 -13.70112 -5.23264 -27.40224 -15.6672 -37.84704 L 385.51296 145.4592 c -20.91008 -20.91008 -54.80448 -20.91008 -75.70432 0 -20.89984 20.89984 -20.89984 54.79424 0 75.70432 L 600.65536 512 309.81888 802.83648 c -20.89984 20.89984 -20.89984 54.80448 0 75.70432 20.89984 20.91008 54.79424 20.91008 75.70432 0 L 714.2272 549.84704 C 724.66176 539.40224 729.88416 525.70112 729.88416 512 Z</StreamGeometry>
@@ -336,7 +337,8 @@
     </ControlTemplate>
 
     <ControlTemplate TargetType="TemplatedControl" x:Key="SettingsPlayTempl">
-        <Canvas Width="1000" Height="1000">
+        <materialIcons:MaterialIcon Kind="Play" />
+        <!--  <Canvas Width="1000" Height="1000">
             <Canvas.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform ScaleX="0.100000" ScaleY="-0.100000" />
@@ -344,7 +346,7 @@
                 </TransformGroup>
             </Canvas.RenderTransform>
             <Path Data="{StaticResource Play}" Fill="{TemplateBinding Foreground}" />
-        </Canvas>
+        </Canvas>-->
     </ControlTemplate>
     <ControlTemplate TargetType="TemplatedControl" x:Key="DeleteTempl">
         <Canvas Width="1000" Height="1000">
