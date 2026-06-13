@@ -1,17 +1,30 @@
 <UserControl
     x:Class="OsuPlayer.Views.UserControls.AnimationControl"
     xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!--
-        AnimationControl - D-phase deferral.
-        WPF 原始版本依赖: FFME.Windows (ffme:MediaElement) + MDS.ShaderEffects (BlendEffect) + 6个Controller事件 + 视频/音频同步。
-        Avalonia 项目的 FFmpegVideoPlayer.Avalonia 提供基本视频能力,BlendEffect/Shaders 需要 D-phase (Skia) 完整实现。
-    -->
-    <Border Background="Black">
-        <TextBlock
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Foreground="White"
-            Text="Animation Control (D-phase)" />
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:userControls="clr-namespace:OsuPlayer.Views.UserControls"
+    x:DataType="userControls:AnimationControlVm">
+    <Border
+        BorderBrush="#40FFFFFF"
+        BorderThickness="1"
+        ClipToBounds="True">
+        <Grid>
+            <Grid.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Offset="0" Color="#DC498D" />
+                    <GradientStop Offset="1" Color="White" />
+                </LinearGradientBrush>
+            </Grid.Background>
+
+            <Border Background="Black">
+                <Image
+                    x:Name="BackImage"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    RenderOptions.BitmapInterpolationMode="HighQuality"
+                    Source="{Binding BackgroundSource}"
+                    Stretch="UniformToFill" />
+            </Border>
+        </Grid>
     </Border>
 </UserControl>

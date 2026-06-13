@@ -1,16 +1,21 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
+using OsuPlayer.Playback;
 using OsuPlayer.Presentation.Interaction;
+using OsuPlayer.Services;
+using OsuPlayer.Shared;
 using OsuPlayer.ViewModels;
 using OsuPlayer.Views.Pages;
 using OsuPlayer.Views.Pages.Settings;
@@ -22,7 +27,10 @@ public partial class MainWindow : Window
 {
     private readonly INavigationService _nav;
     private readonly IPlayerDataService? _playerData;
+    private readonly ObservablePlayController? _controller;
+    private readonly ILogger<MainWindow>? _logger;
     private ConfigWindow? _configWindow;
+    private bool _playbackRestored;
 
     public MainWindow()
     {
@@ -34,12 +42,16 @@ public partial class MainWindow : Window
         MainWindowViewModel viewModel,
         INavigationService navigationService,
         PlayControllerVm playControllerVm,
-        IPlayerDataService playerData)
+        IPlayerDataService playerData,
+        ObservablePlayController controller,
+        ILogger<MainWindow> logger)
     {
         InitializeComponent();
         DataContext = viewModel;
         _nav = navigationService;
         _playerData = playerData;
+        _controller = controller;
+        _logger = logger;
         _nav.Initialize(MainFrame);
         PlayBarController.DataContext = playControllerVm;
         PlayBarController.LikeClicked += Controller_LikeClicked;
@@ -76,6 +88,56 @@ public partial class MainWindow : Window
     private async void OnOpened(object? sender, EventArgs e)
     {
         await UpdateCollectionsAsync();
+        await RestorePlaybackAsync();
+    }
+
+    private async Task RestorePlaybackAsync()
+    {
+        if (_playbackRestored || _controller == null || _playerData == null)
+        {
+            return;
+        }
+
+        _playbackRestored = true;
+
+        var settings = AppSettings.Default;
+        if (settings?.CurrentMap == null || !settings.Play.Memory)
+        {
+            return;
+        }
+
+        var currentMap = settings.CurrentMap.Value;
+        if (string.IsNullOrEmpty(currentMap.FolderName) || string.IsNullOrEmpty(currentMap.Version))
+        {
+            return;
+        }
+
+        try
+        {
+            var savedEntries = settings.CurrentList?.Cast<IMapIdentifiable>() ??
+                               Enumerable.Empty<IMapIdentifiable>();
+            var entries = await _playerData.GetBeatmapsByIdentifiableAsync(
+                savedEntries);
+            await _controller.SetPlaylistAsync(entries, true, playInstantly: false, autoLoad: false);
+
+            var play = settings.Play.AutoPlay;
+            if (currentMap.IsMapTemporary())
+            {
+                await _controller.PlayNewAsync(currentMap.FolderName, play);
+                return;
+            }
+
+            var current = await _playerData.GetBeatmapByIdentifiableAsync(currentMap);
+            if (current != null)
+            {
+                await _controller.PlayNewAsync(current, play);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error while restoring previous playback.");
+            AppNotificationService.Instance.Push("恢复上次播放失败");
+        }
     }
 
     public async Task UpdateCollectionsAsync()
