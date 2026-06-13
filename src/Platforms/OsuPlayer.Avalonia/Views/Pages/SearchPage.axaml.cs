@@ -1,6 +1,4 @@
-using System.ComponentModel;
 using System.IO;
-using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -8,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Core.Services;
+using OsuPlayer.Controls.PanelComponent;
 using OsuPlayer.Shared;
 using OsuPlayer.ViewModels;
 
@@ -17,6 +16,7 @@ public partial class SearchPage : UserControl
 {
     private readonly IBeatmapThumbnailService? _thumbnailService;
     private readonly ILogger<SearchPage>? _logger;
+    private VirtualizingGalleryWrapPanel? _virtualizingGalleryWrapPanel;
     private bool _initialized;
 
     public SearchPage()
@@ -33,7 +33,6 @@ public partial class SearchPage : UserControl
         DataContext = viewModel;
         _thumbnailService = thumbnailService;
         _logger = logger;
-        viewModel.PropertyChanged += ViewModelOnPropertyChanged;
     }
 
     private async void OnAttachedToVisualTree(object? sender, Avalonia.VisualTreeAttachmentEventArgs e)
@@ -46,41 +45,53 @@ public partial class SearchPage : UserControl
         viewModel.IsMinimalMode = AppSettings.Default?.Interface.MinimalMode == true;
         if (_initialized)
         {
-            await LoadThumbsAsync(viewModel);
             return;
         }
 
         _initialized = true;
         await viewModel.PlayListQueryAsync(0, false);
-        await LoadThumbsAsync(viewModel);
     }
 
-    private async void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void Panel_Loaded(object? sender, RoutedEventArgs e)
     {
-        if (e.PropertyName == nameof(SearchPageViewModel.DisplayedMaps) && sender is SearchPageViewModel viewModel)
+        if (sender is VirtualizingGalleryWrapPanel panel)
         {
-            await LoadThumbsAsync(viewModel);
+            _virtualizingGalleryWrapPanel = panel;
+        }
+
+        if (DataContext is SearchPageViewModel viewModel)
+        {
+            viewModel.ClearGalleryNotifications = () => _virtualizingGalleryWrapPanel?.ClearNotificationCount();
         }
     }
 
-    private async Task LoadThumbsAsync(SearchPageViewModel viewModel)
+    private async void VirtualizingGalleryWrapPanel_OnItemLoaded(object? sender, ItemLoadedEventArgs e)
     {
-        if (_thumbnailService == null)
+        if (_thumbnailService == null ||
+            DataContext is not SearchPageViewModel viewModel ||
+            e.Index < 0 ||
+            e.Index >= viewModel.DisplayedMaps.Count)
         {
             return;
         }
 
-        foreach (var dataModel in viewModel.DisplayedMaps)
+        var dataModel = viewModel.DisplayedMaps[e.Index];
+        if (!string.IsNullOrWhiteSpace(dataModel.ThumbPath))
         {
-            try
+            return;
+        }
+
+        try
+        {
+            var fileName = await _thumbnailService.GetThumbByBeatmapDbIdAsync(dataModel);
+            if (!string.IsNullOrWhiteSpace(fileName))
             {
-                var fileName = await _thumbnailService.GetThumbByBeatmapDbIdAsync(dataModel);
-                dataModel.ThumbPath = Path.Combine(AppPaths.Current.ThumbCachePath, $"{fileName}.jpg");
+                dataModel.ThumbPath = ResolveThumbPath(fileName);
             }
-            catch (System.Exception ex)
-            {
-                _logger?.LogError(ex, "Error while loading panel item.");
-            }
+        }
+        catch (System.Exception ex)
+        {
+            _logger?.LogError(ex, "Error while loading panel item.");
         }
     }
 
@@ -185,5 +196,16 @@ public partial class SearchPage : UserControl
         {
             viewModel.SwitchCommand.Execute(true);
         }
+    }
+
+    private static string ResolveThumbPath(string fileName)
+    {
+        if (Path.IsPathRooted(fileName))
+        {
+            return fileName;
+        }
+
+        var cacheFileName = Path.HasExtension(fileName) ? fileName : $"{fileName}.jpg";
+        return Path.Combine(AppPaths.Current.ThumbCachePath, cacheFileName);
     }
 }
