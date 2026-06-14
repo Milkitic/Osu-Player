@@ -1,4 +1,3 @@
-using System.IO;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -7,15 +6,13 @@ using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Controls.PanelComponent;
-using OsuPlayer.Shared;
 using OsuPlayer.ViewModels;
 
 namespace OsuPlayer.Views.Pages;
 
 public partial class SearchPage : UserControl
 {
-    private readonly IBeatmapThumbnailService? _thumbnailService;
-    private readonly ILogger<SearchPage>? _logger;
+    private readonly BeatmapThumbnailLoader? _thumbnailLoader;
     private VirtualizingGalleryWrapPanel? _virtualizingGalleryWrapPanel;
     private bool _initialized;
 
@@ -31,8 +28,7 @@ public partial class SearchPage : UserControl
         ILogger<SearchPage> logger) : this()
     {
         DataContext = viewModel;
-        _thumbnailService = thumbnailService;
-        _logger = logger;
+        _thumbnailLoader = new BeatmapThumbnailLoader(thumbnailService, logger);
     }
 
     private async void OnAttachedToVisualTree(object? sender, Avalonia.VisualTreeAttachmentEventArgs e)
@@ -67,7 +63,7 @@ public partial class SearchPage : UserControl
 
     private async void VirtualizingGalleryWrapPanel_OnItemLoaded(object? sender, ItemLoadedEventArgs e)
     {
-        if (_thumbnailService == null ||
+        if (_thumbnailLoader == null ||
             DataContext is not SearchPageViewModel viewModel ||
             e.Index < 0 ||
             e.Index >= viewModel.DisplayedMaps.Count)
@@ -76,36 +72,12 @@ public partial class SearchPage : UserControl
         }
 
         var dataModel = viewModel.DisplayedMaps[e.Index];
-        if (!string.IsNullOrWhiteSpace(dataModel.ThumbPath))
-        {
-            return;
-        }
-
-        try
-        {
-            var fileName = await _thumbnailService.GetThumbByBeatmapDbIdAsync(dataModel);
-            if (!string.IsNullOrWhiteSpace(fileName))
-            {
-                dataModel.ThumbPath = ResolveThumbPath(fileName);
-            }
-        }
-        catch (System.Exception ex)
-        {
-            _logger?.LogError(ex, "Error while loading panel item.");
-        }
+        await _thumbnailLoader.LoadAsync(dataModel);
     }
 
     private async void ResultList_DoubleTapped(object? sender, TappedEventArgs e)
     {
         if (ResultList.SelectedItem is BeatmapDataModel map && DataContext is SearchPageViewModel viewModel)
-        {
-            await viewModel.DirectPlayAsync(map);
-        }
-    }
-
-    private async void PlayCard_Click(object? sender, RoutedEventArgs e)
-    {
-        if (sender is Control { Tag: BeatmapDataModel map } && DataContext is SearchPageViewModel viewModel)
         {
             await viewModel.DirectPlayAsync(map);
         }
@@ -198,14 +170,4 @@ public partial class SearchPage : UserControl
         }
     }
 
-    private static string ResolveThumbPath(string fileName)
-    {
-        if (Path.IsPathRooted(fileName))
-        {
-            return fileName;
-        }
-
-        var cacheFileName = Path.HasExtension(fileName) ? fileName : $"{fileName}.jpg";
-        return Path.Combine(AppPaths.Current.ThumbCachePath, cacheFileName);
-    }
 }

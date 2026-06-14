@@ -1,0 +1,92 @@
+<Styles xmlns="https://github.com/avaloniaui">
+    <Style Selector="ListBox.beatmap-results">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="ListBox.beatmap-results > ListBoxItem">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ContentPresenter
+                    Name="PART_ContentPresenter"
+                    HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                    VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                    Content="{TemplateBinding Content}"
+                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                    Padding="{TemplateBinding Padding}" />
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    <Style Selector="ListBox.beatmap-results > ListBoxItem:pointerover Border.beatmap-list-row">
+        <Setter Property="Background" Value="White" />
+        <Setter Property="BoxShadow" Value="0 0 15 0 #33000000" />
+    </Style>
+
+    <Style Selector="ListBox.beatmap-card-list">
+        <Setter Property="Padding" Value="3,0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="ListBox.beatmap-card-list ListBoxItem">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ContentPresenter
+                    Name="PART_ContentPresenter"
+                    HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                    VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                    Content="{TemplateBinding Content}"
+                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                    Padding="{TemplateBinding Padding}" />
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="Button.beatmap-card-button">
+        <Setter Property="Width" Value="160" />
+        <Setter Property="Height" Value="220" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ContentPresenter
+                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                    Content="{TemplateBinding Content}" />
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    <Style Selector="Button.beatmap-card-button:pointerover Border.beatmap-card-shadow">
+        <Setter Property="BoxShadow" Value="0 1 10 0 #4D000000" />
+    </Style>
+    <Style Selector="Button.beatmap-card-button:pointerover Grid.beatmap-card-root">
+        <Setter Property="RenderTransform">
+            <Setter.Value>
+                <ScaleTransform ScaleX="1.04" ScaleY="1.04" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style Selector="Button.beatmap-card-button:pressed Border.beatmap-card-main">
+        <Setter Property="Opacity" Value="0.7" />
+    </Style>
+
+    <Style Selector="TextBlock.beatmap-tooltip-prefix">
+        <Setter Property="FontSize" Value="9" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Foreground" Value="#848484" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+</Styles>

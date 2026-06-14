@@ -5,6 +5,7 @@
     xmlns:core="clr-namespace:OsuPlayer.Core;assembly=OsuPlayer.Core"
     xmlns:panelComponent="clr-namespace:OsuPlayer.Controls.PanelComponent"
     xmlns:ui="clr-namespace:OsuPlayer.Controls"
+    xmlns:userControls="clr-namespace:OsuPlayer.Views.UserControls"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels"
     x:Name="Root"
     x:DataType="vm:SearchPageViewModel">
@@ -39,68 +40,6 @@
             <Setter Property="MouseOverBackground" Value="#6DA3EF" />
             <Setter Property="MouseOverForeground" Value="White" />
         </Style>
-
-        <Style Selector="ListBox.search-results">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-        </Style>
-        <Style Selector="ListBox.search-results > ListBoxItem">
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Margin" Value="0" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-        </Style>
-        <Style Selector="ListBox.search-results > ListBoxItem:pointerover Border.search-list-row">
-            <Setter Property="Background" Value="White" />
-            <Setter Property="BoxShadow" Value="0 0 15 0 #33000000" />
-        </Style>
-        <Style Selector="ListBox.search-card-list">
-            <Setter Property="Padding" Value="3,0" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-        </Style>
-        <Style Selector="ListBox.search-card-list ListBoxItem">
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Margin" Value="0" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="MinWidth" Value="0" />
-            <Setter Property="MinHeight" Value="0" />
-        </Style>
-
-        <Style Selector="Button.search-card-button">
-            <Setter Property="Width" Value="160" />
-            <Setter Property="Height" Value="220" />
-            <Setter Property="Margin" Value="0" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderBrush" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="VerticalContentAlignment" Value="Stretch" />
-            <Setter Property="Template">
-                <ControlTemplate>
-                    <ContentPresenter
-                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                        Content="{TemplateBinding Content}" />
-                </ControlTemplate>
-            </Setter>
-        </Style>
-        <Style Selector="Button.search-card-button:pointerover Border.search-card-shadow">
-            <Setter Property="BoxShadow" Value="0 1 10 0 #4D000000" />
-        </Style>
-        <Style Selector="Button.search-card-button:pressed Border.search-card-main">
-            <Setter Property="Opacity" Value="0.7" />
-        </Style>
-
-        <Style Selector="TextBlock.tooltip-prefix">
-            <Setter Property="FontSize" Value="9" />
-            <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="Foreground" Value="#848484" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>
-
         <Style Selector="Button.search-page-button">
             <Setter Property="Width" Value="26" />
             <Setter Property="Height" Value="26" />
@@ -181,13 +120,13 @@
                 <ListBox
                     x:Name="ResultList"
                     Grid.Row="1"
-                    Classes="search-results"
+                    Classes="beatmap-results"
                     DoubleTapped="ResultList_DoubleTapped"
                     ItemsSource="{Binding DisplayedMaps}">
                     <ListBox.ItemTemplate>
                         <DataTemplate x:DataType="core:BeatmapDataModel">
                             <Border
-                                Classes="search-list-row"
+                                Classes="beatmap-list-row"
                                 Margin="2,0,2,-1"
                                 Background="#80FFFFFF"
                                 BorderBrush="#20303030"
@@ -256,7 +195,7 @@
 
             <ListBox
                 x:Name="ResultCardList"
-                Classes="search-card-list"
+                Classes="beatmap-card-list"
                 IsVisible="{Binding IsMinimalMode, Converter={StaticResource BoolFalseToVisibleConverter}}"
                 ItemsSource="{Binding DisplayedMaps}"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -272,111 +211,15 @@
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
                 <ListBox.ItemTemplate>
-                    <DataTemplate x:DataType="core:BeatmapDataModel">
-                        <Button
-                            Classes="search-card-button"
-                            Click="PlayCard_Click"
-                            Tag="{Binding}">
-                            <Button.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Click="PlayWithDifficulty_Click" Tag="{Binding}">
-                                        <MenuItem.Header>
-                                            <TextBlock><Run Text="{DynamicResource ui-play}" /><Run Text="... (Enter)" /></TextBlock>
-                                        </MenuItem.Header>
-                                    </MenuItem>
-                                    <Separator />
-                                    <MenuItem Click="SearchByCondition_Click" CommandParameter="Title" Header="{DynamicResource ui-ctxMenu-searchTitle}" Tag="{Binding}" />
-                                    <MenuItem Click="SearchByCondition_Click" CommandParameter="Artist" Header="{DynamicResource ui-ctxMenu-searchArtist}" Tag="{Binding}" />
-                                    <MenuItem Click="SearchByCondition_Click" CommandParameter="Source" Header="{DynamicResource ui-ctxMenu-searchSource}" Tag="{Binding}" />
-                                    <MenuItem Click="SearchByCondition_Click" CommandParameter="Creator" Header="{DynamicResource ui-ctxMenu-searchCreator}" Tag="{Binding}" />
-                                    <Separator />
-                                    <MenuItem Click="OpenFolder_Click" Tag="{Binding}">
-                                        <MenuItem.Header>
-                                            <TextBlock><Run Text="{DynamicResource ui-ctxMenu-openSourceFolder}" /><Run Text=" (Ctrl+O)" /></TextBlock>
-                                        </MenuItem.Header>
-                                    </MenuItem>
-                                    <MenuItem Click="OpenScorePage_Click" Header="{DynamicResource ui-ctxMenu-openScorePage}" Tag="{Binding}" />
-                                    <Separator />
-                                    <MenuItem Click="SaveCollection_Click" Tag="{Binding}">
-                                        <MenuItem.Header>
-                                            <TextBlock><Run Text="{DynamicResource ui-ctxMenu-saveTo}" /><Run Text="... (Ctrl+S)" /></TextBlock>
-                                        </MenuItem.Header>
-                                    </MenuItem>
-                                    <MenuItem Click="ExportCard_Click" Header="{DynamicResource ui-ctxMenu-export}" Tag="{Binding}" />
-                                </ContextMenu>
-                            </Button.ContextMenu>
-                            <ToolTip.Tip>
-                                <Grid>
-                                    <Border Padding="5" Background="White" BoxShadow="0 0 5 0 #4C000000" />
-                                    <Border Padding="5" Background="#F8FFFFFF">
-                                        <StackPanel>
-                                            <Border Height="150" Margin="5" Background="#F0F0F0">
-                                                <Image
-                                                    HorizontalAlignment="Center"
-                                                    VerticalAlignment="Center"
-                                                    RenderOptions.BitmapInterpolationMode="HighQuality"
-                                                    Source="{Binding ThumbPath, Converter={StaticResource PathToBitmapConverter}}"
-                                                    Stretch="UniformToFill" />
-                                            </Border>
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Classes="tooltip-prefix" Text="ARTIST" />
-                                                <TextBlock Margin="5,0,0,0" Text="{Binding AutoArtist}" />
-                                            </StackPanel>
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Classes="tooltip-prefix" Text="TITLE" />
-                                                <TextBlock Margin="5,0,0,0" Text="{Binding AutoTitle}" />
-                                            </StackPanel>
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Classes="tooltip-prefix" Text="SOURCE" />
-                                                <TextBlock Margin="5,0,0,0" Text="{Binding SongSource}" />
-                                            </StackPanel>
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Classes="tooltip-prefix" Text="CREATOR" />
-                                                <TextBlock Margin="5,0,0,0" Text="{Binding Creator}" />
-                                            </StackPanel>
-                                        </StackPanel>
-                                    </Border>
-                                </Grid>
-                            </ToolTip.Tip>
-                            <Grid Width="160" Height="220">
-                                <Border
-                                    Classes="search-card-shadow"
-                                    Margin="3"
-                                    Background="#FBFBFB" />
-                                <Border
-                                    Classes="search-card-main"
-                                    Margin="3"
-                                    Background="#FBFBFB"
-                                    BorderBrush="#20646464"
-                                    BorderThickness="1">
-                                    <Grid RowDefinitions="Auto,Auto,Auto,*">
-                                        <Border
-                                            Grid.Row="0"
-                                            Height="160"
-                                            Margin="5"
-                                            Background="#F0F0F0"
-                                            ClipToBounds="True">
-                                            <Image
-                                                RenderOptions.BitmapInterpolationMode="HighQuality"
-                                                Source="{Binding ThumbPath, Converter={StaticResource PathToBitmapConverter}}"
-                                                Stretch="UniformToFill" />
-                                        </Border>
-                                        <TextBlock
-                                            Grid.Row="1"
-                                            Margin="5,0"
-                                            Foreground="#484848"
-                                            Text="{Binding AutoArtist}"
-                                            TextTrimming="CharacterEllipsis" />
-                                        <TextBlock
-                                            Grid.Row="2"
-                                            Margin="5,0,5,5"
-                                            Foreground="#484848"
-                                            Text="{Binding AutoTitle}"
-                                            TextTrimming="CharacterEllipsis" />
-                                    </Grid>
-                                </Border>
-                            </Grid>
-                        </Button>
+                    <DataTemplate x:DataType="core:BeatmapDataModel" x:CompileBindings="False">
+                        <userControls:BeatmapCard
+                            DirectPlayCommand="{Binding $parent[UserControl].DataContext.DirectPlayCommand}"
+                            ExportCommand="{Binding $parent[UserControl].DataContext.ExportCommand}"
+                            OpenScorePageCommand="{Binding $parent[UserControl].DataContext.OpenScorePageCommand}"
+                            OpenSourceFolderCommand="{Binding $parent[UserControl].DataContext.OpenSourceFolderCommand}"
+                            PlayCommand="{Binding $parent[UserControl].DataContext.PlayCommand}"
+                            SaveCollectionCommand="{Binding $parent[UserControl].DataContext.SaveCollectionCommand}"
+                            SearchByConditionCommand="{Binding $parent[UserControl].DataContext.SearchByConditionCommand}" />
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>

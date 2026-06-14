@@ -1,0 +1,35 @@
+<Window
+    x:Class="OsuPlayer.Windows.DiffSelectWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:OsuPlayer.Views.UserControls"
+    Title="{DynamicResource ui-win-selectDifficulty}"
+    Width="300"
+    Height="400"
+    MinWidth="300"
+    MinHeight="400"
+    MaxWidth="300"
+    MaxHeight="400"
+    WindowStartupLocation="CenterOwner"
+    WindowDecorations="None"
+    ExtendClientAreaToDecorationsHint="True"
+    ExtendClientAreaTitleBarHeightHint="32">
+
+    <Grid Margin="{Binding $parent[Window].OffScreenMargin}" RowDefinitions="Auto,*">
+        <controls:WindowTitleBar
+            Height="32"
+            Background="#323232"
+            LeftAreaMargin="8,0,0,0"
+            RightAreaMargin="0,0,1,0"
+            ShowMaximize="False"
+            ShowMinimize="False"
+            Title="{DynamicResource ui-win-selectDifficulty}" />
+
+        <Border
+            Grid.Row="1"
+            Padding="15"
+            Background="#FEFEFE">
+            <controls:DiffSelectControl x:Name="ContentHost" />
+        </Border>
+    </Grid>
+</Window>

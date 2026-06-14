@@ -44,6 +44,7 @@
         <StyleInclude Source="avares://OsuPlayer/Styles/ScrollBarTheme.axaml" />
         <StyleInclude Source="avares://OsuPlayer/Styles/ContextMenuStyle.axaml" />
         <StyleInclude Source="avares://OsuPlayer/Styles/Components.axaml" />
+        <StyleInclude Source="avares://OsuPlayer/Styles/BeatmapListStyle.axaml" />
         <StyleInclude Source="avares://OsuPlayer/Styles/CommonButtonStyle.axaml" />
         <StyleInclude Source="avares://OsuPlayer/Styles/ConfigStyle.axaml" />
 

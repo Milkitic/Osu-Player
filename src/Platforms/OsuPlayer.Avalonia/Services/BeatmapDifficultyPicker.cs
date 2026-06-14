@@ -1,26 +1,39 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using OsuPlayer.Data.Models;
-using OsuPlayer.Shared;
+using OsuPlayer.Windows;
 
 namespace OsuPlayer.Services;
 
 public sealed class BeatmapDifficultyPicker : IBeatmapDifficultyPicker
 {
-    private readonly IAppNotificationService _notifications;
-
-    public BeatmapDifficultyPicker(IAppNotificationService notifications)
-    {
-        _notifications = notifications;
-    }
-
-    public Task<Beatmap?> PickAsync(IReadOnlyList<Beatmap> beatmaps)
+    public async Task<Beatmap?> PickAsync(IReadOnlyList<Beatmap> beatmaps)
     {
         if (beatmaps.Count == 0)
-            return Task.FromResult<Beatmap?>(null);
+        {
+            return null;
+        }
 
-        var highest = beatmaps[beatmaps.Count - 1];
-        _notifications.Push("Difficulty picker dialog is not yet implemented; selecting highest difficulty.");
-        return Task.FromResult<Beatmap?>(highest);
+        var dialog = new DiffSelectWindow(beatmaps);
+        var owner = GetMainWindow();
+        if (owner != null)
+        {
+            await dialog.ShowDialog(owner);
+        }
+        else
+        {
+            var completion = new TaskCompletionSource();
+            dialog.Closed += (_, _) => completion.TrySetResult();
+            dialog.Show();
+            await completion.Task;
+        }
+
+        return dialog.SelectedBeatmap;
     }
+
+    private static Window? GetMainWindow()
+        => (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
 }

@@ -39,6 +39,11 @@ public partial class DiffSelectControl : UserControl
 
     public DiffSelectControl(IEnumerable<Beatmap> entries) : this()
     {
+        SetEntries(entries);
+    }
+
+    public void SetEntries(IEnumerable<Beatmap> entries)
+    {
         _viewModel.Entries = new ObservableCollection<Beatmap>(entries.OrderBy(k => k.GameMode).ThenBy(k => k.DiffSrNoneStandard));
     }
 }

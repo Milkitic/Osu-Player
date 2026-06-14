@@ -3,14 +3,10 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:core="clr-namespace:OsuPlayer.Core;assembly=OsuPlayer.Core"
+    xmlns:panelComponent="clr-namespace:OsuPlayer.Controls.PanelComponent"
+    xmlns:userControls="clr-namespace:OsuPlayer.Views.UserControls"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels"
     x:DataType="vm:CollectionPageViewModel">
-    <UserControl.Styles>
-        <Style Selector="ListBox.collection-list > ListBoxItem">
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Margin" Value="0,0,0,1" />
-        </Style>
-    </UserControl.Styles>
     <Grid RowDefinitions="Auto,Auto,*">
         <Border
             Grid.Row="0"
@@ -108,19 +104,82 @@
                 <ListBox
                     x:Name="MapList"
                     Grid.Row="1"
-                    Classes="collection-list"
-                    Background="Transparent"
+                    Classes="beatmap-results"
                     DoubleTapped="MapList_DoubleTapped"
-                    ItemsSource="{Binding DisplayedBeatmaps}">
+                    ItemsSource="{Binding DisplayedBeatmaps}"
+                    KeyDown="MapList_KeyDown"
+                    SelectionMode="Multiple">
                     <ListBox.ItemTemplate>
                         <DataTemplate x:DataType="core:BeatmapDataModel">
-                            <Border Padding="12,10" Background="#FBFBFB" BorderBrush="#E6E6E6" BorderThickness="0,0,0,1">
+                            <Border
+                                Classes="beatmap-list-row"
+                                Padding="12,10"
+                                Background="#FBFBFB"
+                                BorderBrush="#E6E6E6"
+                                BorderThickness="0,0,0,1">
+                                <Border.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Click="PlayWithDifficulty_Click" Tag="{Binding}">
+                                            <MenuItem.Header>
+                                                <TextBlock><Run Text="{DynamicResource ui-play}" /><Run Text="... (Enter)" /></TextBlock>
+                                            </MenuItem.Header>
+                                        </MenuItem>
+                                        <Separator />
+                                        <MenuItem Click="SearchByCondition_Click" CommandParameter="Title" Header="{DynamicResource ui-ctxMenu-searchTitle}" Tag="{Binding}" />
+                                        <MenuItem Click="SearchByCondition_Click" CommandParameter="Artist" Header="{DynamicResource ui-ctxMenu-searchArtist}" Tag="{Binding}" />
+                                        <MenuItem Click="SearchByCondition_Click" CommandParameter="Source" Header="{DynamicResource ui-ctxMenu-searchSource}" Tag="{Binding}" />
+                                        <MenuItem Click="SearchByCondition_Click" CommandParameter="Creator" Header="{DynamicResource ui-ctxMenu-searchCreator}" Tag="{Binding}" />
+                                        <Separator />
+                                        <MenuItem Click="OpenFolder_Click" Tag="{Binding}">
+                                            <MenuItem.Header>
+                                                <TextBlock><Run Text="{DynamicResource ui-ctxMenu-openSourceFolder}" /><Run Text=" (Ctrl+O)" /></TextBlock>
+                                            </MenuItem.Header>
+                                        </MenuItem>
+                                        <MenuItem Click="OpenScorePage_Click" Header="{DynamicResource ui-ctxMenu-openScorePage}" Tag="{Binding}" />
+                                        <Separator />
+                                        <MenuItem Click="SaveCollection_Click" Tag="{Binding}">
+                                            <MenuItem.Header>
+                                                <TextBlock><Run Text="{DynamicResource ui-ctxMenu-saveTo}" /><Run Text="... (Ctrl+S)" /></TextBlock>
+                                            </MenuItem.Header>
+                                        </MenuItem>
+                                        <MenuItem Click="ExportCard_Click" Header="{DynamicResource ui-ctxMenu-export}" Tag="{Binding}" />
+                                        <MenuItem Click="RemoveMap_Click" Tag="{Binding}">
+                                            <MenuItem.Header>
+                                                <TextBlock><Run Text="{DynamicResource ui-ctxMenu-removeFromList}" /><Run Text=" (Delete)" /></TextBlock>
+                                            </MenuItem.Header>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </Border.ContextMenu>
                                 <Grid ColumnDefinitions="40,3*,2*,*,2*">
-                                    <TextBlock Grid.Column="0" Foreground="#9C9C9C" Text="{Binding Index}" />
-                                    <TextBlock Grid.Column="1" Foreground="#222222" Text="{Binding AutoTitle}" />
-                                    <TextBlock Grid.Column="2" Foreground="#9C9C9C" Text="{Binding AutoArtist}" />
-                                    <TextBlock Grid.Column="3" Foreground="#222222" Text="{Binding AutoCreator}" />
-                                    <TextBlock Grid.Column="4" Foreground="#9C9C9C" Text="{Binding AutoVersion}" />
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="#9C9C9C"
+                                        Text="{Binding Index, Converter={StaticResource IndexToStringConverter}}" />
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Foreground="#222222"
+                                        Text="{Binding AutoTitle}"
+                                        TextTrimming="CharacterEllipsis" />
+                                    <TextBlock
+                                        Grid.Column="2"
+                                        VerticalAlignment="Center"
+                                        Foreground="#9C9C9C"
+                                        Text="{Binding AutoArtist}"
+                                        TextTrimming="CharacterEllipsis" />
+                                    <TextBlock
+                                        Grid.Column="3"
+                                        VerticalAlignment="Center"
+                                        Foreground="#222222"
+                                        Text="{Binding AutoCreator}"
+                                        TextTrimming="CharacterEllipsis" />
+                                    <TextBlock
+                                        Grid.Column="4"
+                                        VerticalAlignment="Center"
+                                        Foreground="#9C9C9C"
+                                        Text="{Binding AutoVersion}"
+                                        TextTrimming="CharacterEllipsis" />
                                 </Grid>
                             </Border>
                         </DataTemplate>
@@ -128,29 +187,41 @@
                 </ListBox>
             </Grid>
 
-            <ScrollViewer IsVisible="{Binding IsMinimalMode, Converter={StaticResource BoolFalseToVisibleConverter}}" VerticalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{Binding DisplayedBeatmaps}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="core:BeatmapDataModel">
-                            <Border Width="220" Margin="8" Padding="8" Background="#FAFAFA" BorderBrush="#E5E5E5" BorderThickness="1" CornerRadius="4">
-                                <StackPanel Spacing="8">
-                                    <Border Height="120" Background="#ECECEC" CornerRadius="4">
-                                        <Image Source="{Binding ThumbPath, Converter={StaticResource PathToBitmapConverter}}" Stretch="UniformToFill" />
-                                    </Border>
-                                    <TextBlock FontWeight="SemiBold" Text="{Binding AutoTitle}" TextTrimming="CharacterEllipsis" />
-                                    <TextBlock Foreground="#7A7A7A" Text="{Binding AutoArtist}" TextTrimming="CharacterEllipsis" />
-                                    <TextBlock Foreground="#A0A0A0" Text="{Binding AutoVersion}" TextTrimming="CharacterEllipsis" />
-                                </StackPanel>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
+            <ListBox
+                x:Name="MapCardList"
+                Classes="beatmap-card-list"
+                IsVisible="{Binding IsMinimalMode, Converter={StaticResource BoolFalseToVisibleConverter}}"
+                ItemsSource="{Binding DisplayedBeatmaps}"
+                KeyDown="MapList_KeyDown"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                ScrollViewer.VerticalScrollBarVisibility="Auto"
+                SelectionMode="Multiple">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <panelComponent:VirtualizingGalleryWrapPanel
+                            ChildHeight="220"
+                            ChildWidth="160"
+                            ItemLoaded="VirtualizingGalleryWrapPanel_OnItemLoaded"
+                            Loaded="Panel_Loaded"
+                            ScrollOffset="100" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="core:BeatmapDataModel" x:CompileBindings="False">
+                        <userControls:BeatmapCard
+                            DirectPlayCommand="{Binding $parent[UserControl].DataContext.DirectPlayCommand}"
+                            ExportCommand="{Binding $parent[UserControl].DataContext.ExportCommand}"
+                            OpenScorePageCommand="{Binding $parent[UserControl].DataContext.OpenScorePageCommand}"
+                            OpenSourceFolderCommand="{Binding $parent[UserControl].DataContext.OpenSourceFolderCommand}"
+                            PlayCommand="{Binding $parent[UserControl].DataContext.PlayCommand}"
+                            RemoveCommand="{Binding $parent[UserControl].DataContext.RemoveCommand}"
+                            SaveCollectionCommand="{Binding $parent[UserControl].DataContext.SaveCollectionCommand}"
+                            SearchByConditionCommand="{Binding $parent[UserControl].DataContext.SearchByConditionCommand}"
+                            ShowDifficultyOverlay="True"
+                            ShowRemove="True" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </Grid>
     </Grid>
 </UserControl>

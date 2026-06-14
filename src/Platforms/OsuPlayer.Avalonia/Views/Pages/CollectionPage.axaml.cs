@@ -1,25 +1,23 @@
 ﻿using System.ComponentModel;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Threading;
+using Avalonia.Interactivity;
 using Microsoft.Extensions.Logging;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Core.Services;
+using OsuPlayer.Controls.PanelComponent;
 using OsuPlayer.Playback;
-using OsuPlayer.Shared;
 using OsuPlayer.ViewModels;
 
 namespace OsuPlayer.Views.Pages;
 
 public partial class CollectionPage : UserControl
 {
-    private readonly IBeatmapThumbnailService? _thumbnailService;
-    private readonly ILogger<CollectionPage>? _logger;
+    private readonly BeatmapThumbnailLoader? _thumbnailLoader;
     private readonly ObservablePlayController? _controller;
+    private VirtualizingGalleryWrapPanel? _virtualizingGalleryWrapPanel;
 
     public CollectionPage()
     {
@@ -35,12 +33,11 @@ public partial class CollectionPage : UserControl
     {
         DataContext = viewModel;
         _controller = controller;
-        _thumbnailService = thumbnailService;
-        _logger = logger;
+        _thumbnailLoader = new BeatmapThumbnailLoader(thumbnailService, logger);
         viewModel.PropertyChanged += ViewModelOnPropertyChanged;
     }
 
-    private async void OnAttachedToVisualTree(object? sender, Avalonia.VisualTreeAttachmentEventArgs e)
+    private void OnAttachedToVisualTree(object? sender, Avalonia.VisualTreeAttachmentEventArgs e)
     {
         if (DataContext is not CollectionPageViewModel viewModel)
         {
@@ -48,49 +45,137 @@ public partial class CollectionPage : UserControl
         }
 
         viewModel.IsMinimalMode = AppSettings.Default?.Interface.MinimalMode == true;
-        await LoadThumbsAsync(viewModel);
         var current = viewModel.Beatmaps?.FirstOrDefault(k =>
             k.GetIdentity().Equals(_controller?.PlayList.CurrentInfo?.Beatmap?.GetIdentity()));
         if (current != null)
         {
             MapList.SelectedItem = current;
+            MapCardList.SelectedItem = current;
         }
     }
 
-    private async void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(CollectionPageViewModel.DisplayedBeatmaps) && sender is CollectionPageViewModel viewModel)
+        if (e.PropertyName == nameof(CollectionPageViewModel.DisplayedBeatmaps))
         {
-            await LoadThumbsAsync(viewModel);
+            _virtualizingGalleryWrapPanel?.ClearNotificationCount();
         }
     }
 
-    private async Task LoadThumbsAsync(CollectionPageViewModel viewModel)
+    private void Panel_Loaded(object? sender, RoutedEventArgs e)
     {
-        if (_thumbnailService == null || viewModel.DisplayedBeatmaps == null)
+        if (sender is VirtualizingGalleryWrapPanel panel)
+        {
+            _virtualizingGalleryWrapPanel = panel;
+        }
+    }
+
+    private async void VirtualizingGalleryWrapPanel_OnItemLoaded(object? sender, ItemLoadedEventArgs e)
+    {
+        if (_thumbnailLoader == null ||
+            DataContext is not CollectionPageViewModel viewModel ||
+            viewModel.DisplayedBeatmaps == null ||
+            e.Index < 0 ||
+            e.Index >= viewModel.DisplayedBeatmaps.Count)
         {
             return;
         }
 
-        foreach (var dataModel in viewModel.DisplayedBeatmaps)
-        {
-            try
-            {
-                var fileName = await _thumbnailService.GetThumbByBeatmapDbIdAsync(dataModel).ConfigureAwait(false);
-                Dispatcher.UIThread.Post(() => dataModel.ThumbPath = Path.Combine(AppPaths.Current.ThumbCachePath, $"{fileName}.jpg"));
-            }
-            catch (System.Exception ex)
-            {
-                _logger?.LogError(ex, "Error while loading panel item.");
-            }
-        }
+        var dataModel = viewModel.DisplayedBeatmaps[e.Index];
+        await _thumbnailLoader.LoadAsync(dataModel);
     }
 
     private async void MapList_DoubleTapped(object? sender, TappedEventArgs e)
     {
-        if (MapList.SelectedItem is BeatmapDataModel map && DataContext is CollectionPageViewModel viewModel)
+        if (sender is ListBox { SelectedItem: BeatmapDataModel map } && DataContext is CollectionPageViewModel viewModel)
         {
             await viewModel.DirectPlayAsync(map);
         }
     }
+
+    private async void PlayWithDifficulty_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Control { Tag: BeatmapDataModel map } && DataContext is CollectionPageViewModel viewModel)
+        {
+            await viewModel.PlayCommand.ExecuteAsync(map);
+        }
+    }
+
+    private void SearchByCondition_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not MenuItem { Tag: BeatmapDataModel map, CommandParameter: string field } ||
+            DataContext is not CollectionPageViewModel viewModel)
+        {
+            return;
+        }
+
+        var keyword = field switch
+        {
+            "Title" => map.AutoTitle,
+            "Artist" => map.AutoArtist,
+            "Source" => map.SongSource,
+            "Creator" => map.Creator,
+            _ => string.Empty
+        };
+
+        if (!string.IsNullOrWhiteSpace(keyword))
+        {
+            viewModel.SearchByConditionCommand.Execute(keyword);
+        }
+    }
+
+    private async void SaveCollection_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Control { Tag: BeatmapDataModel map } && DataContext is CollectionPageViewModel viewModel)
+        {
+            await viewModel.SaveCollectionCommand.ExecuteAsync(map);
+        }
+    }
+
+    private async void ExportCard_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Control { Tag: BeatmapDataModel map } && DataContext is CollectionPageViewModel viewModel)
+        {
+            await viewModel.ExportCommand.ExecuteAsync(map);
+        }
+    }
+
+    private async void OpenFolder_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Control { Tag: BeatmapDataModel map } && DataContext is CollectionPageViewModel viewModel)
+        {
+            await viewModel.OpenSourceFolderCommand.ExecuteAsync(map);
+        }
+    }
+
+    private async void OpenScorePage_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Control { Tag: BeatmapDataModel map } && DataContext is CollectionPageViewModel viewModel)
+        {
+            await viewModel.OpenScorePageCommand.ExecuteAsync(map);
+        }
+    }
+
+    private async void RemoveMap_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Control { Tag: BeatmapDataModel map } && DataContext is CollectionPageViewModel viewModel)
+        {
+            await viewModel.RemoveCommand.ExecuteAsync(map);
+        }
+    }
+
+    private async void MapList_KeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key != Key.Delete ||
+            sender is not ListBox listBox ||
+            listBox.SelectedItems is not { Count: > 0 } selectedItems ||
+            DataContext is not CollectionPageViewModel viewModel)
+        {
+            return;
+        }
+
+        e.Handled = true;
+        await viewModel.RemoveSelectedCommand.ExecuteAsync(selectedItems);
+    }
+
 }
