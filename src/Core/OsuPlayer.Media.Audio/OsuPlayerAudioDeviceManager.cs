@@ -187,7 +187,7 @@ public sealed class OsuPlayerAudioDeviceManager : IAudioDeviceManager
     private static Sdl3Out CreateSdl(DeviceDescription description)
     {
         var deviceName = string.IsNullOrWhiteSpace(description.DeviceId) ? null : description.DeviceId;
-        var bufferFrames = description.Latency > 0 ? description.Latency : 1;
+        var bufferFrames = description.Latency > 0 ? description.Latency : 64;
         return new Sdl3Out(deviceName, bufferFrames);
     }
 
