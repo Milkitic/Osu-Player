@@ -6,7 +6,8 @@ public enum AudioOutputType
 {
     DirectSound,
     WASAPI,
-    ASIO
+    ASIO,
+    SDL
 }
 
 public sealed class AudioDeviceDescription

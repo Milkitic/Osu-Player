@@ -507,7 +507,7 @@ public partial class PlayPageViewModel : ObservableObject
 
     private static void ApplyFixedAudioDevicePolicy()
     {
-        AppSettings.Default.Play.DesiredLatency = OsuPlayerAudioDevicePolicy.FixedLatency;
+        AppSettings.Default.Play.DesiredLatency = OsuPlayerAudioDevicePolicy.RecommendedLatency;
         AppSettings.Default.Play.IsExclusive = OsuPlayerAudioDevicePolicy.UseExclusiveMode;
         AppSettings.Default.Play.DeviceDescription =
             OsuPlayerAudioDevicePolicy.ToConfiguration(

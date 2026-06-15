@@ -2,6 +2,7 @@ using System;
 using KeyAsio.Core.Audio;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using OsuPlayer.Core;
@@ -38,6 +39,7 @@ public static class EntrySetup
         });
 
         services.AddAudioModule();
+        services.Replace(ServiceDescriptor.Singleton<IAudioDeviceManager, OsuPlayerAudioDeviceManager>());
         services.AddDatabaseServices();
         services.AddApplicationServices();
         services.AddViewModels();
