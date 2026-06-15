@@ -22,7 +22,7 @@
                         HorizontalContentAlignment="Left"
                         Background="#FAFAFB"
                         BorderThickness="0"
-                        Command="{Binding #Root.DataContext.SelectCommand}"
+                        Command="{Binding #Root.((vm:DiffSelectPageViewModel)DataContext).SelectCommand}"
                         CommandParameter="{Binding}">
                         <Grid HorizontalAlignment="Left">
                             <Grid.ColumnDefinitions>

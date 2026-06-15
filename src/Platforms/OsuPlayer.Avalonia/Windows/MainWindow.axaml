@@ -285,7 +285,7 @@
                                         <ui:IconRadioButton
                                             CheckedIconColor="#4090A0"
                                             Classes="nav-button collection-nav-item"
-                                            Classes.collapsed="{Binding $parent[Window].DataContext.IsNavigationCollapsed}"
+                                            Classes.collapsed="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).IsNavigationCollapsed}"
                                             Click="OnCollectionNavClick"
                                             Content="{Binding Name}"
                                             GroupName="MainNav"
