@@ -56,11 +56,12 @@ public sealed class OsuPlayerAudioEngine : AudioEngine
     {
         // SDL receives the actual requested buffer size. Keep the ms-to-frame policy
         // here in OsuPlayer where the SDL backend lives.
+        const int minBuffer = 64;
         var rawFrames = latencyMs <= 0
-            ? 64
-            : Math.Max(64, (int)((long)sampleRate * latencyMs / 1000));
+            ? minBuffer
+            : Math.Max(minBuffer, (int)((long)sampleRate * latencyMs / 1000));
 
-        var frames = 64;
+        var frames = minBuffer;
         while (frames < rawFrames && frames < 4096)
         {
             frames <<= 1;
