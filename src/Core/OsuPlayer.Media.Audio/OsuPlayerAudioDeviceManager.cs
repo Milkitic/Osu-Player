@@ -8,7 +8,7 @@ using KeyAsio.Core.Audio;
 using Microsoft.Extensions.Logging;
 using NAudio.CoreAudioApi;
 using NAudio.CoreAudioApi.Interfaces;
-using NAudio.SDL2;
+using NAudio.SDL3;
 using NAudio.Wave;
 using NAudio.Wave.Asio;
 
@@ -94,7 +94,7 @@ public sealed class OsuPlayerAudioDeviceManager : IAudioDeviceManager
             _logger.LogWarning(
                 "Audio backend {WavePlayerType} is not supported on this platform. Falling back to SDL.",
                 description.WavePlayerType);
-            description = DeviceDescription.SdlDefault;
+            description = SdlDeviceDescriptions.SdlDefault;
         }
 
         if (description.WavePlayerType == WavePlayerType.ASIO)
@@ -118,7 +118,7 @@ public sealed class OsuPlayerAudioDeviceManager : IAudioDeviceManager
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            return DeviceDescription.SdlDefault;
+            return SdlDeviceDescriptions.SdlDefault;
         }
 
         try
@@ -184,11 +184,11 @@ public sealed class OsuPlayerAudioDeviceManager : IAudioDeviceManager
             description.Latency);
     }
 
-    private static SdlOut CreateSdl(DeviceDescription description)
+    private static Sdl3Out CreateSdl(DeviceDescription description)
     {
         var deviceName = string.IsNullOrWhiteSpace(description.DeviceId) ? null : description.DeviceId;
-        var bufferFrames = description.Latency > 0 ? description.Latency : 64;
-        return new SdlOut(deviceName, bufferFrames);
+        var bufferFrames = description.Latency > 0 ? description.Latency : 1;
+        return new Sdl3Out(deviceName, bufferFrames);
     }
 
     private (AsioOut Device, DeviceDescription Description) CreateAsio(DeviceDescription description)
@@ -356,21 +356,21 @@ public sealed class OsuPlayerAudioDeviceManager : IAudioDeviceManager
 
     private IEnumerable<DeviceDescription> EnumerateFromSdl()
     {
-        IReadOnlyList<SdlAudioDeviceInfo> devices;
+        IReadOnlyList<Sdl3AudioDeviceInfo> devices;
         try
         {
-            devices = SdlAudioDevices.GetPlaybackDevices();
+            devices = Sdl3AudioDevices.GetPlaybackDevices();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error while enumerating SDL2 devices.");
+            _logger.LogError(ex, "Error while enumerating SDL3 devices.");
             yield break;
         }
 
         foreach (var sdl in devices)
         {
             yield return sdl.IsDefault
-                ? DeviceDescription.SdlDefault
+                ? SdlDeviceDescriptions.SdlDefault
                 : new DeviceDescription
                 {
                     DeviceId = sdl.Name,

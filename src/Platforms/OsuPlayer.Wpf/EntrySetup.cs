@@ -38,7 +38,7 @@ public static class EntrySetup
             loggingBuilder.AddNLog();
         });
 
-        services.AddAudioModule();
+        services.AddOsuPlayerAudioModule();
         services.Replace(ServiceDescriptor.Singleton<IAudioDeviceManager, OsuPlayerAudioDeviceManager>());
         services.AddDatabaseServices();
         services.AddApplicationServices();

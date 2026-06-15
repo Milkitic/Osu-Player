@@ -36,7 +36,7 @@ public static class OsuPlayerAudioDevicePolicy
     public static DeviceDescription DefaultDescription { get; } = DefaultPlayerType switch
     {
         WavePlayerType.WASAPI => DeviceDescription.WasapiDefault,
-        WavePlayerType.SDL => DeviceDescription.SdlDefault,
+        WavePlayerType.SDL => SdlDeviceDescriptions.SdlDefault,
         _ => DeviceDescription.WasapiDefault,
     };
 

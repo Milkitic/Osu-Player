@@ -10,7 +10,7 @@
     <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj" />
     <ProjectReference Include="..\..\..\dependencies\KeyASIO.Net\src\Core\KeyAsio.Core.Audio\KeyAsio.Core.Audio.csproj" />
     <ProjectReference Include="..\..\..\dependencies\KeyASIO.Net\src\Core\KeyAsio.Core.OsuAudio\KeyAsio.Core.OsuAudio.csproj" />
-    <ProjectReference Include="..\..\..\dependencies\KeyASIO.Net\dependencies\NAudio\NAudio.SDL2\NAudio.SDL2.csproj" />
+    <ProjectReference Include="..\..\..\dependencies\KeyASIO.Net\dependencies\NAudio\NAudio.SDL3\NAudio.SDL3.csproj" />
   </ItemGroup>
 
   <ItemGroup>
