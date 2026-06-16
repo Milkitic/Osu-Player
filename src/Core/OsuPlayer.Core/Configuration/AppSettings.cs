@@ -54,12 +54,15 @@ public class AppSettings : IUserPreferences, IDisposable
                 OnPropertyChanged(nameof(PlayDeviceDescription));
             else if (e.PropertyName == nameof(PlaySection.PlayListMode)) OnPropertyChanged(nameof(PlayListMode));
         };
+
+        Effects.PropertyChanged += (s, e) => OnPropertyChanged(nameof(Effects));
     }
 
     public VolumeSection Volume { get; set; } = new VolumeSection();
     public GeneralSection General { get; set; } = new GeneralSection();
     public InterfaceSection Interface { get; set; } = new InterfaceSection();
     public PlaySection Play { get; set; } = new PlaySection();
+    public EffectsSection Effects { get; set; } = new EffectsSection();
 
     [JsonPropertyName("hot_keys")]
     public List<HotKey> HotKeys { get; set; } = new List<HotKey>();

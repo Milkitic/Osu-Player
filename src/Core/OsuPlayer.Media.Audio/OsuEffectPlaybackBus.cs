@@ -7,6 +7,8 @@ using KeyAsio.Core.Audio.Utils;
 using KeyAsio.Core.OsuAudio.Hitsounds.Playback;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using OsuPlayer.Core.Configuration;
+using OsuPlayer.Media.Audio.Effects;
 
 namespace OsuPlayer.Media.Audio;
 
@@ -20,15 +22,19 @@ internal sealed class OsuEffectPlaybackBus : IDisposable
 {
     private readonly IMixingSampleProvider _parentMixer;
     private readonly ILogger _logger;
+    private readonly EffectParameterSet _parameters;
     private readonly QueueMixingSampleProvider _backgroundMixer;
     private readonly QueueMixingSampleProvider _hitsoundMixer;
     private readonly EnhancedVolumeSampleProvider _backgroundVolumeProvider;
     private readonly EnhancedVolumeSampleProvider _hitsoundVolumeProvider;
+    private readonly EffectChainSampleProvider _backgroundEffectChain;
+    private readonly EffectChainSampleProvider _hitsoundEffectChain;
     private readonly LoopProviderManager _backgroundLoopProviderManager = new();
 
-    public OsuEffectPlaybackBus(IMixingSampleProvider parentMixer, ILogger? logger = null)
+    public OsuEffectPlaybackBus(IMixingSampleProvider parentMixer, EffectParameterSet parameters, ILogger? logger = null)
     {
         _parentMixer = parentMixer;
+        _parameters = parameters;
         _logger = logger ?? NullLogger<OsuEffectPlaybackBus>.Instance;
 
         _backgroundMixer = CreateChildMixer(parentMixer.WaveFormat);
@@ -43,8 +49,15 @@ internal sealed class OsuEffectPlaybackBus : IDisposable
             ExcludeFromPool = true
         };
 
-        _parentMixer.AddMixerInput(_backgroundVolumeProvider);
-        _parentMixer.AddMixerInput(_hitsoundVolumeProvider);
+        // Wrap the post-volume stage with an effect chain so the
+        // mixer sees our wrapper; the chain itself is normally a
+        // pass-through and only activates when settings are pushed
+        // via ApplyEffectsSettings.
+        _backgroundEffectChain = new EffectChainSampleProvider(_backgroundVolumeProvider, _parameters);
+        _hitsoundEffectChain = new EffectChainSampleProvider(_hitsoundVolumeProvider, _parameters);
+
+        _parentMixer.AddMixerInput(_backgroundEffectChain);
+        _parentMixer.AddMixerInput(_hitsoundEffectChain);
     }
 
     public float HitsoundVolume
@@ -144,10 +157,28 @@ internal sealed class OsuEffectPlaybackBus : IDisposable
     public void Dispose()
     {
         StopAllBackgroundLoops();
-        _parentMixer.RemoveMixerInput(_backgroundVolumeProvider);
-        _parentMixer.RemoveMixerInput(_hitsoundVolumeProvider);
+        _parentMixer.RemoveMixerInput(_backgroundEffectChain);
+        _parentMixer.RemoveMixerInput(_hitsoundEffectChain);
         _backgroundMixer.Dispose();
         _hitsoundMixer.Dispose();
+    }
+
+    /// <summary>
+    /// Pushes the current effect configuration to the per-bus chains.
+    /// Either bus can be disabled individually (the chain returns to
+    /// pass-through) so a single settings object can drive all three
+    /// effect-capable buses (hitsound, background, music) without each
+    /// bus having to know the others exist.
+    /// </summary>
+    public void ApplyEffectsSettings(DirectXEffectSettings settings)
+    {
+        ArgumentNullException.ThrowIfNull(settings);
+        _hitsoundEffectChain.SetEffect(
+            settings.ApplyToHitsound ? settings.Kind : DirectXEffectKind.None,
+            settings.Intensity);
+        _backgroundEffectChain.SetEffect(
+            settings.ApplyToBackground ? settings.Kind : DirectXEffectKind.None,
+            settings.Intensity);
     }
 
     private IMixingSampleProvider GetMixer(OsuEffectTrack track)

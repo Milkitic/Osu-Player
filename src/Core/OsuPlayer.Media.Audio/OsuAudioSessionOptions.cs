@@ -1,4 +1,5 @@
 using KeyAsio.Core.Audio.SampleProviders.BalancePans;
+using OsuPlayer.Core.Configuration;
 
 namespace OsuPlayer.Media.Audio;
 
@@ -23,4 +24,10 @@ public sealed class OsuAudioSessionOptions
     public float SampleVolume { get; set; } = 1;
     public float BalanceFactor { get; set; } = 0.35f;
     public BalanceMode BalanceMode { get; set; } = BalanceMode.MidSide;
+
+    /// <summary>
+    /// DirectSound-style effect selection (kind, master intensity,
+    /// and per-bus toggles). Defaults to disabled.
+    /// </summary>
+    public DirectXEffectSettings Effects { get; set; } = DirectXEffectSettings.Disabled;
 }

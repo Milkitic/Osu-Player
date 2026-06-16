@@ -117,6 +117,11 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
                 AppSettings.Default.Volume.PropertyChanged += Volume_PropertyChanged;
             }
 
+            if (AppSettings.Default?.Effects != null)
+            {
+                AppSettings.Default.Effects.PropertyChanged += Effects_PropertyChanged;
+            }
+
             PlayStatus = PlayStatus.Ready;
         }
         catch (Exception ex)
@@ -277,6 +282,11 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
             AppSettings.Default.Volume.PropertyChanged -= Volume_PropertyChanged;
         }
 
+        if (AppSettings.Default?.Effects != null)
+        {
+            AppSettings.Default.Effects.PropertyChanged -= Effects_PropertyChanged;
+        }
+
         var session = _session;
         await SafeStopExtensions.TryAsync(
             async () =>
@@ -361,12 +371,20 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
         _sessionOptions.SampleVolume = volume.Sample;
         _sessionOptions.BalanceFactor = volume.BalanceFactor / 100;
         _sessionOptions.BalanceMode = (KeyAsio.Core.Audio.SampleProviders.BalancePans.BalanceMode)volume.BalanceMode;
+        _sessionOptions.Effects = AppSettings.Default?.Effects.ToSettings() ?? DirectXEffectSettings.Disabled;
         _session?.ApplyOptions(_sessionOptions);
     }
 
     private void Volume_PropertyChanged(object? sender, PropertyChangedEventArgs? e)
     {
         SynchronizeVolumeSettings();
+    }
+
+    private void Effects_PropertyChanged(object? sender, PropertyChangedEventArgs? e)
+    {
+        if (_sessionOptions == null) return;
+        _sessionOptions.Effects = AppSettings.Default?.Effects.ToSettings() ?? DirectXEffectSettings.Disabled;
+        _session?.ApplyEffectsSettings(_sessionOptions.Effects);
     }
 
     private void StartPositionPump()

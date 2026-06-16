@@ -11,6 +11,8 @@ using KeyAsio.Core.OsuAudio.Hitsounds;
 using KeyAsio.Core.OsuAudio.Hitsounds.Playback;
 using KeyAsio.Core.OsuAudio.Timeline;
 using Microsoft.Extensions.Logging;
+using OsuPlayer.Core.Configuration;
+using OsuPlayer.Media.Audio.Effects;
 using OsuPlayer.Shared.Infrastructure;
 
 namespace OsuPlayer.Media.Audio;
@@ -41,6 +43,8 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
     private OsuAudioSessionOptions _options = null!;
     private CancellationTokenSource _precacheCts = new();
     private int _nextCacheStart;
+    private EffectChainSampleProvider? _musicEffectChain;
+    private readonly EffectParameterSet _effectParameters = new();
 
     public OsuBeatmapAudioSession(
         IPlaybackEngine playbackEngine,
@@ -54,7 +58,7 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
         _audioCacheManager = audioCacheManager;
         _rateProcessorFactory = rateProcessorFactory ?? NoPlaybackRateProcessorFactory.Instance;
         _logger = logger;
-        _effectBus = new OsuEffectPlaybackBus(playbackEngine.EffectMixer, logger);
+        _effectBus = new OsuEffectPlaybackBus(playbackEngine.EffectMixer, _effectParameters, logger);
         _eventAudioCache = new OsuPlaybackEventAudioCache(audioCacheManager, logger);
     }
 
@@ -120,7 +124,13 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
                 cancellationToken).ConfigureAwait(false);
         }
 
-        await _musicTransport.LoadAsync(musicSource, ownsSource: true, cancellationToken).ConfigureAwait(false);
+        // Decorate the music source so the transport registers our
+        // effect chain with the engine's MusicMixer. We still own the
+        // wrapper so disposing the inner source also disposes ours.
+        var wrappedMusicSource = new EffectWrappedMusicPlaybackSource(musicSource, _effectParameters);
+        _musicEffectChain = (EffectChainSampleProvider)wrappedMusicSource.Output;
+
+        await _musicTransport.LoadAsync(wrappedMusicSource, ownsSource: true, cancellationToken).ConfigureAwait(false);
 
         _eventAudioCache.SetContext(resources.BeatmapFolder, resources.UserSkinFolder,
             resources.DefaultHitsoundFolder, _playbackEngine.SourceWaveFormat);
@@ -201,6 +211,22 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
         _effectBus.SampleVolume = options.SampleVolume;
         _effectBus.BalanceFactor = options.BalanceFactor;
         _effectBus.BalanceMode = options.BalanceMode;
+        ApplyEffectsSettings(options.Effects);
+    }
+
+    /// <summary>
+    /// Routes the active DirectSound-style effect to whichever buses
+    /// the user has enabled in <see cref="DirectXEffectSettings"/>. Safe
+    /// to call before any music source has been loaded; in that case
+    /// the music chain is set up the next time a source is loaded.
+    /// </summary>
+    public void ApplyEffectsSettings(DirectXEffectSettings settings)
+    {
+        ArgumentNullException.ThrowIfNull(settings);
+        _effectBus.ApplyEffectsSettings(settings);
+        _musicEffectChain?.SetEffect(
+            settings.ApplyToMusic ? settings.Kind : DirectXEffectKind.None,
+            settings.Intensity);
     }
 
     public async Task ClearAsync(CancellationToken cancellationToken = default)
