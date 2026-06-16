@@ -17,7 +17,6 @@
                 <ResourceInclude Source="avares://OsuPlayer/Assets/Brushes.axaml" />
                 <ResourceInclude Source="avares://OsuPlayer/Assets/Fonts/FontDictionary.axaml" />
                 <ResourceInclude Source="avares://OsuPlayer/Converters/ConverterDictionary.axaml" />
-                <ResourceInclude Source="avares://OsuPlayer/Themes/GeneralStyle.axaml" />
                 <ResourceInclude Source="avares://OsuPlayer/lang/i18n.axaml" />
                 <ResourceInclude Source="avares://OsuPlayer/Assets/Icons.axaml" />
             </ResourceDictionary.MergedDictionaries>
@@ -38,17 +37,7 @@
             <Setter Property="FontFamily" Value="{StaticResource SspRegular}" />
         </Style>
 
-        <StyleInclude Source="avares://OsuPlayer/Themes/ButtonStyle.axaml" />
-        <StyleInclude Source="avares://OsuPlayer/Themes/SliderStyle.axaml" />
-        <StyleInclude Source="avares://OsuPlayer/Themes/NavigationStyle.axaml" />
-        <StyleInclude Source="avares://OsuPlayer/Themes/ScrollBarTheme.axaml" />
-        <StyleInclude Source="avares://OsuPlayer/Themes/ContextMenuStyle.axaml" />
-        <StyleInclude Source="avares://OsuPlayer/Themes/Components.axaml" />
-        <StyleInclude Source="avares://OsuPlayer/Themes/BeatmapListStyle.axaml" />
-        <StyleInclude Source="avares://OsuPlayer/Themes/CommonButtonStyle.axaml" />
-        <StyleInclude Source="avares://OsuPlayer/Themes/ConfigStyle.axaml" />
-        <StyleInclude Source="avares://OsuPlayer/Themes/CommonButton.axaml" />
-        <StyleInclude Source="avares://OsuPlayer/Themes/Dialog.axaml" />
+        <StyleInclude Source="avares://OsuPlayer/Themes/Index.axaml" />
 
         <smoothScroll:ScrollViewerSmoothTheme />
         <materialIcons:MaterialIconStyles />

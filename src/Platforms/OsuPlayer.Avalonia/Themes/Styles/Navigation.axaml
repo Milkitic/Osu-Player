@@ -1,14 +1,10 @@
-<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:controls="clr-namespace:OsuPlayer.Controls">
+<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:OsuPlayer.Controls">
 
-    <!--
-        nav-button: 对齐 WPF 导航 IconRadioButton 样式
-        默认: Transparent 背景 / White 前景
-        Hover: White 背景 / #303030 前景
-        Pressed: #F0F0F0 背景 / #303030 前景
-        Checked: #F8F8F8 背景 / #303030 前景
-        Height=39 对齐 WPF 导航项高度
-    -->
-    <Style Selector="ToggleButton.nav-button, Button.nav-button, RadioButton.nav-button">
+    <!--  nav-button:WPF 导航 IconRadioButton 样式  -->
+    <Style Selector=":is(Button).nav-button">
         <Setter Property="Foreground" Value="#FEFEFEFE" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -33,34 +29,32 @@
                 </Grid>
             </ControlTemplate>
         </Setter>
+
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="Foreground" Value="#303030" />
+        </Style>
+        <Style Selector="^:pointerover /template/ Rectangle#innerRectangle">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="^:pressed">
+            <Setter Property="Background" Value="#F0F0F0" />
+            <Setter Property="Foreground" Value="#303030" />
+        </Style>
+        <Style Selector="^:pressed /template/ Rectangle#innerRectangle">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="^:checked">
+            <Setter Property="Background" Value="#F8F8F8" />
+            <Setter Property="Foreground" Value="#303030" />
+        </Style>
+        <Style Selector="^:checked /template/ Rectangle#innerRectangle">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
     </Style>
 
-    <!-- Hover -->
-    <Style Selector="ToggleButton.nav-button:pointerover /template/ Rectangle#innerRectangle, Button.nav-button:pointerover /template/ Rectangle#innerRectangle, RadioButton.nav-button:pointerover /template/ Rectangle#innerRectangle">
-        <Setter Property="Opacity" Value="1" />
-    </Style>
-    <Style Selector="ToggleButton.nav-button:pointerover, Button.nav-button:pointerover, RadioButton.nav-button:pointerover">
-        <Setter Property="Background" Value="White" />
-        <Setter Property="Foreground" Value="#303030" />
-    </Style>
-
-    <!-- Pressed -->
-    <Style Selector="ToggleButton.nav-button:pressed, Button.nav-button:pressed, RadioButton.nav-button:pressed">
-        <Setter Property="Background" Value="#F0F0F0" />
-        <Setter Property="Foreground" Value="#303030" />
-    </Style>
-    <Style Selector="ToggleButton.nav-button:pressed /template/ Rectangle#innerRectangle, Button.nav-button:pressed /template/ Rectangle#innerRectangle, RadioButton.nav-button:pressed /template/ Rectangle#innerRectangle">
-        <Setter Property="Opacity" Value="1" />
-    </Style>
-
-    <!-- Checked -->
-    <Style Selector="ToggleButton.nav-button:checked /template/ Rectangle#innerRectangle, Button.nav-button:checked /template/ Rectangle#innerRectangle, RadioButton.nav-button:checked /template/ Rectangle#innerRectangle">
-        <Setter Property="Opacity" Value="1" />
-    </Style>
-    <Style Selector="ToggleButton.nav-button:checked, Button.nav-button:checked, RadioButton.nav-button:checked">
-        <Setter Property="Background" Value="#F8F8F8" />
-        <Setter Property="Foreground" Value="#303030" />
-    </Style>
     <Style Selector="Label.nav-header">
         <Setter Property="FontSize" Value="16" />
         <Setter Property="Foreground" Value="#f8e0dfef" />
@@ -69,12 +63,10 @@
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Padding" Value="5,0,0,0" />
         <Setter Property="Background">
-            <Setter.Value>
-                <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
-                    <GradientStop Offset="0" Color="#20FFFFFF" />
-                    <GradientStop Offset="1" Color="Transparent" />
-                </LinearGradientBrush>
-            </Setter.Value>
+            <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                <GradientStop Offset="0" Color="#20FFFFFF" />
+                <GradientStop Offset="1" Color="Transparent" />
+            </LinearGradientBrush>
         </Setter>
         <Setter Property="Transitions">
             <Transitions>
@@ -87,6 +79,7 @@
         <Setter Property="Height" Value="0" />
         <Setter Property="Margin" Value="0" />
     </Style>
+
     <Style Selector="Grid.nav-header-grid">
         <Setter Property="Height" Value="40" />
         <Setter Property="Margin" Value="0" />

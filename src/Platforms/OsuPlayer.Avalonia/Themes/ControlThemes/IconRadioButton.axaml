@@ -1,0 +1,101 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:OsuPlayer.Controls">
+
+    <ControlTheme x:Key="{x:Type controls:IconRadioButton}" TargetType="controls:IconRadioButton">
+        <Setter Property="Background" Value="#10303030" />
+        <Setter Property="Foreground" Value="#484848" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <ControlTemplate TargetType="controls:IconRadioButton">
+                <Border
+                    x:Name="PART_Border"
+                    Padding="{TemplateBinding Padding}"
+                    Background="{TemplateBinding Background}"
+                    ClipToBounds="True">
+                    <StackPanel
+                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                        Orientation="{TemplateBinding IconOrientation}">
+                        <Viewbox
+                            Width="{TemplateBinding IconSize}"
+                            Height="{TemplateBinding IconSize}"
+                            Margin="{TemplateBinding IconMargin}"
+                            VerticalAlignment="Center"
+                            Stretch="Uniform">
+                            <ContentControl
+                                x:Name="PART_Icon"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Template="{TemplateBinding IconTemplate}" />
+                        </Viewbox>
+                        <ContentPresenter
+                            x:Name="PART_ContentPresenter"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Content="{TemplateBinding Content}" />
+                    </StackPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^ /template/ ContentControl#PART_Icon">
+            <Setter Property="Foreground">
+                <MultiBinding Converter="{StaticResource IconColorConverter}">
+                    <Binding Path="$parent[controls:IconRadioButton].Foreground" />
+                    <Binding Path="$parent[controls:IconRadioButton].IconColor" />
+                </MultiBinding>
+            </Setter>
+        </Style>
+
+        <Style Selector="^:pointerover:not(:checked) /template/ Border#PART_Border">
+            <Setter Property="Background" Value="{Binding $parent[controls:IconRadioButton].MouseOverBackground}" />
+            <Setter Property="TextBlock.Foreground" Value="{Binding $parent[controls:IconRadioButton].MouseOverForeground}" />
+        </Style>
+        <Style Selector="^:pointerover:not(:checked) /template/ ContentControl#PART_Icon">
+            <Setter Property="Foreground">
+                <MultiBinding Converter="{StaticResource IconColorConverter}">
+                    <Binding Path="$parent[controls:IconRadioButton].MouseOverForeground" />
+                    <Binding Path="$parent[controls:IconRadioButton].MouseOverIconColor" />
+                </MultiBinding>
+            </Setter>
+        </Style>
+
+        <Style Selector="^:pressed /template/ Border#PART_Border">
+            <Setter Property="Background" Value="{Binding $parent[controls:IconRadioButton].MouseDownBackground}" />
+            <Setter Property="TextBlock.Foreground" Value="{Binding $parent[controls:IconRadioButton].MouseDownForeground}" />
+        </Style>
+        <Style Selector="^:pressed /template/ ContentControl#PART_Icon">
+            <Setter Property="Foreground">
+                <MultiBinding Converter="{StaticResource IconColorConverter}">
+                    <Binding Path="$parent[controls:IconRadioButton].MouseDownForeground" />
+                    <Binding Path="$parent[controls:IconRadioButton].MouseDownIconColor" />
+                </MultiBinding>
+            </Setter>
+        </Style>
+
+        <Style Selector="^:checked /template/ Border#PART_Border">
+            <Setter Property="Background" Value="{Binding $parent[controls:IconRadioButton].CheckedBackground}" />
+            <Setter Property="TextBlock.Foreground" Value="{Binding $parent[controls:IconRadioButton].CheckedForeground}" />
+        </Style>
+        <Style Selector="^:checked /template/ ContentControl#PART_Icon">
+            <Setter Property="Foreground">
+                <MultiBinding Converter="{StaticResource IconColorConverter}">
+                    <Binding Path="$parent[controls:IconRadioButton].CheckedForeground" />
+                    <Binding Path="$parent[controls:IconRadioButton].CheckedIconColor" />
+                </MultiBinding>
+            </Setter>
+        </Style>
+
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.5" />
+        </Style>
+    </ControlTheme>
+
+</ResourceDictionary>

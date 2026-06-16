@@ -1,0 +1,192 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:OsuPlayer.Controls"
+    xmlns:system="clr-namespace:System;assembly=System.Runtime">
+
+    <Design.PreviewWith>
+        <Border
+            HorizontalAlignment="Center"
+            Background="White"
+            BorderBrush="Black"
+            BorderThickness="1"
+            UseLayoutRounding="True">
+            <controls:ContentDialog Header="Title">
+                <Border Width="400" Height="200" />
+            </controls:ContentDialog>
+        </Border>
+    </Design.PreviewWith>
+
+    <!--  Dialog footer button base theme  -->
+    <ControlTheme
+        x:Key="DockButton"
+        BasedOn="{StaticResource {x:Type controls:CommonButton}}"
+        TargetType="controls:CommonButton">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="#DADADB" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="Margin" Value="5" />
+        <Setter Property="Height" Value="28" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="IconSize" Value="15" />
+        <Setter Property="Background" Value="#FAFAFB" />
+        <Setter Property="MouseOverBackground" Value="#F0F0F0" />
+        <Setter Property="IconMargin" Value="0,0,5,0" />
+    </ControlTheme>
+
+    <!--  Dialog header close button theme  -->
+    <ControlTheme
+        x:Key="HeaderButton"
+        BasedOn="{StaticResource DockButton}"
+        TargetType="controls:CommonButton">
+        <Setter Property="Width" Value="34" />
+        <Setter Property="Height" Value="34" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="IconMargin" Value="0" />
+        <Setter Property="IconSize" Value="13" />
+    </ControlTheme>
+
+    <ControlTheme x:Key="{x:Type controls:ContentDialog}" TargetType="controls:ContentDialog">
+        <!--  Header defaults  -->
+        <Setter Property="ShowHeader" Value="True" />
+        <Setter Property="Header" Value="" />
+        <Setter Property="HeaderFontSize" Value="14" />
+        <Setter Property="HeaderBackground" Value="#10808080" />
+        <Setter Property="HeaderForeground" Value="Black" />
+        <Setter Property="HeaderShowClose" Value="True" />
+        <Setter Property="HeaderButtonTheme" Value="{StaticResource HeaderButton}" />
+
+        <!--  Footer defaults  -->
+        <Setter Property="ShowFooter" Value="True" />
+        <Setter Property="Footer" Value="" />
+        <Setter Property="FooterFontSize" Value="14" />
+        <Setter Property="FooterBackground" Value="Transparent" />
+        <Setter Property="FooterForeground" Value="Black" />
+        <Setter Property="FooterButtonStyle" Value="YesNo" />
+        <Setter Property="FooterYesButtonText" Value="{Binding $self.TaskDialogConstants.ButtonOkText}" />
+        <Setter Property="FooterNoButtonText" Value="{Binding $self.TaskDialogConstants.ButtonCancelText}" />
+        <Setter Property="FooterButtonTheme" Value="{StaticResource DockButton}" />
+
+        <Setter Property="Template">
+            <ControlTemplate TargetType="controls:ContentDialog">
+                <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                    <Border.Styles>
+                        <Style Selector="controls|CommonButton.ContentDialogFooterButton">
+                            <Setter Property="Height" Value="28" />
+                            <Setter Property="Margin" Value="5,0" />
+                            <Setter Property="IconMargin" Value="0" />
+                            <Setter Property="Padding" Value="15,0" />
+                        </Style>
+                    </Border.Styles>
+
+                    <Grid Background="{TemplateBinding Background}" RowDefinitions="Auto,*,Auto">
+                        <!--  Header  -->
+                        <DockPanel
+                            x:Name="PART_Header"
+                            Height="34"
+                            Background="{TemplateBinding HeaderBackground}"
+                            IsVisible="{TemplateBinding ShowHeader}">
+                            <ContentPresenter
+                                Margin="10,0,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Content="{TemplateBinding Header}"
+                                TextElement.FontSize="{TemplateBinding HeaderFontSize}"
+                                TextElement.Foreground="{TemplateBinding HeaderForeground}" />
+
+                            <controls:CommonButton
+                                x:Name="Button_Cancel"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Command="{Binding $parent[controls:ContentDialog].CloseDialogCommand}"
+                                DockPanel.Dock="Right"
+                                Foreground="{TemplateBinding HeaderForeground}"
+                                IconTemplate="{StaticResource CloseTempl}"
+                                IsVisible="False"
+                                MouseDownBackground="#A0FE3242"
+                                MouseDownForeground="White"
+                                MouseOverBackground="#FE3242"
+                                MouseOverForeground="White"
+                                Theme="{TemplateBinding HeaderButtonTheme}" />
+                        </DockPanel>
+
+                        <!--  Content  -->
+                        <ContentPresenter
+                            x:Name="PART_Content"
+                            Grid.Row="1"
+                            Content="{TemplateBinding Content}" />
+
+                        <!--  Footer  -->
+                        <DockPanel
+                            x:Name="PART_Footer"
+                            Grid.Row="2"
+                            Margin="10,0,10,10"
+                            Background="{TemplateBinding FooterBackground}"
+                            IsVisible="{TemplateBinding ShowFooter}">
+                            <ContentPresenter
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Content="{TemplateBinding Footer}"
+                                TextElement.FontSize="{TemplateBinding FooterFontSize}"
+                                TextElement.Foreground="{TemplateBinding FooterForeground}" />
+
+                            <StackPanel
+                                x:Name="PART_FooterButtonsHost"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                DockPanel.Dock="Right"
+                                Orientation="Horizontal">
+                                <controls:CommonButton
+                                    x:Name="Button_Yes"
+                                    Margin="0,0,5,0"
+                                    Background="#F4F4F4"
+                                    Classes="ContentDialogFooterButton"
+                                    Command="{Binding $parent[controls:ContentDialog].ValidateAndCloseDialogCommand}"
+                                    Content="{TemplateBinding FooterYesButtonText}"
+                                    IsEnabled="{TemplateBinding Confirmable}"
+                                    IsVisible="False"
+                                    TextElement.FontSize="{TemplateBinding FooterFontSize}"
+                                    Theme="{TemplateBinding FooterButtonTheme}">
+                                    <controls:CommonButton.CommandParameter>
+                                        <system:Boolean>True</system:Boolean>
+                                    </controls:CommonButton.CommandParameter>
+                                </controls:CommonButton>
+
+                                <controls:CommonButton
+                                    x:Name="Button_No"
+                                    Margin="5,0,0,0"
+                                    Background="#F4F4F4"
+                                    Classes="ContentDialogFooterButton"
+                                    Command="{Binding $parent[controls:ContentDialog].CloseDialogCommand}"
+                                    Content="{TemplateBinding FooterNoButtonText}"
+                                    IsVisible="False"
+                                    TextElement.FontSize="{TemplateBinding FooterFontSize}"
+                                    Theme="{TemplateBinding FooterButtonTheme}">
+                                    <controls:CommonButton.CommandParameter>
+                                        <system:Boolean>False</system:Boolean>
+                                    </controls:CommonButton.CommandParameter>
+                                </controls:CommonButton>
+                            </StackPanel>
+                        </DockPanel>
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^[FooterButtonStyle=Yes] /template/ controls|CommonButton#Button_Yes">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+        <Style Selector="^[FooterButtonStyle=YesNo] /template/ controls|CommonButton#Button_Yes">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+        <Style Selector="^[FooterButtonStyle=YesNo] /template/ controls|CommonButton#Button_No">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+        <Style Selector="^[HeaderShowClose=True] /template/ controls|CommonButton#Button_Cancel">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+    </ControlTheme>
+
+</ResourceDictionary>

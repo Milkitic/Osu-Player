@@ -1,0 +1,113 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dialogHost="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+    xmlns:positioners="clr-namespace:DialogHostAvalonia.Positioners;assembly=DialogHost.Avalonia">
+
+    <ControlTheme
+        x:Key="{x:Type dialogHost:DialogHost}"
+        BasedOn="{StaticResource {x:Type dialogHost:DialogHost}}"
+        TargetType="dialogHost:DialogHost">
+        <Setter Property="DialogMargin" Value="0" />
+        <Setter Property="PopupPositioner">
+            <positioners:AlignmentDialogPopupPositioner />
+        </Setter>
+        <Setter Property="PopupTemplate">
+            <ControlTemplate>
+                <ScrollViewer VerticalScrollBarVisibility="Hidden">
+                    <Panel>
+                        <Button
+                            Command="{Binding $parent[dialogHost:DialogHost].CloseDialogCommand}"
+                            IsEnabled="{Binding $parent[dialogHost:DialogHost].CloseOnClickAway}">
+                            <Button.Template>
+                                <ControlTemplate>
+                                    <ContentPresenter Background="Transparent" Content="{TemplateBinding Content}" />
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                        <Border
+                            Name="PART_ContentBackground"
+                            Margin="0,50"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Background="{Binding $parent[dialogHost:DialogHost].Background}"
+                            BorderBrush="{Binding $parent[dialogHost:DialogHost].(dialogHost:DialogHostStyle.BorderBrush)}"
+                            BorderThickness="{Binding $parent[dialogHost:DialogHost].(dialogHost:DialogHostStyle.BorderThickness)}"
+                            BoxShadow="1.5 1.5 8 #4c000000"
+                            ClipToBounds="{Binding $parent[dialogHost:DialogHost].(dialogHost:DialogHostStyle.ClipToBounds)}"
+                            CornerRadius="{Binding $parent[dialogHost:DialogHost].(dialogHost:DialogHostStyle.CornerRadius)}">
+                            <ContentPresenter
+                                Name="PART_ContentPresenter"
+                                Padding="{TemplateBinding Padding}"
+                                Background="{TemplateBinding Background}"
+                                Content="{TemplateBinding Content}"
+                                ContentTemplate="{TemplateBinding ContentTemplate}" />
+                        </Border>
+                    </Panel>
+                </ScrollViewer>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <ControlTheme x:Key="{x:Type dialogHost:DialogOverlayPopupHost}" TargetType="dialogHost:DialogOverlayPopupHost">
+        <Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}" />
+        <Setter Property="KeyboardNavigation.TabNavigation" Value="Cycle" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ContentPresenter
+                    Name="PART_ContentPresenter"
+                    Padding="{TemplateBinding Padding}"
+                    Background="{TemplateBinding Background}"
+                    Content="{TemplateBinding Content}"
+                    ContentTemplate="{TemplateBinding ContentTemplate}" />
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^[IsOpen=True][DisableOpeningAnimation=False]">
+            <Style.Animations>
+                <Animation
+                    Easing="CircularEaseOut"
+                    FillMode="Both"
+                    Duration="0:0:0.3">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="ScaleTransform.ScaleY" Value="0.667" />
+                        <Setter Property="ScaleTransform.ScaleX" Value="0.667" />
+                        <Setter Property="Opacity" Value="0" />
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="ScaleTransform.ScaleY" Value="1" />
+                        <Setter Property="ScaleTransform.ScaleX" Value="1" />
+                        <Setter Property="Opacity" Value="1" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <Style Selector="^[IsOpen=False][DisableOpeningAnimation=False]">
+            <Style.Animations>
+                <Animation
+                    Easing="SineEaseInOut"
+                    FillMode="Both"
+                    Duration="0:0:0.3">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="ScaleTransform.ScaleY" Value="1" />
+                        <Setter Property="ScaleTransform.ScaleX" Value="1" />
+                        <Setter Property="Opacity" Value="1" />
+                    </KeyFrame>
+                    <KeyFrame Cue="60%">
+                        <Setter Property="ScaleTransform.ScaleY" Value="1" />
+                        <Setter Property="ScaleTransform.ScaleX" Value="1" />
+                        <Setter Property="Opacity" Value="1" />
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="ScaleTransform.ScaleY" Value="0.5" />
+                        <Setter Property="ScaleTransform.ScaleX" Value="0.5" />
+                        <Setter Property="Opacity" Value="0" />
+                        <Setter Property="IsActuallyOpen" Value="False" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+    </ControlTheme>
+
+</ResourceDictionary>

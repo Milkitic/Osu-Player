@@ -1,0 +1,101 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:OsuPlayer.Controls">
+
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <StackPanel Spacing="8">
+                <controls:CommonButton Content="Default" />
+                <controls:CommonButton Content="Simple" Theme="{StaticResource SimpleCommonButtonTheme}" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <ControlTheme x:Key="{x:Type controls:CommonButton}" TargetType="controls:CommonButton">
+        <Setter Property="Background" Value="#F0F0F0" />
+        <Setter Property="BorderBrush" Value="#F0F0F0" />
+        <Setter Property="Foreground" Value="#484848" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="CornerRadius" Value="2" />
+        <Setter Property="ClipToBounds" Value="False" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Bottom" />
+        <Setter Property="MouseOverBackground" Value="#F3F5F5" />
+        <Setter Property="MouseOverForeground" Value="#484848" />
+        <Setter Property="MouseDownBackground" Value="#E8E8E8" />
+        <Setter Property="MouseDownForeground" Value="#323232" />
+        <Setter Property="Template">
+            <ControlTemplate TargetType="controls:CommonButton">
+                <Border
+                    x:Name="PART_Border"
+                    Width="{TemplateBinding Width}"
+                    Height="{TemplateBinding Height}"
+                    Padding="{TemplateBinding Padding}"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    BoxShadow="{TemplateBinding BoxShadow}"
+                    CornerRadius="{TemplateBinding CornerRadius}">
+                    <StackPanel
+                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                        Orientation="{TemplateBinding IconOrientation}">
+                        <Viewbox
+                            Width="{TemplateBinding IconSize}"
+                            Height="{TemplateBinding IconSize}"
+                            Margin="{TemplateBinding IconMargin}"
+                            VerticalAlignment="Center"
+                            IsVisible="{Binding $parent[controls:CommonButton].IconTemplate, Converter={StaticResource NullToBoolFalseConverter}}"
+                            Stretch="Uniform">
+                            <ContentControl
+                                x:Name="PART_Icon"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Foreground="{TemplateBinding Foreground}"
+                                Template="{TemplateBinding IconTemplate}" />
+                        </Viewbox>
+                        <ContentPresenter
+                            x:Name="PART_ContentPresenter"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            RecognizesAccessKey="True" />
+                    </StackPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^:pointerover /template/ Border#PART_Border">
+            <Setter Property="Background" Value="{Binding $parent[controls:CommonButton].MouseOverBackground}" />
+            <Setter Property="TextBlock.Foreground" Value="{Binding $parent[controls:CommonButton].MouseOverForeground}" />
+        </Style>
+        <Style Selector="^:pointerover /template/ ContentControl#PART_Icon">
+            <Setter Property="Foreground" Value="{Binding $parent[controls:CommonButton].MouseOverForeground}" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ Border#PART_Border">
+            <Setter Property="Background" Value="{Binding $parent[controls:CommonButton].MouseDownBackground}" />
+            <Setter Property="TextBlock.Foreground" Value="{Binding $parent[controls:CommonButton].MouseDownForeground}" />
+        </Style>
+        <Style Selector="^:pressed /template/ ContentControl#PART_Icon">
+            <Setter Property="Foreground" Value="{Binding $parent[controls:CommonButton].MouseDownForeground}" />
+        </Style>
+
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.5" />
+        </Style>
+    </ControlTheme>
+
+    <ControlTheme
+        x:Key="SimpleCommonButtonTheme"
+        BasedOn="{StaticResource {x:Type controls:CommonButton}}"
+        TargetType="controls:CommonButton" />
+
+</ResourceDictionary>
