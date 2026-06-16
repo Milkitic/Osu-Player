@@ -16,15 +16,18 @@ internal sealed class DistortionEffectProvider : DirectXEffectProviderBase
     private float _gainLinear = 1f;
     private float _cutoffHz = 8000f;
     private float _lpCoef;
-    private float _lpState;
+    private float[] _lpState = Array.Empty<float>();
     private float _sendAmount;
     private int _sampleRate;
+    private int _channels;
     private bool _bypass = true;
     private float[] _dryScratch = Array.Empty<float>();
 
     public DistortionEffectProvider(ISampleProvider source) : base(source)
     {
         _sampleRate = source.WaveFormat.SampleRate;
+        _channels = source.WaveFormat.Channels;
+        _lpState = new float[_channels];
         UpdateLowpassCoefficient();
     }
 
@@ -46,14 +49,14 @@ internal sealed class DistortionEffectProvider : DirectXEffectProviderBase
     public void ResetToDefaults()
     {
         _sendAmount = 0.5f;
-        _lpState = 0f;
+        Array.Clear(_lpState, 0, _lpState.Length);
         _bypass = false;
         ApplyParameters(new DistortionParameters());
     }
 
     public override void ResetState()
     {
-        _lpState = 0f;
+        Array.Clear(_lpState, 0, _lpState.Length);
     }
 
     private void UpdateLowpassCoefficient()
@@ -74,10 +77,11 @@ internal sealed class DistortionEffectProvider : DirectXEffectProviderBase
         for (var i = 0; i < count; i++)
         {
             var idx = offset + i;
+            var channel = i % _channels;
             var driven = buffer[idx] * _gainLinear;
             var clipped = MathF.Tanh(driven);
-            _lpState += _lpCoef * (clipped - _lpState);
-            buffer[idx] = _dryScratch[i] * dryAmount + _lpState * _sendAmount;
+            _lpState[channel] += _lpCoef * (clipped - _lpState[channel]);
+            buffer[idx] = _dryScratch[i] * dryAmount + _lpState[channel] * _sendAmount;
         }
     }
 }

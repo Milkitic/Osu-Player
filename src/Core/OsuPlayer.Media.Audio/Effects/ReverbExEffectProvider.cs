@@ -29,7 +29,7 @@ internal sealed class ReverbExEffectProvider : DirectXEffectProviderBase
 
     private readonly LBCF[] _combs;
     private readonly APF[] _allpasses;
-    private readonly float[] _lastWet = new float[2];
+    private float _lastWet;
 
     private float _roomSize;
     private float _damp;
@@ -78,8 +78,7 @@ internal sealed class ReverbExEffectProvider : DirectXEffectProviderBase
     {
         _sendAmount = 0.5f;
         _bypass = false;
-        _lastWet[0] = 0f;
-        _lastWet[1] = 0f;
+        _lastWet = 0f;
         ApplyParameters(new ReverbExParameters());
     }
 
@@ -87,8 +86,7 @@ internal sealed class ReverbExEffectProvider : DirectXEffectProviderBase
     {
         for (var c = 0; c < CombCount; c++) _combs[c].Reset();
         for (var a = 0; a < AllpassCount; a++) _allpasses[a].Reset();
-        _lastWet[0] = 0f;
-        _lastWet[1] = 0f;
+        _lastWet = 0f;
     }
 
     protected override void Process(float[] buffer, int offset, int count)
@@ -126,10 +124,9 @@ internal sealed class ReverbExEffectProvider : DirectXEffectProviderBase
                 allpassOut = _allpasses[a].Process(allpassOut);
             }
 
-            var wetL = allpassOut * (_width * 0.5f + 0.5f) + _lastWet[1] * (_width * 0.5f - 0.5f);
-            var wetR = allpassOut * (_width * 0.5f - 0.5f) + _lastWet[1] * (_width * 0.5f + 0.5f);
-            _lastWet[0] = allpassOut;
-            _lastWet[1] = allpassOut;
+            var wetL = allpassOut * (_width * 0.5f + 0.5f) + _lastWet * (_width * 0.5f - 0.5f);
+            var wetR = allpassOut * (_width * 0.5f - 0.5f) + _lastWet * (_width * 0.5f + 0.5f);
+            _lastWet = allpassOut;
 
             float leftOutput;
             float rightOutput;

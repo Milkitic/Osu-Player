@@ -12,9 +12,9 @@ namespace OsuPlayer.Media.Audio.Effects;
 /// </summary>
 internal sealed class FlangerEffectProvider : DirectXEffectProviderBase
 {
-    private readonly float[] _ringBuffer;
-    private readonly int _ringLength;
-    private int _writeIndex;
+    private readonly float[][] _ringBuffers;
+    private readonly int[] _ringLengths;
+    private readonly int[] _writeIndices;
     private float _phase;
     private float _depthSeconds;
     private float _rateHz;
@@ -30,8 +30,15 @@ internal sealed class FlangerEffectProvider : DirectXEffectProviderBase
     {
         _sampleRate = source.WaveFormat.SampleRate;
         _channels = source.WaveFormat.Channels;
-        _ringLength = Math.Max(64, (int)(0.010f * _sampleRate) + 16);
-        _ringBuffer = new float[_ringLength];
+        var ringLength = Math.Max(64, (int)(0.010f * _sampleRate) + 16);
+        _ringBuffers = new float[_channels][];
+        _ringLengths = new int[_channels];
+        _writeIndices = new int[_channels];
+        for (var c = 0; c < _channels; c++)
+        {
+            _ringBuffers[c] = new float[ringLength];
+            _ringLengths[c] = ringLength;
+        }
     }
 
     public override void SetIntensity(float intensity)
@@ -60,8 +67,11 @@ internal sealed class FlangerEffectProvider : DirectXEffectProviderBase
 
     public override void ResetState()
     {
-        Array.Clear(_ringBuffer, 0, _ringBuffer.Length);
-        _writeIndex = 0;
+        for (var c = 0; c < _channels; c++)
+        {
+            Array.Clear(_ringBuffers[c], 0, _ringBuffers[c].Length);
+            _writeIndices[c] = 0;
+        }
         _phase = 0f;
     }
 
@@ -79,19 +89,24 @@ internal sealed class FlangerEffectProvider : DirectXEffectProviderBase
         for (var i = 0; i < count; i++)
         {
             var idx = offset + i;
+            var channel = i % _channels;
             var input = buffer[idx];
+
+            var ring = _ringBuffers[channel];
+            var ringLength = _ringLengths[channel];
+            var writeIndex = _writeIndices[channel];
 
             var mod = MathF.Sin(_phase);
             var delaySamples = depthSamples * (0.5f + 0.5f * mod);
             if (delaySamples < 1f) delaySamples = 1f;
             var intDelay = (int)delaySamples;
             var frac = delaySamples - intDelay;
-            var read0 = (_writeIndex - intDelay + _ringLength) % _ringLength;
-            var read1 = (read0 - 1 + _ringLength) % _ringLength;
-            var delayed = _ringBuffer[read0] * (1f - frac) + _ringBuffer[read1] * frac;
+            var read0 = (writeIndex - intDelay + ringLength) % ringLength;
+            var read1 = (read0 - 1 + ringLength) % ringLength;
+            var delayed = ring[read0] * (1f - frac) + ring[read1] * frac;
 
-            _ringBuffer[_writeIndex] = input + delayed * _feedback;
-            _writeIndex = (_writeIndex + 1) % _ringLength;
+            ring[writeIndex] = input + delayed * _feedback;
+            _writeIndices[channel] = (writeIndex + 1) % ringLength;
 
             var processed = input * (1f - _wet) + delayed * _wet;
             buffer[idx] = _dryScratch[i] * dryAmount + processed * _sendAmount;

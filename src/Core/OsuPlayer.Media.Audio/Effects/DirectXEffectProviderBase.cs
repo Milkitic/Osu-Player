@@ -42,25 +42,6 @@ internal abstract class DirectXEffectProviderBase : IDirectXEffectProvider
     /// </summary>
     protected abstract void Process(float[] buffer, int offset, int count);
 
-    protected static float Lerp(float a, float b, float t)
-    {
-        return a + (b - a) * t;
-    }
-
-    /// <summary>
-    /// Maps an intensity in <c>[-1, +1]</c> to a <c>[0, 1]</c> parameter
-    /// range. Values at or below <c>-1</c> are clamped to 0; values at
-    /// or above <c>+1</c> are clamped to 1. Callers that want bypass
-    /// semantics should compare the raw intensity against
-    /// <see cref="BypassThreshold"/> before calling this.
-    /// </summary>
-    protected static float NormaliseIntensity(float intensity)
-    {
-        if (intensity <= -1f) return 0f;
-        if (intensity >= 1f) return 1f;
-        return (intensity + 1f) * 0.5f;
-    }
-
     /// <summary>
     /// Maps a master intensity value in <c>[-1, +1]</c> to a wet/dry
     /// send amount in <c>[0, 1]</c>. At <c>-1</c> the effect is
