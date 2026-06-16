@@ -1,0 +1,25 @@
+<UserControl
+    x:Class="OsuPlayer.Views.UserControls.ParamSliderRow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Name="Root">
+    <Grid ColumnDefinitions="120,*,80" VerticalAlignment="Center">
+        <TextBlock
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Text="{Binding Label, ElementName=Root}" />
+        <Slider
+            Grid.Column="1"
+            Classes="osu-slider"
+            IsSnapToTickEnabled="False"
+            Maximum="{Binding Maximum, ElementName=Root}"
+            Minimum="{Binding Minimum, ElementName=Root}"
+            TickFrequency="{Binding TickFrequency, ElementName=Root}"
+            Value="{Binding Value, Mode=TwoWay, ElementName=Root}" />
+        <TextBox
+            Grid.Column="2"
+            Margin="8,0,0,0"
+            Classes="config-box"
+            Text="{Binding DisplayText, Mode=TwoWay, ElementName=Root}" />
+    </Grid>
+</UserControl>

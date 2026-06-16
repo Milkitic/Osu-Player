@@ -123,6 +123,17 @@
     <sys:String x:Key="ui-sets-title-autoPlay">自动播放</sys:String>
     <sys:String x:Key="ui-sets-title-playProgress">播放进度</sys:String>
     <sys:String x:Key="ui-sets-title-audioPlayDevice">音频播放设备</sys:String>
+    <sys:String x:Key="ui-sets-title-audioEffects">音频效果 (DirectSound)</sys:String>
+    <sys:String x:Key="ui-sets-content-effect-applyToHitsound">应用到 Hitsound</sys:String>
+    <sys:String x:Key="ui-sets-content-effect-applyToBackground">应用到 Background</sys:String>
+    <sys:String x:Key="ui-sets-content-effect-applyToMusic">应用到 Music</sys:String>
+    <sys:String x:Key="ui-sets-content-effect-reset">重置为默认</sys:String>
+    <sys:String x:Key="ui-sets-title-effect-params-compressor">压缩器参数</sys:String>
+    <sys:String x:Key="ui-sets-title-effect-params-chorus">合唱参数</sys:String>
+    <sys:String x:Key="ui-sets-title-effect-params-gargle">颤音参数</sys:String>
+    <sys:String x:Key="ui-sets-title-effect-params-reverbex">大混响参数</sys:String>
+    <sys:String x:Key="ui-sets-title-effect-params-flanger">镶边参数</sys:String>
+    <sys:String x:Key="ui-sets-title-effect-params-distortion">失真参数</sys:String>
     <sys:String x:Key="ui-sets-title-language">语言</sys:String>
     <sys:String x:Key="ui-sets-title-minimalEffectMode">低配模式</sys:String>
     <sys:String x:Key="ui-sets-title-hotKeySettings">热键设置</sys:String>

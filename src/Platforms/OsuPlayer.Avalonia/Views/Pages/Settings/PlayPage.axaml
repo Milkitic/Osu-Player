@@ -4,10 +4,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="clr-namespace:OsuPlayer.Converters"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels.Pages.Settings"
+    xmlns:controls="clr-namespace:OsuPlayer.Views.UserControls"
     Classes="settings-page"
     x:DataType="vm:PlayPageViewModel">
     <UserControl.Resources>
         <converters:DeviceInfoToStringConverter x:Key="DeviceInfoToStringConverter" />
+        <converters:EffectKindToStringConverter x:Key="EffectKindToStringConverter" />
     </UserControl.Resources>
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="10" Spacing="6">
@@ -35,6 +37,152 @@
                 HorizontalAlignment="Left"
                 Content="{DynamicResource ui-sets-content-resumePlaylistOnProgramStartup}"
                 IsChecked="{Binding Memory, Mode=TwoWay}" />
+
+            <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-audioEffects}" />
+            <StackPanel Classes="config-row" Orientation="Horizontal" Spacing="12">
+                <ComboBox
+                    Classes="config-box"
+                    Width="180"
+                    HorizontalAlignment="Left"
+                    ItemsSource="{Binding EffectKinds}"
+                    SelectedItem="{Binding SelectedEffectKind, Mode=TwoWay}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Converter={StaticResource EffectKindToStringConverter}}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Slider
+                    Classes="osu-slider"
+                    Height="120"
+                    VerticalAlignment="Top"
+                    Maximum="1"
+                    Minimum="-1"
+                    Orientation="Vertical"
+                    TickFrequency="0.1"
+                    TickPlacement="Outside"
+                    Value="{Binding EffectIntensity, Mode=TwoWay}" />
+                <StackPanel Spacing="2" VerticalAlignment="Top" Margin="8,0,0,0">
+                    <CheckBox
+                        Classes="config-check"
+                        HorizontalAlignment="Left"
+                        Content="{DynamicResource ui-sets-content-effect-applyToHitsound}"
+                        IsChecked="{Binding EffectApplyToHitsound, Mode=TwoWay}" />
+                    <CheckBox
+                        Classes="config-check"
+                        HorizontalAlignment="Left"
+                        Content="{DynamicResource ui-sets-content-effect-applyToBackground}"
+                        IsChecked="{Binding EffectApplyToBackground, Mode=TwoWay}" />
+                    <CheckBox
+                        Classes="config-check"
+                        HorizontalAlignment="Left"
+                        Content="{DynamicResource ui-sets-content-effect-applyToMusic}"
+                        IsChecked="{Binding EffectApplyToMusic, Mode=TwoWay}" />
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Per-effect parameter panels. Only the one matching
+                 the selected kind is visible. -->
+            <StackPanel Spacing="4" IsVisible="{Binding IsCompressorSelected}">
+                <DockPanel LastChildFill="True" Margin="0,8,0,4">
+                    <Button
+                        Classes="config-box"
+                        Width="120"
+                        DockPanel.Dock="Right"
+                        Command="{Binding ResetEffectCommand}"
+                        Content="{DynamicResource ui-sets-content-effect-reset}" />
+                    <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-effect-params-compressor}" />
+                </DockPanel>
+                <controls:ParamSliderRow Label="Threshold (dB)" Minimum="-60" Maximum="0" TickFrequency="0.5" Value="{Binding CompressorThresholdDb, Mode=TwoWay}" />
+                <controls:ParamSliderRow Label="Ratio" Minimum="1" Maximum="20" TickFrequency="0.1" Value="{Binding CompressorRatio, Mode=TwoWay}" />
+                <controls:ParamSliderRow Label="Attack (ms)" Minimum="0.1" Maximum="200" TickFrequency="0.5" Value="{Binding CompressorAttackMs, Mode=TwoWay}" />
+                <controls:ParamSliderRow Label="Release (ms)" Minimum="1" Maximum="1000" TickFrequency="5" Value="{Binding CompressorReleaseMs, Mode=TwoWay}" />
+                <controls:ParamSliderRow Label="Makeup (dB)" Minimum="-12" Maximum="24" TickFrequency="0.5" Value="{Binding CompressorMakeupDb, Mode=TwoWay}" />
+            </StackPanel>
+
+            <StackPanel Spacing="4" IsVisible="{Binding IsChorusSelected}">
+                <DockPanel LastChildFill="True" Margin="0,8,0,4">
+                    <Button
+                        Classes="config-box"
+                        Width="120"
+                        DockPanel.Dock="Right"
+                        Command="{Binding ResetEffectCommand}"
+                        Content="{DynamicResource ui-sets-content-effect-reset}" />
+                    <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-effect-params-chorus}" />
+                </DockPanel>
+                <controls:ParamSliderRow Label="Voice 1 Delay (ms)" Minimum="1" Maximum="50" TickFrequency="0.5" Value="{Binding ChorusVoice1DelayMs, Mode=TwoWay}" />
+                <controls:ParamSliderRow Label="Voice 2 Delay (ms)" Minimum="1" Maximum="50" TickFrequency="0.5" Value="{Binding ChorusVoice2DelayMs, Mode=TwoWay}" />
+                <controls:ParamSliderRow Label="Voice 3 Delay (ms)" Minimum="1" Maximum="50" TickFrequency="0.5" Value="{Binding ChorusVoice3DelayMs, Mode=TwoWay}" />
+                <controls:ParamSliderRow Label="Depth (ms)" Minimum="0" Maximum="20" TickFrequency="0.1" Value="{Binding ChorusDepthMs, Mode=TwoWay}" />
+                <controls:ParamSliderRow Label="Rate (Hz)" Minimum="0.05" Maximum="10" TickFrequency="0.1" Value="{Binding ChorusRateHz, Mode=TwoWay}" />
+                <controls:ParamSliderRow Label="Wet" Minimum="0" Maximum="1" TickFrequency="0.01" Value="{Binding ChorusWet, Mode=TwoWay}" />
+            </StackPanel>
+
+            <StackPanel Spacing="4" IsVisible="{Binding IsGargleSelected}">
+                <DockPanel LastChildFill="True" Margin="0,8,0,4">
+                    <Button
+                        Classes="config-box"
+                        Width="120"
+                        DockPanel.Dock="Right"
+                        Command="{Binding ResetEffectCommand}"
+                        Content="{DynamicResource ui-sets-content-effect-reset}" />
+                    <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-effect-params-gargle}" />
+                </DockPanel>
+                <controls:ParamSliderRow Label="Rate (Hz)" Minimum="0.1" Maximum="30" TickFrequency="0.5" Value="{Binding GargleRateHz, Mode=TwoWay}" />
+                <controls:ParamSliderRow Label="Depth" Minimum="0" Maximum="1" TickFrequency="0.01" Value="{Binding GargleDepth, Mode=TwoWay}" />
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <TextBlock VerticalAlignment="Center" Text="Waveform:" Width="120" />
+                    <ComboBox Classes="config-box" Width="160" ItemsSource="{Binding GargleWaveforms}" SelectedItem="{Binding SelectedGargleWaveform, Mode=TwoWay}" />
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Spacing="4" IsVisible="{Binding IsReverbExSelected}">
+                <DockPanel LastChildFill="True" Margin="0,8,0,4">
+                    <Button
+                        Classes="config-box"
+                        Width="120"
+                        DockPanel.Dock="Right"
+                        Command="{Binding ResetEffectCommand}"
+                        Content="{DynamicResource ui-sets-content-effect-reset}" />
+                    <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-effect-params-reverbex}" />
+                </DockPanel>
+                <controls:ParamSliderRow Label="Room Size" Minimum="0" Maximum="1" TickFrequency="0.01" Value="{Binding ReverbRoomSize, Mode=TwoWay}" />
+                <controls:ParamSliderRow Label="Damp" Minimum="0" Maximum="1" TickFrequency="0.01" Value="{Binding ReverbDamp, Mode=TwoWay}" />
+                <controls:ParamSliderRow Label="Wet L" Minimum="0" Maximum="1" TickFrequency="0.01" Value="{Binding ReverbWet1, Mode=TwoWay}" />
+                <controls:ParamSliderRow Label="Wet R" Minimum="0" Maximum="1" TickFrequency="0.01" Value="{Binding ReverbWet2, Mode=TwoWay}" />
+                <controls:ParamSliderRow Label="Dry" Minimum="0" Maximum="1" TickFrequency="0.01" Value="{Binding ReverbDry, Mode=TwoWay}" />
+                <controls:ParamSliderRow Label="Width" Minimum="0" Maximum="1" TickFrequency="0.01" Value="{Binding ReverbWidth, Mode=TwoWay}" />
+            </StackPanel>
+
+            <StackPanel Spacing="4" IsVisible="{Binding IsFlangerSelected}">
+                <DockPanel LastChildFill="True" Margin="0,8,0,4">
+                    <Button
+                        Classes="config-box"
+                        Width="120"
+                        DockPanel.Dock="Right"
+                        Command="{Binding ResetEffectCommand}"
+                        Content="{DynamicResource ui-sets-content-effect-reset}" />
+                    <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-effect-params-flanger}" />
+                </DockPanel>
+                <controls:ParamSliderRow Label="Depth (ms)" Minimum="0.01" Maximum="10" TickFrequency="0.05" Value="{Binding FlangerDepthMs, Mode=TwoWay}" />
+                <controls:ParamSliderRow Label="Rate (Hz)" Minimum="0.01" Maximum="5" TickFrequency="0.05" Value="{Binding FlangerRateHz, Mode=TwoWay}" />
+                <controls:ParamSliderRow Label="Feedback" Minimum="-0.9" Maximum="0.9" TickFrequency="0.01" Value="{Binding FlangerFeedback, Mode=TwoWay}" />
+                <controls:ParamSliderRow Label="Wet" Minimum="0" Maximum="1" TickFrequency="0.01" Value="{Binding FlangerWet, Mode=TwoWay}" />
+            </StackPanel>
+
+            <StackPanel Spacing="4" IsVisible="{Binding IsDistortionSelected}">
+                <DockPanel LastChildFill="True" Margin="0,8,0,4">
+                    <Button
+                        Classes="config-box"
+                        Width="120"
+                        DockPanel.Dock="Right"
+                        Command="{Binding ResetEffectCommand}"
+                        Content="{DynamicResource ui-sets-content-effect-reset}" />
+                    <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-effect-params-distortion}" />
+                </DockPanel>
+                <controls:ParamSliderRow Label="Gain (dB)" Minimum="0" Maximum="48" TickFrequency="0.5" Value="{Binding DistortionGainDb, Mode=TwoWay}" />
+                <controls:ParamSliderRow Label="Cutoff (Hz)" Minimum="200" Maximum="16000" TickFrequency="50" Value="{Binding DistortionCutoffHz, Mode=TwoWay}" />
+            </StackPanel>
 
             <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-audioPlayDevice}" />
             <ComboBox
