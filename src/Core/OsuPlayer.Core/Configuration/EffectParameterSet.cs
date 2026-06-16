@@ -41,4 +41,14 @@ public sealed class EffectParameterSet
             default: throw new ArgumentException($"Parameter type {parameters.GetType().Name} does not match effect {kind}.", nameof(parameters));
         }
     }
+
+    public EffectParameterSet Clone() => new()
+    {
+        Compressor = Compressor.Clone(),
+        Chorus = Chorus.Clone(),
+        Gargle = Gargle.Clone(),
+        ReverbEx = ReverbEx.Clone(),
+        Flanger = Flanger.Clone(),
+        Distortion = Distortion.Clone(),
+    };
 }

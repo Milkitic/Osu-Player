@@ -41,6 +41,7 @@ public partial class EffectsSection : ObservableObject
         ApplyToHitsound = ApplyToHitsound,
         ApplyToBackground = ApplyToBackground,
         ApplyToMusic = ApplyToMusic,
+        Parameters = Parameters.Clone(),
     };
 
     public void LoadFromSettings(DirectXEffectSettings settings)
@@ -51,4 +52,12 @@ public partial class EffectsSection : ObservableObject
         ApplyToBackground = settings.ApplyToBackground;
         ApplyToMusic = settings.ApplyToMusic;
     }
+
+    /// <summary>
+    /// Raises <see cref="ObservableObject.PropertyChanged"/> for the
+    /// <see cref="Parameters"/> property. Call this after mutating any
+    /// nested parameter object so audio engine subscribers can push the
+    /// new values to the live effect chain.
+    /// </summary>
+    public void NotifyParametersChanged() => OnPropertyChanged(nameof(Parameters));
 }

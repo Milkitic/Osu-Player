@@ -179,6 +179,8 @@ internal sealed class OsuEffectPlaybackBus : IDisposable
         _backgroundEffectChain.SetEffect(
             settings.ApplyToBackground ? settings.Kind : DirectXEffectKind.None,
             settings.Intensity);
+        _hitsoundEffectChain.ApplyActiveParameters();
+        _backgroundEffectChain.ApplyActiveParameters();
     }
 
     private IMixingSampleProvider GetMixer(OsuEffectTrack track)

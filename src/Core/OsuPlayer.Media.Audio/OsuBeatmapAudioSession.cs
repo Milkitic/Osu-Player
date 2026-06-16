@@ -223,10 +223,28 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
     public void ApplyEffectsSettings(DirectXEffectSettings settings)
     {
         ArgumentNullException.ThrowIfNull(settings);
+        SyncEffectParameters(settings.Parameters);
         _effectBus.ApplyEffectsSettings(settings);
-        _musicEffectChain?.SetEffect(
-            settings.ApplyToMusic ? settings.Kind : DirectXEffectKind.None,
-            settings.Intensity);
+        if (settings.ApplyToMusic)
+        {
+            _musicEffectChain?.SetEffect(settings.Kind, settings.Intensity);
+            _musicEffectChain?.ApplyActiveParameters();
+        }
+        else
+        {
+            _musicEffectChain?.SetEffect(DirectXEffectKind.None, settings.Intensity);
+        }
+    }
+
+    private void SyncEffectParameters(EffectParameterSet? source)
+    {
+        if (source == null) return;
+        _effectParameters.Compressor = source.Compressor.Clone();
+        _effectParameters.Chorus = source.Chorus.Clone();
+        _effectParameters.Gargle = source.Gargle.Clone();
+        _effectParameters.ReverbEx = source.ReverbEx.Clone();
+        _effectParameters.Flanger = source.Flanger.Clone();
+        _effectParameters.Distortion = source.Distortion.Clone();
     }
 
     public async Task ClearAsync(CancellationToken cancellationToken = default)
