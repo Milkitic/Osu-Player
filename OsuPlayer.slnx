@@ -35,12 +35,7 @@
       <BuildType Solution="Release 4.5|*" Project="Release" />
       <BuildType Solution="Release 4.6|*" Project="Release" />
     </Project>
-    <Project Path="dependencies/KeyASIO.Net/dependencies/NAudio/NAudio.SDL2/NAudio.SDL2.csproj">
-      <BuildType Solution="Analysis|*" Project="Debug" />
-      <BuildType Solution="Release 4.5|*" Project="Release" />
-      <BuildType Solution="Release 4.6|*" Project="Release" />
-    </Project>
-    <Project Path="dependencies/KeyASIO.Net/dependencies/NAudio/NAudio.SDL3/NAudio.SDL3.csproj">
+    <Project Path="dependencies/NAudio.SDL3/src/NAudio.SDL3/NAudio.SDL3.csproj">
       <BuildType Solution="Analysis|*" Project="Debug" />
       <BuildType Solution="Release 4.5|*" Project="Release" />
       <BuildType Solution="Release 4.6|*" Project="Release" />

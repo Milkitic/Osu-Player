@@ -1,3 +1,6 @@
 [submodule "dependencies/KeyASIO.Net"]
 	path = dependencies/KeyASIO.Net
 	url = https://github.com/Milkitic/KeyASIO.Net.git
+[submodule "dependencies/NAudio.SDL3"]
+	path = dependencies/NAudio.SDL3
+	url = https://github.com/Milkitic/NAudio.SDL3.git
