@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Core\OsuPlayer.Media.Audio\OsuPlayer.Media.Audio.csproj" />
+    <ProjectReference Include="..\..\src\Core\OsuPlayer.Core\OsuPlayer.Core.csproj" />
   </ItemGroup>
 
 </Project>
