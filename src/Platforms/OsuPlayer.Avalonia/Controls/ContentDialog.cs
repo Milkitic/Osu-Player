@@ -30,6 +30,13 @@ public class ContentDialog : ContentControl
         _validateAndCloseDialogCommand = new AsyncRelayCommand<object?>(InternalValidateAndClose);
         _closeDialogCommand = new AsyncRelayCommand<object?>(InternalClose);
         Loaded += ContentDialog_Loaded;
+        Unloaded += ContentDialog_Unloaded;
+    }
+
+    private void ContentDialog_Unloaded(object? sender, RoutedEventArgs e)
+    {
+        Loaded -= ContentDialog_Loaded;
+        Unloaded -= ContentDialog_Unloaded;
     }
 
     #endregion
@@ -409,29 +416,21 @@ public class ContentDialog : ContentControl
 
     private void ApplyFooterButtonsDirection()
     {
-        if (_stackPanel == null) return;
-        var firstButton = (Button)_stackPanel.Children[0];
-        if (FooterButtonDirection == FlowDirection.RightToLeft && firstButton.CommandParameter is true ||
-            FooterButtonDirection == FlowDirection.LeftToRight && firstButton.CommandParameter is false)
-        {
-            _stackPanel.Children.RemoveAt(0);
-            _stackPanel.Children.Insert(1, firstButton);
-        }
+        if (_stackPanel == null || _stackPanel.Children.Count < 2) return;
+        if (_stackPanel.Children[0] is not Button firstButton) return;
+        var shouldSwap = FooterButtonDirection == FlowDirection.RightToLeft && firstButton.CommandParameter is true
+                         || FooterButtonDirection == FlowDirection.LeftToRight && firstButton.CommandParameter is false;
+        if (!shouldSwap) return;
+        _stackPanel.Children.RemoveAt(0);
+        _stackPanel.Children.Insert(1, firstButton);
     }
 
     private void ContentDialog_Loaded(object? sender, RoutedEventArgs e)
     {
         if (_stackPanel == null) return;
-        if (FooterButtonDirection == FlowDirection.RightToLeft)
-        {
-            if (_stackPanel.Children.Count >= 1)
-                _stackPanel.Children[1].Focus();
-        }
-        else if (FooterButtonDirection == FlowDirection.LeftToRight)
-        {
-            if (_stackPanel.Children.Count >= 0)
-                _stackPanel.Children[0].Focus();
-        }
+        var target = FooterButtonDirection == FlowDirection.RightToLeft ? 1 : 0;
+        if (_stackPanel.Children.Count > target)
+            _stackPanel.Children[target].Focus();
     }
 
     private async Task InternalValidateAndClose(object? obj)

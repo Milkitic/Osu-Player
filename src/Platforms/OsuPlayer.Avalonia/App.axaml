@@ -47,6 +47,8 @@
         <StyleInclude Source="avares://OsuPlayer/Styles/BeatmapListStyle.axaml" />
         <StyleInclude Source="avares://OsuPlayer/Styles/CommonButtonStyle.axaml" />
         <StyleInclude Source="avares://OsuPlayer/Styles/ConfigStyle.axaml" />
+        <StyleInclude Source="avares://OsuPlayer/Themes/CommonButton.axaml" />
+        <StyleInclude Source="avares://OsuPlayer/Themes/Dialog.axaml" />
 
         <smoothScroll:ScrollViewerSmoothTheme />
         <materialIcons:MaterialIconStyles />
