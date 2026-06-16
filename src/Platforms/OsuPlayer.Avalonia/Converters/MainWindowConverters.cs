@@ -31,8 +31,8 @@ public class TitleIconConverter : IValueConverter
             try
             {
                 var uri = new Uri(isNavigationCollapsed
-                    ? "avares://OsuPlayer/Resources/title_sm.png"
-                    : "avares://OsuPlayer/Resources/title.png");
+                    ? "avares://OsuPlayer/Assets/title_sm.png"
+                    : "avares://OsuPlayer/Assets/title.png");
                 using var stream = AssetLoader.Open(uri);
                 return new Bitmap(stream);
             }

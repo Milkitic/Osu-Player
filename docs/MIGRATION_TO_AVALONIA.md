@@ -86,8 +86,7 @@ src/
     ├── Video/                       # FFmpegVideoPlayer 集成
     ├── ViewModels/                  # ViewModel(原 ViewModels/,可复用)
     ├── lang/                        # lang/default.axaml
-    ├── Resources/                   # 图片/字体
-    └── Assets/                      # 图标
+    └── Assets/                      # 图片/字体/图标
 ```
 
 ### 1.3 命名空间映射
@@ -355,9 +354,9 @@ public override void Initialize()
 {
     AvaloniaXamlLoader.Load(this);
     // 加载自定义字体
-    Resources["MainFont"] = new FontFamily("avares://OsuPlayer.Avalonia/Resources/Fonts#Source Sans Pro");
+    Resources["MainFont"] = new FontFamily("avares://OsuPlayer.Avalonia/Assets/Fonts#Source Sans Pro");
     // 或
-    var assets = AssetLoader.Open(new Uri("avares://OsuPlayer.Avalonia/Resources/Fonts/SourceSansPro-Regular.ttf"));
+    var assets = AssetLoader.Open(new Uri("avares://OsuPlayer.Avalonia/Assets/Fonts/SourceSansPro-Regular.ttf"));
     // 注册到 FontManager.Manager
 }
 ```
@@ -372,7 +371,7 @@ public override void Initialize()
 <Application.Resources>
     <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
-            <ResourceInclude Source="avares://OsuPlayer.Avalonia/Resources/Fonts.axaml" />
+            <ResourceInclude Source="avares://OsuPlayer.Avalonia/Assets/Fonts.axaml" />
         </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
 </Application.Resources>
@@ -838,7 +837,7 @@ FFmpegInitializer.Initialize();  // 加载 FFmpeg 原生库
     <Application.Styles>...</Application.Styles>
     <TrayIcon.Icons>
         <TrayIcons>
-            <TrayIcon Icon="avares://OsuPlayer.Avalonia/Resources/osuPlayer.ico"
+            <TrayIcon Icon="avares://OsuPlayer.Avalonia/Assets/osuPlayer.ico"
                       ToolTipText="Osu Player"
                       Clicked="OnTrayClick">
                 <TrayIcon.Menu>
@@ -1004,9 +1003,9 @@ using Avalonia.Platform;
    - 添加 `Avalonia.TrayIcon`(若 Avalonia 12 包含则无需)
    - 添加 `FFmpegVideoPlayer.Avalonia`
    - 添加 `NAudio` / `FFmpeg.AutoGen` / `Dapper` / `Coosu.Beatmap` / `NLog`
-2. 复制 `OsuPlayer/Resources/Fonts/*` → `OsuPlayer.Avalonia/Resources/Fonts/`,并配置为 `<AvaloniaResource>`
-3. 复制 `OsuPlayer/Resources/*.png` `OsuPlayer/Resources/official/*` `OsuPlayer/Resources/*.jpg` → Avalonia
-4. 复制 `OsuPlayer/Resources/xaml/*.xaml`(SVG 资源)
+2. 复制 `OsuPlayer/Resources/Fonts/*` → `OsuPlayer.Avalonia/Assets/Fonts/`,并配置为 `<AvaloniaResource>`
+3. 复制 `OsuPlayer/Resources/*.png` `OsuPlayer/Resources/official/*` `OsuPlayer/Resources/*.jpg` → `OsuPlayer.Avalonia/Assets/`
+4. 复制 `OsuPlayer/Resources/xaml/*.xaml`(SVG 资源) → `OsuPlayer.Avalonia/Assets/xaml/`
 5. 创建 `OsuPlayer.Avalonia/Styles/FontDictionary.axaml` 注册字体
 6. 创建 `OsuPlayer.Avalonia/Converters/*`(直接复制 + 改 using)
 7. 创建 `OsuPlayer.Avalonia/EntrySetup.cs`(服务注册)

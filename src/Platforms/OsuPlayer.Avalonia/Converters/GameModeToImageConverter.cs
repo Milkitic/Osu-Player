@@ -26,7 +26,7 @@ public class GameModeToImageConverter : IValueConverter
 
         try
         {
-            var uri = $"avares://OsuPlayer/Resources/mode_{name}.png";
+            var uri = $"avares://OsuPlayer/Assets/mode_{name}.png";
             return new Bitmap(uri);
         }
         catch

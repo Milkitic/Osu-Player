@@ -1,9 +1,9 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!--  Texture brushes  -->
-    <Bitmap x:Key="TextureSource1">avares://OsuPlayer/Resources/osu_texture.png</Bitmap>
-    <Bitmap x:Key="TextureSource2">avares://OsuPlayer/Resources/osu_texture2.png</Bitmap>
-    <Bitmap x:Key="TextureSource3">avares://OsuPlayer/Resources/store.jpg</Bitmap>
-    <Bitmap x:Key="OsuTextureBlue">avares://OsuPlayer/Resources/osu_texture_blue.png</Bitmap>
+    <Bitmap x:Key="TextureSource1">avares://OsuPlayer/Assets/osu_texture.png</Bitmap>
+    <Bitmap x:Key="TextureSource2">avares://OsuPlayer/Assets/osu_texture2.png</Bitmap>
+    <Bitmap x:Key="TextureSource3">avares://OsuPlayer/Assets/store.jpg</Bitmap>
+    <Bitmap x:Key="OsuTextureBlue">avares://OsuPlayer/Assets/osu_texture_blue.png</Bitmap>
 
     <ImageBrush x:Key="TextureBrush" Source="{StaticResource TextureSource1}" Stretch="Fill" />
     <ImageBrush x:Key="TextureBrush2" Source="{StaticResource TextureSource2}" Stretch="None" TileMode="Tile" />
