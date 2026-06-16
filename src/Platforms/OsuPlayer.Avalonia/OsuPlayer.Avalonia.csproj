@@ -15,8 +15,6 @@
     <Folder Include="Models\" />
     <AvaloniaResource Include="osuPlayer.ico" />
     <AvaloniaResource Include="Assets\**" />
-    <AvaloniaResource Remove="Assets\xaml\**" />
-    <AvaloniaResource Remove="Assets\asio.xaml" />
   </ItemGroup>
 
   <ItemGroup>
