@@ -1,0 +1,363 @@
+<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:OsuPlayer.Controls"
+    xmlns:dialogHost="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+    xmlns:positioners="clr-namespace:DialogHostAvalonia.Positioners;assembly=DialogHost.Avalonia"
+    xmlns:system="clr-namespace:System;assembly=System.Runtime">
+
+    <!--  设计时预览区域  -->
+    <Design.PreviewWith>
+        <StackPanel>
+            <dialogHost:DialogHost
+                Name="DialogHost"
+                Width="500"
+                Height="500"
+                Background="Gray"
+                CloseOnClickAway="False">
+                <dialogHost:DialogHost.DialogContent>
+                    <Grid RowDefinitions="Auto Auto">
+                        <controls:ContentDialog Header="Title">
+                            <Grid
+                                Width="400"
+                                Height="300"
+                                RowDefinitions="Auto,Auto">
+                                <TextBlock>You content here</TextBlock>
+                                <Button Grid.Row="1" Command="{Binding #DialogHost.CloseDialogCommand}">
+                                    CLOSE
+                                </Button>
+                            </Grid>
+                        </controls:ContentDialog>
+                    </Grid>
+                </dialogHost:DialogHost.DialogContent>
+                <Button
+                    Margin="8"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom"
+                    Command="{Binding #DialogHost.OpenDialogCommand}">
+                    OPEN
+                </Button>
+            </dialogHost:DialogHost>
+
+            <Border
+                HorizontalAlignment="Center"
+                Background="White"
+                BorderBrush="Black"
+                BorderThickness="1"
+                UseLayoutRounding="True">
+                <controls:ContentDialog>
+                    <Border Width="400" Height="300" />
+                </controls:ContentDialog>
+            </Border>
+        </StackPanel>
+
+    </Design.PreviewWith>
+
+    <!--  样式资源定义  -->
+    <Styles.Resources>
+
+        <!--  关闭按钮图标模板  -->
+        <ControlTemplate x:Key="CloseTempl" TargetType="controls:CommonButton">
+            <Canvas Width="1024" Height="1024">
+                <Path Fill="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Foreground}">
+                    <Path.Data>
+                        <PathGeometry Figures="M886.592 841.344L557.248 512l329.36-329.36a32 32 0 1 0-45.264-45.232L512 466.752 182.656 137.408a32 32 0 1 0-45.264 45.232L466.752 512 137.408 841.344a32 32 0 1 0 45.232 45.264L512 557.248l329.36 329.36a32 32 0 1 0 45.232-45.264z" FillRule="NonZero" />
+                    </Path.Data>
+                </Path>
+            </Canvas>
+        </ControlTemplate>
+
+        <!--  对话框底部按钮样式  -->
+        <ControlTheme
+            x:Key="DockButton"
+            BasedOn="{StaticResource {x:Type controls:CommonButton}}"
+            TargetType="{x:Type controls:CommonButton}">
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="#DADADB" />
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Height" Value="28" />
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="IconSize" Value="15" />
+            <Setter Property="Background" Value="#FAFAFB" />
+            <Setter Property="MouseOverBackground" Value="#F0F0F0" />
+            <Setter Property="IconMargin" Value="0,0,5,0" />
+        </ControlTheme>
+
+        <!--  对话框头部按钮样式  -->
+        <ControlTheme
+            x:Key="HeaderButton"
+            BasedOn="{StaticResource DockButton}"
+            TargetType="{x:Type controls:CommonButton}">
+            <Setter Property="Width" Value="34" />
+            <Setter Property="Height" Value="34" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="IconMargin" Value="0" />
+            <Setter Property="IconSize" Value="13" />
+        </ControlTheme>
+
+        <!--  ContentDialog控件主题定义  -->
+        <ControlTheme x:Key="{x:Type controls:ContentDialog}" TargetType="controls:ContentDialog">
+            <!--  头部属性设置  -->
+            <Setter Property="ShowHeader" Value="True" />
+            <Setter Property="Header" Value="" />
+            <Setter Property="HeaderFontSize" Value="14" />
+            <Setter Property="HeaderBackground" Value="#10808080" />
+            <Setter Property="HeaderForeground" Value="Black" />
+            <Setter Property="HeaderShowClose" Value="True" />
+            <Setter Property="HeaderButtonTheme" Value="{StaticResource HeaderButton}" />
+
+            <!--  底部属性设置  -->
+            <Setter Property="ShowFooter" Value="True" />
+            <Setter Property="Footer" Value="" />
+            <Setter Property="FooterFontSize" Value="14" />
+            <Setter Property="FooterBackground" Value="Transparent" />
+            <Setter Property="FooterForeground" Value="Black" />
+            <Setter Property="FooterButtonStyle" Value="YesNo" />
+            <Setter Property="FooterYesButtonText" Value="{Binding $self.TaskDialogConstants.ButtonOkText}" />
+            <Setter Property="FooterNoButtonText" Value="{Binding $self.TaskDialogConstants.ButtonCancelText}" />
+            <Setter Property="FooterButtonTheme" Value="{StaticResource DockButton}" />
+
+            <!--  控件模板定义  -->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="controls:ContentDialog">
+                        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                            <!--  底部按钮样式设置  -->
+                            <Border.Styles>
+                                <Style Selector="controls|CommonButton.ContentDialogFooterButton">
+                                    <Setter Property="Height" Value="28" />
+                                    <Setter Property="Margin" Value="5,0" />
+                                    <Setter Property="IconMargin" Value="0" />
+                                    <Setter Property="Padding" Value="15,0" />
+                                </Style>
+                            </Border.Styles>
+
+                            <!--  对话框整体布局  -->
+                            <Grid Background="{TemplateBinding Background}" RowDefinitions="Auto,*,Auto">
+                                <!--  对话框头部区域  -->
+                                <DockPanel
+                                    x:Name="PART_Header"
+                                    Height="34"
+                                    Background="{TemplateBinding HeaderBackground}"
+                                    IsVisible="{TemplateBinding ShowHeader}">
+                                    <!--  头部标题内容  -->
+                                    <ContentPresenter
+                                        Margin="10,0,0,0"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        Content="{TemplateBinding Header}"
+                                        TextElement.FontSize="{TemplateBinding HeaderFontSize}"
+                                        TextElement.Foreground="{TemplateBinding HeaderForeground}" />
+
+                                    <!--  关闭按钮  -->
+                                    <controls:CommonButton
+                                        x:Name="Button_Cancel"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Command="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=CloseDialogCommand}"
+                                        DockPanel.Dock="Right"
+                                        Foreground="{TemplateBinding HeaderForeground}"
+                                        IconTemplate="{StaticResource CloseTempl}"
+                                        IsVisible="False"
+                                        MouseDownBackground="#A0FE3242"
+                                        MouseDownForeground="White"
+                                        MouseOverBackground="#FE3242"
+                                        MouseOverForeground="White"
+                                        Theme="{TemplateBinding HeaderButtonTheme}" />
+                                </DockPanel>
+
+                                <!--  对话框内容区域  -->
+                                <ContentPresenter
+                                    x:Name="PART_Content"
+                                    Grid.Row="1"
+                                    Content="{TemplateBinding Content}" />
+
+                                <!--  对话框底部区域  -->
+                                <DockPanel
+                                    x:Name="PART_Footer"
+                                    Grid.Row="2"
+                                    Margin="10,0,10,10"
+                                    Background="{TemplateBinding FooterBackground}"
+                                    IsVisible="{TemplateBinding ShowFooter}">
+
+                                    <!--  底部自定义内容  -->
+                                    <ContentPresenter
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        Content="{TemplateBinding Footer}"
+                                        TextElement.FontSize="{TemplateBinding FooterFontSize}"
+                                        TextElement.Foreground="{TemplateBinding FooterForeground}" />
+
+                                    <!--  底部按钮区域  -->
+                                    <StackPanel
+                                        x:Name="PART_FooterButtonsHost"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        DockPanel.Dock="Right"
+                                        Orientation="Horizontal">
+
+                                        <!--  确认按钮  -->
+                                        <controls:CommonButton
+                                            x:Name="Button_Yes"
+                                            Margin="0,0,5,0"
+                                            Background="#F4F4F4"
+                                            Classes="ContentDialogFooterButton"
+                                            Command="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ValidateAndCloseDialogCommand}"
+                                            Content="{TemplateBinding FooterYesButtonText}"
+                                            IsEnabled="{TemplateBinding Confirmable}"
+                                            IsVisible="False"
+                                            TextElement.FontSize="{TemplateBinding FooterFontSize}"
+                                            Theme="{TemplateBinding FooterButtonTheme}">
+                                            <controls:CommonButton.CommandParameter>
+                                                <system:Boolean>True</system:Boolean>
+                                            </controls:CommonButton.CommandParameter>
+                                        </controls:CommonButton>
+
+                                        <!--  取消按钮  -->
+                                        <controls:CommonButton
+                                            x:Name="Button_No"
+                                            Margin="5,0,0,0"
+                                            Background="#F4F4F4"
+                                            Classes="ContentDialogFooterButton"
+                                            Command="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=CloseDialogCommand}"
+                                            Content="{TemplateBinding FooterNoButtonText}"
+                                            IsVisible="False"
+                                            TextElement.FontSize="{TemplateBinding FooterFontSize}"
+                                            Theme="{TemplateBinding FooterButtonTheme}">
+                                            <controls:CommonButton.CommandParameter>
+                                                <system:Boolean>False</system:Boolean>
+                                            </controls:CommonButton.CommandParameter>
+                                        </controls:CommonButton>
+                                    </StackPanel>
+                                </DockPanel>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style Selector="^[FooterButtonStyle=Yes] /template/ controls|CommonButton#Button_Yes">
+                <Setter Property="IsVisible" Value="True" />
+            </Style>
+            <Style Selector="^[FooterButtonStyle=YesNo] /template/ controls|CommonButton#Button_Yes">
+                <Setter Property="IsVisible" Value="True" />
+            </Style>
+            <Style Selector="^[FooterButtonStyle=YesNo] /template/ controls|CommonButton#Button_No">
+                <Setter Property="IsVisible" Value="True" />
+            </Style>
+            <Style Selector="^[HeaderShowClose=True] /template/ controls|CommonButton#Button_Cancel">
+                <Setter Property="IsVisible" Value="True" />
+            </Style>
+        </ControlTheme>
+
+        <ControlTheme
+            x:Key="{x:Type dialogHost:DialogHost}"
+            BasedOn="{StaticResource {x:Type dialogHost:DialogHost}}"
+            TargetType="dialogHost:DialogHost">
+            <Setter Property="DialogMargin" Value="0" />
+            <Setter Property="PopupPositioner">
+                <Setter.Value>
+                    <positioners:AlignmentDialogPopupPositioner />
+                </Setter.Value>
+            </Setter>
+            <Setter Property="PopupTemplate">
+                <ControlTemplate>
+                    <ScrollViewer VerticalScrollBarVisibility="Hidden">
+                        <Panel>
+                            <Button Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=dialogHost:DialogHost}, Path=CloseDialogCommand}" IsEnabled="{Binding Path=CloseOnClickAway, RelativeSource={RelativeSource FindAncestor, AncestorType=dialogHost:DialogHost}}">
+                                <Button.Template>
+                                    <ControlTemplate>
+                                        <ContentPresenter Background="Transparent" Content="{TemplateBinding Content}" />
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                            <Border
+                                Name="PART_ContentBackground"
+                                Margin="0,50"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Background="{Binding Path=Background, RelativeSource={RelativeSource FindAncestor, AncestorType=dialogHost:DialogHost}}"
+                                BorderBrush="{Binding Path=(dialogHost:DialogHostStyle.BorderBrush), RelativeSource={RelativeSource FindAncestor, AncestorType=dialogHost:DialogHost}}"
+                                BorderThickness="{Binding Path=(dialogHost:DialogHostStyle.BorderThickness), RelativeSource={RelativeSource FindAncestor, AncestorType=dialogHost:DialogHost}}"
+                                BoxShadow="1.5 1.5 8 #4c000000"
+                                ClipToBounds="{Binding Path=(dialogHost:DialogHostStyle.ClipToBounds), RelativeSource={RelativeSource FindAncestor, AncestorType=dialogHost:DialogHost}}"
+                                CornerRadius="{Binding Path=(dialogHost:DialogHostStyle.CornerRadius), RelativeSource={RelativeSource FindAncestor, AncestorType=dialogHost:DialogHost}}">
+                                <ContentPresenter
+                                    Name="PART_ContentPresenter"
+                                    Padding="{TemplateBinding Padding}"
+                                    Background="{TemplateBinding Background}"
+                                    Content="{TemplateBinding Content}"
+                                    ContentTemplate="{TemplateBinding ContentTemplate}" />
+                            </Border>
+
+                        </Panel>
+
+                    </ScrollViewer>
+                </ControlTemplate>
+            </Setter>
+        </ControlTheme>
+        <ControlTheme x:Key="{x:Type dialogHost:DialogOverlayPopupHost}" TargetType="dialogHost:DialogOverlayPopupHost">
+            <Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}" />
+            <Setter Property="KeyboardNavigation.TabNavigation" Value="Cycle" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <ContentPresenter
+                        Name="PART_ContentPresenter"
+                        Padding="{TemplateBinding Padding}"
+                        Background="{TemplateBinding Background}"
+                        Content="{TemplateBinding Content}"
+                        ContentTemplate="{TemplateBinding ContentTemplate}" />
+                </ControlTemplate>
+            </Setter>
+
+            <Style Selector="^[IsOpen=True][DisableOpeningAnimation=False]">
+                <Style.Animations>
+                    <Animation
+                        Easing="CircularEaseOut"
+                        FillMode="Both"
+                        Duration="0:0:0.3">
+                        <KeyFrame Cue="0%">
+                            <Setter Property="ScaleTransform.ScaleY" Value="0.667" />
+                            <Setter Property="ScaleTransform.ScaleX" Value="0.667" />
+                            <Setter Property="Opacity" Value="0" />
+                        </KeyFrame>
+                        <KeyFrame Cue="100%">
+                            <Setter Property="ScaleTransform.ScaleY" Value="1" />
+                            <Setter Property="ScaleTransform.ScaleX" Value="1" />
+                            <Setter Property="Opacity" Value="1" />
+                        </KeyFrame>
+                    </Animation>
+                </Style.Animations>
+            </Style>
+
+            <Style Selector="^[IsOpen=False][DisableOpeningAnimation=False]">
+                <Style.Animations>
+                    <Animation
+                        Easing="SineEaseInOut"
+                        FillMode="Both"
+                        Duration="0:0:0.3">
+                        <KeyFrame Cue="0%">
+                            <Setter Property="ScaleTransform.ScaleY" Value="1" />
+                            <Setter Property="ScaleTransform.ScaleX" Value="1" />
+                            <Setter Property="Opacity" Value="1" />
+                        </KeyFrame>
+                        <KeyFrame Cue="60%">
+                            <Setter Property="ScaleTransform.ScaleY" Value="1" />
+                            <Setter Property="ScaleTransform.ScaleX" Value="1" />
+                            <Setter Property="Opacity" Value="1" />
+                        </KeyFrame>
+                        <KeyFrame Cue="100%">
+                            <Setter Property="ScaleTransform.ScaleY" Value="0.5" />
+                            <Setter Property="ScaleTransform.ScaleX" Value="0.5" />
+                            <Setter Property="Opacity" Value="0" />
+                            <Setter Property="IsActuallyOpen" Value="False" />
+                        </KeyFrame>
+                    </Animation>
+                </Style.Animations>
+            </Style>
+        </ControlTheme>
+    </Styles.Resources>
+</Styles>
