@@ -60,10 +60,10 @@ public partial class ParamSliderRow : UserControl
             var clamped = Math.Clamp(value, Minimum, Maximum);
             if (Math.Abs(clamped - value) > float.Epsilon)
             {
-                SetValue(ValueProperty, clamped);
+                SetCurrentValue(ValueProperty, clamped);
                 return;
             }
-            SetValue(ValueProperty, value);
+            SetCurrentValue(ValueProperty, value);
         }
     }
 
@@ -105,7 +105,7 @@ public partial class ParamSliderRow : UserControl
                 var clamped = Math.Clamp(parsed, Minimum, Maximum);
                 if (Math.Abs(clamped - Value) > float.Epsilon)
                 {
-                    SetValue(ValueProperty, clamped);
+                    SetCurrentValue(ValueProperty, clamped);
                 }
                 else
                 {

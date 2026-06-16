@@ -90,4 +90,24 @@ public class EffectChainSampleProviderTests
         // Should not throw when no effect is active.
         chain.ApplyActiveParameters();
     }
+
+    [Fact]
+    public void ApplyActiveParameters_UpdatesLiveProvider()
+    {
+        var source = new FixedSignalSampleProvider(new float[] { 0.5f, 0.5f, 0.5f, 0.5f });
+        var parameters = new EffectParameterSet();
+        var chain = new EffectChainSampleProvider(source, parameters);
+        chain.SetEffect(DirectXEffectKind.Distortion, 1f);
+
+        var bufferBefore = new float[4];
+        chain.Read(bufferBefore, 0, 4);
+
+        parameters.Distortion.GainDb = 48f;
+        chain.ApplyActiveParameters();
+
+        var bufferAfter = new float[4];
+        chain.Read(bufferAfter, 0, 4);
+
+        Assert.NotEqual(bufferBefore, bufferAfter);
+    }
 }

@@ -35,4 +35,53 @@ public class DirectXEffectSettingsTests
         Assert.Equal(a, b);
         Assert.NotEqual(a, c);
     }
+
+    [Fact]
+    public void Parameters_CarriedInSnapshot()
+    {
+        var settings = new DirectXEffectSettings
+        {
+            Kind = DirectXEffectKind.Compressor,
+            Intensity = 0.5f,
+            Parameters = new EffectParameterSet
+            {
+                Compressor = new CompressorParameters { ThresholdDb = -30f, Ratio = 10f }
+            }
+        };
+
+        Assert.Equal(-30f, settings.Parameters.Compressor.ThresholdDb);
+        Assert.Equal(10f, settings.Parameters.Compressor.Ratio);
+    }
+
+    [Fact]
+    public void EffectsSection_ToSettings_IncludesParametersClone()
+    {
+        var section = new EffectsSection
+        {
+            Kind = DirectXEffectKind.Distortion,
+            Intensity = 0.8f,
+        };
+        section.Parameters.Distortion.GainDb = 24f;
+
+        var settings = section.ToSettings();
+
+        Assert.Equal(DirectXEffectKind.Distortion, settings.Kind);
+        Assert.Equal(0.8f, settings.Intensity);
+        Assert.Equal(24f, settings.Parameters.Distortion.GainDb);
+        Assert.NotSame(section.Parameters, settings.Parameters);
+        Assert.NotSame(section.Parameters.Distortion, settings.Parameters.Distortion);
+    }
+
+    [Fact]
+    public void EffectsSection_NotifyParametersChanged_RaisesPropertyChanged()
+    {
+        var section = new EffectsSection();
+        string? raisedPropertyName = null;
+        section.PropertyChanged += (_, e) => raisedPropertyName = e.PropertyName;
+
+        section.Parameters.Compressor.ThresholdDb = -40f;
+        section.NotifyParametersChanged();
+
+        Assert.Equal(nameof(EffectsSection.Parameters), raisedPropertyName);
+    }
 }

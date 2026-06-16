@@ -220,6 +220,7 @@ public partial class PlayPageViewModel : ObservableObject
             p.ThresholdDb = value;
             OnPropertyChanged();
             AppSettings.SaveDefault();
+            NotifyEffectParametersChanged();
         }
     }
     public float CompressorRatio
@@ -233,6 +234,7 @@ public partial class PlayPageViewModel : ObservableObject
             p.Ratio = value;
             OnPropertyChanged();
             AppSettings.SaveDefault();
+            NotifyEffectParametersChanged();
         }
     }
     public float CompressorAttackMs
@@ -246,6 +248,7 @@ public partial class PlayPageViewModel : ObservableObject
             p.AttackMs = value;
             OnPropertyChanged();
             AppSettings.SaveDefault();
+            NotifyEffectParametersChanged();
         }
     }
     public float CompressorReleaseMs
@@ -259,6 +262,7 @@ public partial class PlayPageViewModel : ObservableObject
             p.ReleaseMs = value;
             OnPropertyChanged();
             AppSettings.SaveDefault();
+            NotifyEffectParametersChanged();
         }
     }
     public float CompressorMakeupDb
@@ -272,6 +276,7 @@ public partial class PlayPageViewModel : ObservableObject
             p.MakeupDb = value;
             OnPropertyChanged();
             AppSettings.SaveDefault();
+            NotifyEffectParametersChanged();
         }
     }
 
@@ -313,6 +318,7 @@ public partial class PlayPageViewModel : ObservableObject
         var p = AppSettings.Default.Effects.Parameters.Chorus;
         mutate(p);
         AppSettings.SaveDefault();
+        NotifyEffectParametersChanged();
         OnPropertyChanged(nameof(ChorusVoice1DelayMs));
         OnPropertyChanged(nameof(ChorusVoice2DelayMs));
         OnPropertyChanged(nameof(ChorusVoice3DelayMs));
@@ -343,6 +349,7 @@ public partial class PlayPageViewModel : ObservableObject
             p.Waveform = value;
             OnPropertyChanged();
             AppSettings.SaveDefault();
+            NotifyEffectParametersChanged();
         }
     }
     private void UpdateGargle(Action<Core.Configuration.GargleParameters> mutate)
@@ -351,6 +358,7 @@ public partial class PlayPageViewModel : ObservableObject
         var p = AppSettings.Default.Effects.Parameters.Gargle;
         mutate(p);
         AppSettings.SaveDefault();
+        NotifyEffectParametersChanged();
         OnPropertyChanged(nameof(GargleRateHz));
         OnPropertyChanged(nameof(GargleDepth));
     }
@@ -392,6 +400,7 @@ public partial class PlayPageViewModel : ObservableObject
         var p = AppSettings.Default.Effects.Parameters.ReverbEx;
         mutate(p);
         AppSettings.SaveDefault();
+        NotifyEffectParametersChanged();
         OnPropertyChanged(nameof(ReverbRoomSize));
         OnPropertyChanged(nameof(ReverbDamp));
         OnPropertyChanged(nameof(ReverbWet1));
@@ -427,6 +436,7 @@ public partial class PlayPageViewModel : ObservableObject
         var p = AppSettings.Default.Effects.Parameters.Flanger;
         mutate(p);
         AppSettings.SaveDefault();
+        NotifyEffectParametersChanged();
         OnPropertyChanged(nameof(FlangerDepthMs));
         OnPropertyChanged(nameof(FlangerRateHz));
         OnPropertyChanged(nameof(FlangerFeedback));
@@ -450,8 +460,14 @@ public partial class PlayPageViewModel : ObservableObject
         var p = AppSettings.Default.Effects.Parameters.Distortion;
         mutate(p);
         AppSettings.SaveDefault();
+        NotifyEffectParametersChanged();
         OnPropertyChanged(nameof(DistortionGainDb));
         OnPropertyChanged(nameof(DistortionCutoffHz));
+    }
+
+    private static void NotifyEffectParametersChanged()
+    {
+        AppSettings.Default?.Effects.NotifyParametersChanged();
     }
 
     public IRelayCommand ResetEffectCommand => new RelayCommand(ResetCurrentEffect);
@@ -490,6 +506,7 @@ public partial class PlayPageViewModel : ObservableObject
                 return;
         }
         AppSettings.SaveDefault();
+        NotifyEffectParametersChanged();
         RaiseAllParameterProperties();
     }
 
