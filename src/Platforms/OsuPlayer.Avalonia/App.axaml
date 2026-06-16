@@ -14,12 +14,12 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceInclude Source="avares://OsuPlayer/Styles/BrushDictionary.axaml" />
-                <ResourceInclude Source="avares://OsuPlayer/Styles/FontDictionary.axaml" />
-                <ResourceInclude Source="avares://OsuPlayer/Styles/ConverterDictionary.axaml" />
+                <ResourceInclude Source="avares://OsuPlayer/Assets/Brushes.axaml" />
+                <ResourceInclude Source="avares://OsuPlayer/Assets/Fonts/FontDictionary.axaml" />
+                <ResourceInclude Source="avares://OsuPlayer/Converters/ConverterDictionary.axaml" />
                 <ResourceInclude Source="avares://OsuPlayer/Styles/GeneralStyle.axaml" />
-                <ResourceInclude Source="avares://OsuPlayer/Styles/i18n.axaml" />
-                <ResourceInclude Source="avares://OsuPlayer/Styles/SvgDictionary.axaml" />
+                <ResourceInclude Source="avares://OsuPlayer/lang/i18n.axaml" />
+                <ResourceInclude Source="avares://OsuPlayer/Assets/Icons.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
