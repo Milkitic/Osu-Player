@@ -73,6 +73,7 @@ public sealed class PlayerSessionService : IAsyncDisposable
         _loggerFactory = loggerFactory;
 
         _bus.PlayStatusChanged += OnPlayerPlayStatusChanged;
+        _playList.ModeChanged += OnPlaylistModeChanged;
     }
 
     public async Task PlayNewFromBeatmapAsync(Beatmap beatmap, bool playInstantly)
@@ -193,6 +194,7 @@ public sealed class PlayerSessionService : IAsyncDisposable
         }
 
         _bus.PlayStatusChanged -= OnPlayerPlayStatusChanged;
+        _playList.ModeChanged -= OnPlaylistModeChanged;
 
         try
         {
@@ -394,6 +396,7 @@ public sealed class PlayerSessionService : IAsyncDisposable
             await player.Initialize().ConfigureAwait(false);
             operationToken.ThrowIfCancellationRequested();
             player.ManualOffset = context.BeatmapSettings?.Offset ?? 0;
+            player.IsLooping = _playList.Mode == PlaylistMode.SingleLoop;
             _bus.AttachPlayer(player);
             attached = true;
             operationToken.ThrowIfCancellationRequested();
@@ -497,7 +500,7 @@ public sealed class PlayerSessionService : IAsyncDisposable
         if (player == null) return;
 
         operationToken.ThrowIfCancellationRequested();
-        await player.RestartAsync().ConfigureAwait(false);
+        await player.SetTimeAsync(0, play: true).ConfigureAwait(false);
     }
 
     private async Task StopCurrentAsync()
@@ -533,6 +536,15 @@ public sealed class PlayerSessionService : IAsyncDisposable
     {
         if (status != PlayStatus.Finished) return;
         _ = HandlePlaybackFinishedAsync();
+    }
+
+    private void OnPlaylistModeChanged(PlaylistMode oldValue, PlaylistMode newValue)
+    {
+        var player = _bus.Player;
+        if (player != null)
+        {
+            player.IsLooping = newValue == PlaylistMode.SingleLoop;
+        }
     }
 
     private async Task HandlePlaybackFinishedAsync()

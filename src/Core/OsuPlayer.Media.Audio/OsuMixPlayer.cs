@@ -43,6 +43,7 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
     private readonly CancellableAsyncLoop _positionPumpLoop = new();
     private PlayStatus _playStatus = PlayStatus.Unknown;
     private int _manualOffset;
+    private bool _isLooping;
 
     public event Action<PlayStatus>? PlayStatusChanged;
     public event Action<TimeSpan>? PositionUpdated;
@@ -61,6 +62,18 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
     public TimeSpan Position => _session?.Position ?? TimeSpan.Zero;
     public float PlaybackRate => _musicTransport?.RateState.Rate ?? 1f;
     public bool KeepTune => _musicTransport?.RateState.PreservePitch ?? false;
+    public bool IsLooping
+    {
+        get => _isLooping;
+        set
+        {
+            _isLooping = value;
+            if (_session != null)
+            {
+                _session.IsLooping = value;
+            }
+        }
+    }
 
     public PlayStatus PlayStatus
     {
@@ -104,6 +117,7 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
             _musicTransport = new StandaloneMusicTransport(_engine);
             _session = new OsuBeatmapAudioSession(_engine, _musicTransport, _audioCacheManager,
                 new SoundTouchPlaybackRateProcessorFactory());
+            _session.IsLooping = _isLooping;
             _session.Finished += Session_Finished;
             _sessionOptions = CreateSessionOptions();
             SynchronizeVolumeSettings();
@@ -134,6 +148,7 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
         _sessionOptions = CreateSessionOptions();
         SynchronizeVolumeSettings();
         var session = RequireSession();
+        session.IsLooping = _isLooping;
         await session.LoadAsync(_osuFile, _sessionOptions).ConfigureAwait(false);
         PlayStatus = PlayStatus.Ready;
     }

@@ -19,6 +19,7 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
 {
     private static readonly TimeSpan MinimumSchedulerDelay = TimeSpan.FromMilliseconds(1);
     private static readonly TimeSpan MaximumSchedulerDelay = TimeSpan.FromMilliseconds(50);
+    private static readonly TimeSpan LoopWrapDetectionWindow = TimeSpan.FromMilliseconds(250);
     private const int CacheWindowMilliseconds = 12_000;
     private const int CacheAdvanceMilliseconds = 8_000;
 
@@ -41,6 +42,8 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
     private OsuAudioSessionOptions _options = null!;
     private CancellationTokenSource _precacheCts = new();
     private int _nextCacheStart;
+    private bool _isLooping;
+    private TimeSpan _lastSchedulerPosition;
 
     public OsuBeatmapAudioSession(
         IPlaybackEngine playbackEngine,
@@ -65,6 +68,16 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
     public PlaybackRateState RateState => _musicTransport.RateState;
     public bool IsRunning => _musicTransport.IsRunning;
     public bool SupportsPlaybackRateChange => _musicTransport.SupportsPlaybackRateChange;
+
+    public bool IsLooping
+    {
+        get => _isLooping;
+        set
+        {
+            _isLooping = value;
+            ApplyLoopingToMusicSource();
+        }
+    }
 
     public int ManualOffsetMilliseconds
     {
@@ -107,6 +120,8 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
 
         await _musicTransport.LoadAsync(musicSourceResult.Source, ownsSource: true, cancellationToken)
             .ConfigureAwait(false);
+        ApplyLoopingToMusicSource();
+        _lastSchedulerPosition = TimeSpan.Zero;
 
         _eventAudioCache.SetContext(resources.BeatmapFolder, resources.UserSkinFolder,
             resources.DefaultHitsoundFolder, _playbackEngine.SourceWaveFormat);
@@ -149,6 +164,7 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
         {
             _timelineScheduler.Reset();
             _nextCacheStart = 0;
+            _lastSchedulerPosition = TimeSpan.Zero;
         }
     }
 
@@ -164,6 +180,7 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
             {
                 _timelineScheduler.Seek(eventClock);
                 _nextCacheStart = cacheStart + CacheAdvanceMilliseconds;
+                _lastSchedulerPosition = position;
                 playbackEvents = _playbackEvents;
             }
 
@@ -353,6 +370,7 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
 
         var musicSource = CreateSilentMusicSource(duration);
         await _musicTransport.LoadAsync(musicSource, ownsSource: true, cancellationToken).ConfigureAwait(false);
+        ApplyLoopingToMusicSource();
     }
 
     private TimeSpan CalculateDurationFromPlaybackEvents(
@@ -386,20 +404,59 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
         while (!cancellationToken.IsCancellationRequested)
         {
             var position = Position;
+            if (IsLooping && HasLoopWrapped(position))
+            {
+                ResetTimelineForLoop();
+            }
+
             var eventClock = ToEventClock(position);
             await DispatchDueEventsAsync(eventClock, cancellationToken).ConfigureAwait(false);
             StartCacheWindowIfNeeded((int)eventClock.TotalMilliseconds);
 
             if (Duration > TimeSpan.Zero && position >= Duration)
             {
+                if (IsLooping)
+                {
+                    await LoopToStartAsync(cancellationToken).ConfigureAwait(false);
+                    _lastSchedulerPosition = Position;
+                    continue;
+                }
+
                 _schedulerLoop.Stop();
                 _effectBus.ClearLoops();
                 Finished?.Invoke();
                 break;
             }
 
+            _lastSchedulerPosition = position;
             await Task.Delay(GetNextSchedulerDelay(eventClock), cancellationToken)
                 .ConfigureAwait(false);
+        }
+    }
+
+    private bool HasLoopWrapped(TimeSpan position)
+    {
+        var duration = Duration;
+        return duration > TimeSpan.Zero
+               && _lastSchedulerPosition + LoopWrapDetectionWindow >= duration
+               && position + LoopWrapDetectionWindow < _lastSchedulerPosition;
+    }
+
+    private async Task LoopToStartAsync(CancellationToken cancellationToken)
+    {
+        await _musicTransport.SeekAsync(TimeSpan.Zero, cancellationToken).ConfigureAwait(false);
+        ResetTimelineForLoop();
+    }
+
+    private void ResetTimelineForLoop()
+    {
+        _effectBus.ClearLoops();
+
+        var loopStartEventClock = ToEventClock(TimeSpan.Zero);
+        lock (_timelineGate)
+        {
+            _timelineScheduler.Seek(loopStartEventClock);
+            _nextCacheStart = GetCacheStartMilliseconds(loopStartEventClock) + CacheAdvanceMilliseconds;
         }
     }
 
@@ -429,6 +486,15 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
 
         if (nextEventTime == null)
         {
+            if (IsLooping && Duration > TimeSpan.Zero)
+            {
+                var loopEndEventClock = ToEventClock(Duration);
+                if (loopEndEventClock > eventClock)
+                {
+                    return ClampSchedulerDelay(loopEndEventClock - eventClock);
+                }
+            }
+
             return MaximumSchedulerDelay;
         }
 
@@ -438,6 +504,11 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
             return MinimumSchedulerDelay;
         }
 
+        return ClampSchedulerDelay(eventDelta);
+    }
+
+    private TimeSpan ClampSchedulerDelay(TimeSpan eventDelta)
+    {
         var rate = Math.Max(Math.Abs(RateState.Rate), 0.01f);
         var realTimeDelay = TimeSpan.FromTicks((long)(eventDelta.Ticks / rate));
         if (realTimeDelay < MinimumSchedulerDelay)
@@ -589,6 +660,15 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
     private void StartSchedulerLoop()
     {
         _schedulerLoop.Start(SchedulerLoopAsync, ex => _logger?.LogError(ex, "Error in osu playback scheduler."));
+    }
+
+    private void ApplyLoopingToMusicSource()
+    {
+        var source = _musicTransport.Source;
+        if (source != null)
+        {
+            source.IsLooping = _isLooping;
+        }
     }
 
     private static int GetCacheStartMilliseconds(TimeSpan eventClock)
