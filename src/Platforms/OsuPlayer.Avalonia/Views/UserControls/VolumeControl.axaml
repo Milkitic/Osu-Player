@@ -2,6 +2,7 @@
     x:Class="OsuPlayer.Views.UserControls.VolumeControl"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
     xmlns:models="clr-namespace:OsuPlayer.Shared.Models;assembly=OsuPlayer.Shared"
     xmlns:vm="clr-namespace:OsuPlayer.Views.UserControls"
     Width="200"
@@ -70,7 +71,7 @@
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
                             Foreground="#303030"
-                            Text="{DynamicResource ui-volumeMaster}" />
+                            Text="{I18N {x:Static lang:SRKeys.Ui_VolumeMaster}}" />
                     </StackPanel>
                     <StackPanel Grid.Column="1">
                         <Slider
@@ -87,7 +88,7 @@
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
                             Foreground="#303030"
-                            Text="{DynamicResource ui-volumeMusic}" />
+                            Text="{I18N {x:Static lang:SRKeys.Ui_VolumeMusic}}" />
                     </StackPanel>
                     <StackPanel Grid.Column="2">
                         <Slider
@@ -104,7 +105,7 @@
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
                             Foreground="#303030"
-                            Text="{DynamicResource ui-volumeSound}" />
+                            Text="{I18N {x:Static lang:SRKeys.Ui_VolumeSound}}" />
                     </StackPanel>
                     <StackPanel Grid.Column="3">
                         <Slider
@@ -121,7 +122,7 @@
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
                             Foreground="#303030"
-                            Text="{DynamicResource ui-volumeSample}" />
+                            Text="{I18N {x:Static lang:SRKeys.Ui_VolumeSample}}" />
                     </StackPanel>
                 </Grid>
                 <Grid Grid.Row="1">
@@ -141,7 +142,7 @@
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
                             Foreground="#303030"
-                            Text="{DynamicResource ui-3dSoundEffect}" />
+                            Text="{I18N {x:Static lang:SRKeys.Ui_3dSoundEffect}}" />
                         <Grid Margin="10,2">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -150,7 +151,7 @@
                             <TextBlock
                                 VerticalAlignment="Center"
                                 Foreground="#303030"
-                                Text="{DynamicResource ui-balanceMode}" />
+                                Text="{I18N {x:Static lang:SRKeys.Ui_BalanceMode}}" />
                             <ComboBox
                                 x:Name="BalanceMode"
                                 Grid.Column="1"
@@ -181,7 +182,7 @@
                             HorizontalAlignment="Center"
                             Foreground="#303030"
                             IsVisible="False"
-                            Text="{DynamicResource ui-currentMapOffset}" />
+                            Text="{I18N {x:Static lang:SRKeys.Ui_CurrentMapOffset}}" />
                         <Grid Margin="10,2">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -190,7 +191,7 @@
                             <TextBlock
                                 VerticalAlignment="Center"
                                 Foreground="#303030"
-                                Text="{DynamicResource ui-limiterType}" />
+                                Text="{I18N {x:Static lang:SRKeys.Ui_LimiterType}}" />
                             <ComboBox
                                 x:Name="LimiterType"
                                 Grid.Column="1"

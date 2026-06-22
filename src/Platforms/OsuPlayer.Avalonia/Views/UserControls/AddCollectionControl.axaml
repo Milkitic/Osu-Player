@@ -2,6 +2,7 @@
     x:Class="OsuPlayer.Views.UserControls.AddCollectionControl"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
     xmlns:controls="clr-namespace:OsuPlayer.Controls">
     <Grid>
         <controls:CommonTextBox
@@ -12,7 +13,7 @@
             Padding="3"
             VerticalAlignment="Top"
             FontSize="15"
-            Hint="{DynamicResource ui-max30Char}"
+            Hint="{I18N {x:Static lang:SRKeys.Ui_Max30Char}}"
             MaxLength="30"
             TextWrapping="Wrap" />
     </Grid>

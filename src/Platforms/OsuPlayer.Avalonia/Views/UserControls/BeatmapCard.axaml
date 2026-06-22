@@ -2,6 +2,7 @@
     x:Class="OsuPlayer.Views.UserControls.BeatmapCard"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
     x:Name="Self"
     x:CompileBindings="False">
     <Button
@@ -11,32 +12,32 @@
             <ContextMenu>
                 <MenuItem Click="PlayWithDifficulty_Click">
                     <MenuItem.Header>
-                        <TextBlock><Run Text="{DynamicResource ui-play}" /><Run Text="... (Enter)" /></TextBlock>
+                        <TextBlock><Run Text="{I18N {x:Static lang:SRKeys.Ui_Play}}" /><Run Text="... (Enter)" /></TextBlock>
                     </MenuItem.Header>
                 </MenuItem>
                 <Separator />
-                <MenuItem Click="SearchByCondition_Click" CommandParameter="Title" Header="{DynamicResource ui-ctxMenu-searchTitle}" />
-                <MenuItem Click="SearchByCondition_Click" CommandParameter="Artist" Header="{DynamicResource ui-ctxMenu-searchArtist}" />
-                <MenuItem Click="SearchByCondition_Click" CommandParameter="Source" Header="{DynamicResource ui-ctxMenu-searchSource}" />
-                <MenuItem Click="SearchByCondition_Click" CommandParameter="Creator" Header="{DynamicResource ui-ctxMenu-searchCreator}" />
+                <MenuItem Click="SearchByCondition_Click" CommandParameter="Title" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchTitle}}" />
+                <MenuItem Click="SearchByCondition_Click" CommandParameter="Artist" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchArtist}}" />
+                <MenuItem Click="SearchByCondition_Click" CommandParameter="Source" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchSource}}" />
+                <MenuItem Click="SearchByCondition_Click" CommandParameter="Creator" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchCreator}}" />
                 <Separator />
                 <MenuItem Click="OpenFolder_Click">
                     <MenuItem.Header>
-                        <TextBlock><Run Text="{DynamicResource ui-ctxMenu-openSourceFolder}" /><Run Text=" (Ctrl+O)" /></TextBlock>
+                        <TextBlock><Run Text="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_OpenSourceFolder}}" /><Run Text=" (Ctrl+O)" /></TextBlock>
                     </MenuItem.Header>
                 </MenuItem>
-                <MenuItem Click="OpenScorePage_Click" Header="{DynamicResource ui-ctxMenu-openScorePage}" />
+                <MenuItem Click="OpenScorePage_Click" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_OpenScorePage}}" />
                 <Separator />
                 <MenuItem Click="SaveCollection_Click">
                     <MenuItem.Header>
-                        <TextBlock><Run Text="{DynamicResource ui-ctxMenu-saveTo}" /><Run Text="... (Ctrl+S)" /></TextBlock>
+                        <TextBlock><Run Text="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SaveTo}}" /><Run Text="... (Ctrl+S)" /></TextBlock>
                     </MenuItem.Header>
                 </MenuItem>
-                <MenuItem Click="Export_Click" Header="{DynamicResource ui-ctxMenu-export}" />
+                <MenuItem Click="Export_Click" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_Export}}" />
                 <Separator x:Name="RemoveSeparator" />
                 <MenuItem x:Name="RemoveMenuItem" Click="Remove_Click">
                     <MenuItem.Header>
-                        <TextBlock><Run Text="{DynamicResource ui-ctxMenu-removeFromList}" /><Run Text=" (Delete)" /></TextBlock>
+                        <TextBlock><Run Text="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_RemoveFromList}}" /><Run Text=" (Delete)" /></TextBlock>
                     </MenuItem.Header>
                 </MenuItem>
             </ContextMenu>

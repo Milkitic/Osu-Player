@@ -2,6 +2,7 @@
     x:Class="OsuPlayer.Views.UserControls.EditCollectionControl"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
     xmlns:viewModels="clr-namespace:OsuPlayer.ViewModels"
     xmlns:controls="clr-namespace:OsuPlayer.Controls"
     x:DataType="viewModels:EditCollectionPageViewModel">
@@ -28,13 +29,13 @@
                 Grid.Column="0"
                 Margin="0,5,5,0"
                 Foreground="#303030"
-                Text="{DynamicResource ui-collectionName}" />
+                Text="{I18N {x:Static lang:SRKeys.Ui_CollectionName}}" />
             <TextBlock
                 Grid.Row="1"
                 Grid.Column="0"
                 Margin="0,5,5,0"
                 Foreground="#303030"
-                Text="{DynamicResource ui-briefIntroduction}" />
+                Text="{I18N {x:Static lang:SRKeys.Ui_BriefIntroduction}}" />
             <controls:CommonTextBox
                 Grid.Row="0"
                 Grid.Column="1"
@@ -62,7 +63,7 @@
                     Margin="0"
                     BorderBrush="Transparent"
                     Click="BtnSave_Click"
-                    Content="{DynamicResource ui-btn-save}" />
+                    Content="{I18N {x:Static lang:SRKeys.Ui_Btn_Save}}" />
             </StackPanel>
         </Grid>
         <Grid Grid.Column="1">
@@ -81,7 +82,7 @@
                 <controls:CommonButton
                     Margin="10,0"
                     Click="BtnChooseImg_Click"
-                    Content="{DynamicResource ui-btn-editCover}" />
+                    Content="{I18N {x:Static lang:SRKeys.Ui_Btn_EditCover}}" />
             </StackPanel>
         </Grid>
     </Grid>

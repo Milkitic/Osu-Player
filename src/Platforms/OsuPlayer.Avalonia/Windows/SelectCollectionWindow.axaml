@@ -2,8 +2,9 @@
     x:Class="OsuPlayer.Windows.SelectCollectionWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
     xmlns:controls="clr-namespace:OsuPlayer.Views.UserControls"
-    Title="{DynamicResource ui-nav-collection}"
+    Title="{I18N {x:Static lang:SRKeys.Ui_Nav_Collection}}"
     Width="350"
     Height="400"
     MinWidth="350"
@@ -21,7 +22,7 @@
             Background="#323232"
             LeftAreaMargin="8,0,0,0"
             RightAreaMargin="0,0,1,0"
-            Title="{DynamicResource ui-nav-collection}"
+            Title="{I18N {x:Static lang:SRKeys.Ui_Nav_Collection}}"
             ShowMinimize="False"
             ShowMaximize="False" />
 

@@ -2,6 +2,7 @@
     x:Class="OsuPlayer.Views.Pages.Settings.HotKeyPage"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels.Pages.Settings"
     x:DataType="vm:HotKeyPageViewModel"
     Classes="settings-page">
@@ -31,7 +32,7 @@
     </UserControl.Styles>
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="10" Spacing="6">
-            <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-hotKeySettings}" />
+            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_HotKeySettings}}" />
             <ItemsControl ItemsSource="{Binding Entries}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="vm:HotKeyEntry">

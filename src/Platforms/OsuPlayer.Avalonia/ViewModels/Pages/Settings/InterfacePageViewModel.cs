@@ -1,38 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using OsuPlayer.Core.Configuration;
+using OsuPlayer.Localization;
 
 namespace OsuPlayer.ViewModels.Pages.Settings;
 
 public partial class InterfacePageViewModel : ObservableObject
 {
-    public List<string> AvailableLanguages => I18NUtil.AvailableLangDic.Keys.ToList();
-
-    private string? _selectedLanguage;
-    public string SelectedLanguage
+    public InterfacePageViewModel(LanguageManager languageManager)
     {
-        get => _selectedLanguage ?? I18NUtil.AvailableLangDic.FirstOrDefault(kv => kv.Value == (AppSettings.Default?.Interface.Locale ?? "en-US")).Key ?? "English";
-        set
-        {
-            if (!SetProperty(ref _selectedLanguage, value) || string.IsNullOrWhiteSpace(value))
-            {
-                return;
-            }
-
-            if (!I18NUtil.AvailableLangDic.TryGetValue(value, out var locale))
-            {
-                return;
-            }
-
-            I18NUtil.SwitchToLang(locale);
-            if (AppSettings.Default != null)
-            {
-                AppSettings.Default.Interface.Locale = locale;
-                AppSettings.SaveDefault();
-            }
-        }
+        LanguageManager = languageManager;
     }
+
+    public LanguageManager LanguageManager { get; }
 
     public bool MinimalMode
     {

@@ -2,8 +2,9 @@
     x:Class="OsuPlayer.Windows.ConfigWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
     xmlns:controls="clr-namespace:OsuPlayer.Views.UserControls"
-    Title="{DynamicResource ui-win-sets}"
+    Title="{I18N {x:Static lang:SRKeys.Ui_Win_Sets}}"
     Icon="avares://OsuPlayer/osuPlayer.ico"
     Width="640"
     Height="440"
@@ -22,7 +23,7 @@
             Background="#323232"
             LeftAreaMargin="8,0,0,0"
             RightAreaMargin="0,0,1,0"
-            Title="{DynamicResource ui-win-sets}"
+            Title="{I18N {x:Static lang:SRKeys.Ui_Win_Sets}}"
             ShowMinimize="False"
             ShowMaximize="False" />
 
@@ -30,14 +31,14 @@
             <Border Grid.Column="0" Background="#2B2B2B">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="0,8,0,8" Spacing="2">
-                        <TextBlock Margin="12,0,0,8" Foreground="#B8B8B8" Text="{DynamicResource ui-sets}" />
-                        <ToggleButton x:Name="GeneralButton" Classes="nav-button" Click="OnNavClick" IsChecked="True" Tag="General" Content="{DynamicResource ui-sets-nav-common}" />
-                        <ToggleButton x:Name="PlayButton" Classes="nav-button" Click="OnNavClick" Tag="Play" Content="{DynamicResource ui-sets-nav-playing}" />
-                        <ToggleButton x:Name="InterfaceButton" Classes="nav-button" Click="OnNavClick" Tag="Interface" Content="{DynamicResource ui-sets-nav-interface}" />
-                        <ToggleButton x:Name="HotKeyButton" Classes="nav-button" Click="OnNavClick" Tag="HotKey" Content="{DynamicResource ui-sets-nav-hotKey}" />
-                        <ToggleButton x:Name="LyricButton" Classes="nav-button" Click="OnNavClick" Tag="Lyric" Content="{DynamicResource ui-sets-nav-lyric}" />
-                        <ToggleButton x:Name="ExportButton" Classes="nav-button" Click="OnNavClick" Tag="Export" Content="{DynamicResource ui-sets-nav-export}" />
-                        <ToggleButton x:Name="AboutButton" Classes="nav-button" Click="OnNavClick" Tag="About" Content="{DynamicResource ui-sets-nav-about}" />
+                        <TextBlock Margin="12,0,0,8" Foreground="#B8B8B8" Text="{I18N {x:Static lang:SRKeys.Ui_Sets}}" />
+                        <ToggleButton x:Name="GeneralButton" Classes="nav-button" Click="OnNavClick" IsChecked="True" Tag="General" Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Common}}" />
+                        <ToggleButton x:Name="PlayButton" Classes="nav-button" Click="OnNavClick" Tag="Play" Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Playing}}" />
+                        <ToggleButton x:Name="InterfaceButton" Classes="nav-button" Click="OnNavClick" Tag="Interface" Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Interface}}" />
+                        <ToggleButton x:Name="HotKeyButton" Classes="nav-button" Click="OnNavClick" Tag="HotKey" Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_HotKey}}" />
+                        <ToggleButton x:Name="LyricButton" Classes="nav-button" Click="OnNavClick" Tag="Lyric" Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Lyric}}" />
+                        <ToggleButton x:Name="ExportButton" Classes="nav-button" Click="OnNavClick" Tag="Export" Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Export}}" />
+                        <ToggleButton x:Name="AboutButton" Classes="nav-button" Click="OnNavClick" Tag="About" Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_About}}" />
                     </StackPanel>
                 </ScrollViewer>
             </Border>

@@ -1,33 +1,67 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
+using OsuPlayer.Localization;
 
 namespace OsuPlayer;
 
-/// <summary>
-/// Avalonia 版本的 I18NUtil 占位 - 实际加载机制后续通过资源字典替换
-/// </summary>
 public static class I18NUtil
 {
-    private static readonly Dictionary<string, string> s_defaultStrings = new()
+    public static Dictionary<string, string> AvailableLangDic { get; } = new()
     {
-        { "err-collectionNotInDb", "The collection does not exist in the database." },
-        { "text-error", "Error" }
+        { "System Default", LanguageManager.SystemLanguageCode },
+        { "中文", "zh-CN" },
+        { "English", "en" }
     };
-
-    public static Dictionary<string, string> AvailableLangDic { get; } = new();
 
     public static void LoadI18N()
     {
-        // Avalonia 端: 加载逻辑由 App.axaml 的 ResourceInclude 接管
-        AvailableLangDic["English"] = "en-US";
     }
 
     public static void SwitchToLang(string locale)
     {
-        // Avalonia 端: 后续由 ResourceInclude 切换
+        LocalizationService.Instance.ApplyCulture(LanguageManager.ResolveCulture(locale));
     }
 
     public static string GetString(string key)
     {
-        return s_defaultStrings.TryGetValue(key, out var s) ? s : "UNBOUND";
+        return LocalizationService.Instance[NormalizeLegacyKey(key)];
+    }
+
+    private static string NormalizeLegacyKey(string key)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            return string.Empty;
+        }
+
+        var builder = new StringBuilder(key.Length);
+        var upperNext = true;
+        foreach (var ch in key)
+        {
+            if (char.IsLetterOrDigit(ch))
+            {
+                builder.Append(upperNext ? char.ToUpper(ch, CultureInfo.InvariantCulture) : ch);
+                upperNext = false;
+                continue;
+            }
+
+            if (builder.Length > 0 && builder[^1] != '_')
+            {
+                builder.Append('_');
+            }
+
+            upperNext = true;
+        }
+
+        if (builder.Length > 0 && builder[^1] == '_')
+        {
+            builder.Length--;
+        }
+
+        return builder.Length > 0 && char.IsDigit(builder[0])
+            ? "_" + builder
+            : builder.ToString();
     }
 }

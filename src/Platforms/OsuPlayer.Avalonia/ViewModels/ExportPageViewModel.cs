@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -13,6 +13,7 @@ using OsuPlayer.Data.Models;
 using OsuPlayer.Presentation.Interaction;
 using OsuPlayer.Services;
 using OsuPlayer.Shared;
+using OsuPlayer.Lang;
 
 namespace OsuPlayer.ViewModels;
 
@@ -79,7 +80,7 @@ public partial class ExportPageViewModel : ObservableObject
                 StartProcess("Explorer", "/select," + dataModel.ExportFile);
                 break;
             default:
-                AppNotificationService.Instance.Push(I18NUtil.GetString("err-dirNotFound"));
+                AppNotificationService.Instance.Push(I18NUtil.GetString(SRKeys.Err_DirNotFound));
                 break;
         }
     }

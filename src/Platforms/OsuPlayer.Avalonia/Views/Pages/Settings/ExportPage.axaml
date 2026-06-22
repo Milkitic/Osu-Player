@@ -1,7 +1,8 @@
-﻿<UserControl
+<UserControl
     x:Class="OsuPlayer.Views.Pages.Settings.ExportPage"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
     xmlns:shared="using:OsuPlayer.Shared.Models"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels.Pages.Settings"
     Classes="settings-page"
@@ -12,9 +13,9 @@
     </UserControl.Resources>
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="10" Spacing="6">
-            <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-exportPath}" />
+            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_ExportPath}}" />
             <StackPanel Classes="config-row" Orientation="Horizontal">
-                <TextBlock Classes="config-label" Text="{DynamicResource ui-sets-content-musicDirectory}" />
+                <TextBlock Classes="config-label" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_MusicDirectory}}" />
                 <TextBox
                     Classes="config-box"
                     Width="250"
@@ -32,7 +33,7 @@
                 </Button>
             </StackPanel>
             <StackPanel Classes="config-row" Orientation="Horizontal">
-                <TextBlock Classes="config-label" Text="{DynamicResource ui-sets-content-bgDirectory}" />
+                <TextBlock Classes="config-label" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_BgDirectory}}" />
                 <TextBox
                     Classes="config-box"
                     Width="250"
@@ -50,7 +51,7 @@
                 </Button>
             </StackPanel>
 
-            <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-fileNamingFormat}" />
+            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_FileNamingFormat}}" />
             <RadioButton
                 Classes="config-radio"
                 Content="Title"
@@ -67,25 +68,25 @@
                 GroupName="naming"
                 IsChecked="{Binding NamingStyle, Converter={StaticResource ExportNamingConv}, ConverterParameter={x:Static shared:ExportNamingStyle.TitleArtist}, Mode=TwoWay}" />
 
-            <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-directoryGrouping}" />
+            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_DirectoryGrouping}}" />
             <RadioButton
                 Classes="config-radio"
-                Content="{DynamicResource ui-sets-content-dirNoGroup}"
+                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_DirNoGroup}}"
                 GroupName="grouping"
                 IsChecked="{Binding GroupStyle, Converter={StaticResource ExportGroupConv}, ConverterParameter={x:Static shared:ExportGroupStyle.None}, Mode=TwoWay}" />
             <RadioButton
                 Classes="config-radio"
-                Content="{DynamicResource ui-sets-content-dirGroupByArtist}"
+                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_DirGroupByArtist}}"
                 GroupName="grouping"
                 IsChecked="{Binding GroupStyle, Converter={StaticResource ExportGroupConv}, ConverterParameter={x:Static shared:ExportGroupStyle.Artist}, Mode=TwoWay}" />
             <RadioButton
                 Classes="config-radio"
-                Content="{DynamicResource ui-sets-content-dirGroupByMapper}"
+                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_DirGroupByMapper}}"
                 GroupName="grouping"
                 IsChecked="{Binding GroupStyle, Converter={StaticResource ExportGroupConv}, ConverterParameter={x:Static shared:ExportGroupStyle.Mapper}, Mode=TwoWay}" />
             <RadioButton
                 Classes="config-radio"
-                Content="{DynamicResource ui-sets-content-dirGroupBySource}"
+                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_DirGroupBySource}}"
                 GroupName="grouping"
                 IsChecked="{Binding GroupStyle, Converter={StaticResource ExportGroupConv}, ConverterParameter={x:Static shared:ExportGroupStyle.Source}, Mode=TwoWay}" />
         </StackPanel>

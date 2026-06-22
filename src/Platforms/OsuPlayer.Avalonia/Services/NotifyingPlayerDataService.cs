@@ -6,6 +6,7 @@ using OsuPlayer.Data;
 using OsuPlayer.Data.Models;
 using OsuPlayer.Shared;
 using OsuPlayer.Shared.Models;
+using OsuPlayer.Lang;
 
 namespace OsuPlayer.Services;
 
@@ -94,7 +95,7 @@ public sealed class NotifyingPlayerDataService : IPlayerDataService
             var collection = await _inner.GetCollectionByIdAsync(id);
             if (collection is null)
             {
-                _notifications.Push(I18NUtil.GetString("err-collectionNotInDb"), I18NUtil.GetString("text-error"));
+                _notifications.Push(I18NUtil.GetString(SRKeys.Err_CollectionNotInDb), I18NUtil.GetString(SRKeys.Text_Error));
             }
 
             return collection!;

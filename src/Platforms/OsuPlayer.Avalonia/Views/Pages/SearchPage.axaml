@@ -2,6 +2,7 @@
     x:Class="OsuPlayer.Views.Pages.SearchPage"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
     xmlns:core="clr-namespace:OsuPlayer.Core;assembly=OsuPlayer.Core"
     xmlns:panelComponent="clr-namespace:OsuPlayer.Controls.PanelComponent"
     xmlns:ui="clr-namespace:OsuPlayer.Controls"
@@ -29,7 +30,7 @@
         <Style Selector="ui|CommonButton.search-play">
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="BorderBrush" Value="#5D9CEC" />
-            <Setter Property="Content" Value="{DynamicResource ui-btn-playAll}" />
+            <Setter Property="Content" Value="{I18N {x:Static lang:SRKeys.Ui_Btn_PlayAll}}" />
             <Setter Property="Foreground" Value="White" />
             <Setter Property="IconTemplate" Value="{StaticResource SettingsPlayTempl}" />
             <Setter Property="IconSize" Value="18" />
@@ -67,7 +68,7 @@
             FontSize="15" Cursor="IBeam"
             Foreground="#555555"
             Padding="10,0"
-            PlaceholderText="{DynamicResource ui-hint-searchPageBox}"
+            PlaceholderText="{I18N {x:Static lang:SRKeys.Ui_Hint_SearchPageBox}}"
             Text="{Binding SearchText, Mode=TwoWay}" />
 
         <StackPanel
@@ -82,7 +83,7 @@
             <ui:CommonButton
                 Classes="search-settings"
                 Command="{Binding QueueAllCommand}"
-                Content="{DynamicResource ui-btn-queueAll}"
+                Content="{I18N {x:Static lang:SRKeys.Ui_Btn_QueueAll}}"
                 IconTemplate="{StaticResource FolderTempl}" />
         </StackPanel>
 
@@ -102,19 +103,19 @@
                             VerticalAlignment="Center"
                             FontWeight="SemiBold"
                             Foreground="#666666"
-                            Text="{DynamicResource ui-title}" />
+                            Text="{I18N {x:Static lang:SRKeys.Ui_Title}}" />
                         <TextBlock
                             Grid.Column="1"
                             VerticalAlignment="Center"
                             FontWeight="SemiBold"
                             Foreground="#666666"
-                            Text="{DynamicResource ui-artist}" />
+                            Text="{I18N {x:Static lang:SRKeys.Ui_Artist}}" />
                         <TextBlock
                             Grid.Column="2"
                             VerticalAlignment="Center"
                             FontWeight="SemiBold"
                             Foreground="#666666"
-                            Text="{DynamicResource ui-creator}" />
+                            Text="{I18N {x:Static lang:SRKeys.Ui_Creator}}" />
                     </Grid>
                 </Border>
                 <ListBox
@@ -136,28 +137,28 @@
                                     <ContextMenu>
                                         <MenuItem Click="PlayWithDifficulty_Click" Tag="{Binding}">
                                             <MenuItem.Header>
-                                                <TextBlock><Run Text="{DynamicResource ui-play}" /><Run Text="... (Enter)" /></TextBlock>
+                                                <TextBlock><Run Text="{I18N {x:Static lang:SRKeys.Ui_Play}}" /><Run Text="... (Enter)" /></TextBlock>
                                             </MenuItem.Header>
                                         </MenuItem>
                                         <Separator />
-                                        <MenuItem Click="SearchByCondition_Click" CommandParameter="Title" Header="{DynamicResource ui-ctxMenu-searchTitle}" Tag="{Binding}" />
-                                        <MenuItem Click="SearchByCondition_Click" CommandParameter="Artist" Header="{DynamicResource ui-ctxMenu-searchArtist}" Tag="{Binding}" />
-                                        <MenuItem Click="SearchByCondition_Click" CommandParameter="Source" Header="{DynamicResource ui-ctxMenu-searchSource}" Tag="{Binding}" />
-                                        <MenuItem Click="SearchByCondition_Click" CommandParameter="Creator" Header="{DynamicResource ui-ctxMenu-searchCreator}" Tag="{Binding}" />
+                                        <MenuItem Click="SearchByCondition_Click" CommandParameter="Title" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchTitle}}" Tag="{Binding}" />
+                                        <MenuItem Click="SearchByCondition_Click" CommandParameter="Artist" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchArtist}}" Tag="{Binding}" />
+                                        <MenuItem Click="SearchByCondition_Click" CommandParameter="Source" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchSource}}" Tag="{Binding}" />
+                                        <MenuItem Click="SearchByCondition_Click" CommandParameter="Creator" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchCreator}}" Tag="{Binding}" />
                                         <Separator />
                                         <MenuItem Click="OpenFolder_Click" Tag="{Binding}">
                                             <MenuItem.Header>
-                                                <TextBlock><Run Text="{DynamicResource ui-ctxMenu-openSourceFolder}" /><Run Text=" (Ctrl+O)" /></TextBlock>
+                                                <TextBlock><Run Text="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_OpenSourceFolder}}" /><Run Text=" (Ctrl+O)" /></TextBlock>
                                             </MenuItem.Header>
                                         </MenuItem>
-                                        <MenuItem Click="OpenScorePage_Click" Header="{DynamicResource ui-ctxMenu-openScorePage}" Tag="{Binding}" />
+                                        <MenuItem Click="OpenScorePage_Click" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_OpenScorePage}}" Tag="{Binding}" />
                                         <Separator />
                                         <MenuItem Click="SaveCollection_Click" Tag="{Binding}">
                                             <MenuItem.Header>
-                                                <TextBlock><Run Text="{DynamicResource ui-ctxMenu-saveTo}" /><Run Text="... (Ctrl+S)" /></TextBlock>
+                                                <TextBlock><Run Text="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SaveTo}}" /><Run Text="... (Ctrl+S)" /></TextBlock>
                                             </MenuItem.Header>
                                         </MenuItem>
-                                        <MenuItem Click="ExportCard_Click" Header="{DynamicResource ui-ctxMenu-export}" Tag="{Binding}" />
+                                        <MenuItem Click="ExportCard_Click" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_Export}}" Tag="{Binding}" />
                                     </ContextMenu>
                                 </Border.ContextMenu>
                                 <Grid ColumnDefinitions="300,200,100,*">

@@ -8,6 +8,7 @@ using OsuPlayer.Core.Instances;
 using OsuPlayer.Core.Scanning;
 using OsuPlayer.Services;
 using OsuPlayer.Utils;
+using OsuPlayer.Lang;
 
 namespace OsuPlayer.ViewModels.Pages.Settings;
 
@@ -144,7 +145,7 @@ public partial class GeneralPageViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            AppNotificationService.Instance.Push($"{I18NUtil.GetString("err-osudb-sync")}: {ex.Message}");
+            AppNotificationService.Instance.Push($"{I18NUtil.GetString(SRKeys.Err_Osudb_Sync)}: {ex.Message}");
         }
     }
 
@@ -165,7 +166,7 @@ public partial class GeneralPageViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            AppNotificationService.Instance.Push($"{I18NUtil.GetString("err-custom-scan")}: {ex.Message}");
+            AppNotificationService.Instance.Push($"{I18NUtil.GetString(SRKeys.Err_Custom_Scan)}: {ex.Message}");
         }
     }
 
@@ -183,7 +184,7 @@ public partial class GeneralPageViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            AppNotificationService.Instance.Push($"{I18NUtil.GetString("err-custom-scan")}: {ex.Message}");
+            AppNotificationService.Instance.Push($"{I18NUtil.GetString(SRKeys.Err_Custom_Scan)}: {ex.Message}");
         }
     }
 

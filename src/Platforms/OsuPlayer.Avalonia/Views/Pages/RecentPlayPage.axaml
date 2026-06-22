@@ -2,6 +2,7 @@
     x:Class="OsuPlayer.Views.Pages.RecentPlayPage"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
     xmlns:core="clr-namespace:OsuPlayer.Core;assembly=OsuPlayer.Core"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels"
     x:DataType="vm:RecentPlayPageViewModel">
@@ -20,20 +21,20 @@
             <Button
                 Classes="play-button"
                 Command="{Binding PlayAllCommand}"
-                Content="{DynamicResource ui-btn-playAll}" />
+                Content="{I18N {x:Static lang:SRKeys.Ui_Btn_PlayAll}}" />
             <Button
                 Classes="settings-button"
                 Command="{Binding ClearAllRecentCommand}"
-                Content="{DynamicResource ui-btn-deleteAll}" />
+                Content="{I18N {x:Static lang:SRKeys.Ui_Btn_DeleteAll}}" />
         </StackPanel>
         <Grid Grid.Row="1" Margin="5,0,5,5" RowDefinitions="Auto,*">
             <Border Grid.Row="0" Padding="12,8" Background="#F4F5F7" BorderBrush="#E4E6EB" BorderThickness="0,0,0,1" VerticalAlignment="Top">
                 <Grid ColumnDefinitions="40,3*,2*,*,2*">
                     <TextBlock FontWeight="SemiBold" Foreground="#666666" Text="#" />
-                    <TextBlock Grid.Column="1" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-title}" />
-                    <TextBlock Grid.Column="2" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-artist}" />
-                    <TextBlock Grid.Column="3" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-creator}" />
-                    <TextBlock Grid.Column="4" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-mapDifficulty}" />
+                    <TextBlock Grid.Column="1" FontWeight="SemiBold" Foreground="#666666" Text="{I18N {x:Static lang:SRKeys.Ui_Title}}" />
+                    <TextBlock Grid.Column="2" FontWeight="SemiBold" Foreground="#666666" Text="{I18N {x:Static lang:SRKeys.Ui_Artist}}" />
+                    <TextBlock Grid.Column="3" FontWeight="SemiBold" Foreground="#666666" Text="{I18N {x:Static lang:SRKeys.Ui_Creator}}" />
+                    <TextBlock Grid.Column="4" FontWeight="SemiBold" Foreground="#666666" Text="{I18N {x:Static lang:SRKeys.Ui_MapDifficulty}}" />
                 </Grid>
             </Border>
             <ListBox

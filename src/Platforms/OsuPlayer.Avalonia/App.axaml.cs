@@ -6,6 +6,8 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
 using Microsoft.Extensions.DependencyInjection;
 using OsuPlayer.Core;
+using OsuPlayer.Lang;
+using OsuPlayer.Localization;
 using OsuPlayer.Media.Audio;
 using OsuPlayer.Playback;
 using OsuPlayer.Video;
@@ -43,6 +45,8 @@ public partial class App : Application
                 Environment.Exit(1);
                 return;
             }
+
+            Services.GetRequiredService<LanguageManager>();
 
             // 初始化 FFmpeg(视频播放)
             VideoPlayerInitializer.Initialize();
@@ -89,11 +93,11 @@ public partial class App : Application
         var showItem = new NativeMenuItem("Show / Hide Osu Player");
         showItem.Click += (_, _) => ToggleMainWindow();
         menu.Items.Add(showItem);
-        var settingsItem = new NativeMenuItem("Settings");
+        var settingsItem = new NativeMenuItem(I18NUtil.GetString(SRKeys.Ui_Sets));
         settingsItem.Click += (_, _) => OpenSettingsWindow();
         menu.Items.Add(settingsItem);
         menu.Items.Add(new NativeMenuItemSeparator());
-        var exitItem = new NativeMenuItem("Exit");
+        var exitItem = new NativeMenuItem(I18NUtil.GetString(SRKeys.Ui_Exit));
         exitItem.Click += (_, _) => ExitApp();
         menu.Items.Add(exitItem);
 

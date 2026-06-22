@@ -17,7 +17,6 @@
                 <ResourceInclude Source="avares://OsuPlayer/Assets/Brushes.axaml" />
                 <ResourceInclude Source="avares://OsuPlayer/Assets/Fonts/FontDictionary.axaml" />
                 <ResourceInclude Source="avares://OsuPlayer/Converters/ConverterDictionary.axaml" />
-                <ResourceInclude Source="avares://OsuPlayer/lang/i18n.axaml" />
                 <ResourceInclude Source="avares://OsuPlayer/Assets/Icons.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

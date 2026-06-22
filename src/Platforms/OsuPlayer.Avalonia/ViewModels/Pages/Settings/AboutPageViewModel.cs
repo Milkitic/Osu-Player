@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Services;
 using OsuPlayer.Shared;
+using OsuPlayer.Lang;
 
 namespace OsuPlayer.ViewModels.Pages.Settings;
 
@@ -37,7 +38,7 @@ public partial class AboutPageViewModel : ObservableObject
     private void UpdateLastUpdateText()
     {
         LastUpdateCheckText = AppSettings.Default?.LastUpdateCheck == null
-            ? I18NUtil.GetString("ui-sets-content-never")
+            ? I18NUtil.GetString(SRKeys.Ui_Sets_Content_Never)
             : AppSettings.Default.LastUpdateCheck.Value.ToString(DtFormat);
     }
 
@@ -62,12 +63,12 @@ public partial class AboutPageViewModel : ObservableObject
             }
             else
             {
-                AppNotificationService.Instance.Push(I18NUtil.GetString("ui-sets-content-alreadyNewest"));
+                AppNotificationService.Instance.Push(I18NUtil.GetString(SRKeys.Ui_Sets_Content_AlreadyNewest));
             }
         }
         catch (Exception ex)
         {
-            AppNotificationService.Instance.Push(I18NUtil.GetString("ui-sets-content-errorWhileCheckingUpdate") +
+            AppNotificationService.Instance.Push(I18NUtil.GetString(SRKeys.Ui_Sets_Content_ErrorWhileCheckingUpdate) +
                                                 Environment.NewLine +
                                                 (ex.InnerException?.Message ?? ex.Message));
         }
@@ -82,7 +83,7 @@ public partial class AboutPageViewModel : ObservableObject
     {
         if (_updateInst.NewRelease != null)
         {
-            AppNotificationService.Instance.Push($"{I18NUtil.GetString("ui-sets-content-hasNewVersion")}: {_updateInst.NewRelease.NewVerString}");
+            AppNotificationService.Instance.Push($"{I18NUtil.GetString(SRKeys.Ui_Sets_Content_HasNewVersion)}: {_updateInst.NewRelease.NewVerString}");
         }
     }
 

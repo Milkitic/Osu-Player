@@ -2,6 +2,7 @@
     x:Class="OsuPlayer.Views.UserControls.WelcomeControl"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
     xmlns:vm="clr-namespace:OsuPlayer.Views.UserControls"
     xmlns:controls="clr-namespace:OsuPlayer.Controls"
     x:DataType="vm:WelcomeControlVm">
@@ -18,30 +19,30 @@
                 FontSize="35"
                 FontWeight="Bold"
                 Foreground="{StaticResource SliderBackground}"
-                Text="{DynamicResource ui-welcome-title}" />
+                Text="{I18N {x:Static lang:SRKeys.Ui_Welcome_Title}}" />
             <TextBlock
                 Margin="0,5"
                 HorizontalAlignment="Center"
                 FontSize="12"
                 Foreground="{StaticResource SliderBackground}"
-                Text="{DynamicResource ui-welcome-subtitle}" />
+                Text="{I18N {x:Static lang:SRKeys.Ui_Welcome_Subtitle}}" />
             <CheckBox
                 Margin="0,10"
                 HorizontalAlignment="Center"
                 Command="{Binding SelectDbCommand}"
-                Content="{DynamicResource ui-welcome-selectDb}"
+                Content="{I18N {x:Static lang:SRKeys.Ui_Welcome_SelectDb}}"
                 IsChecked="{Binding GuideSelectedDb, Mode=TwoWay}" />
             <CheckBox
                 Margin="0,10"
                 HorizontalAlignment="Center"
-                Content="{DynamicResource ui-wenable-watcher}"
+                Content="{I18N {x:Static lang:SRKeys.Ui_Wenable_Watcher}}"
                 IsVisible="False" />
             <controls:CommonButton
                 Width="150"
                 Margin="0,55,0,5"
                 HorizontalContentAlignment="Center"
                 Command="{Binding SkipCommand}"
-                Content="{DynamicResource ui-welcome-skip}" />
+                Content="{I18N {x:Static lang:SRKeys.Ui_Welcome_Skip}}" />
             <ProgressBar
                 Width="30"
                 Height="30"

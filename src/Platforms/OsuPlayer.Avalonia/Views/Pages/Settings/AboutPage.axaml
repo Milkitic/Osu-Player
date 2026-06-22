@@ -2,19 +2,20 @@
     x:Class="OsuPlayer.Views.Pages.Settings.AboutPage"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels.Pages.Settings"
     Classes="settings-page"
     x:DataType="vm:AboutPageViewModel">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="10" Spacing="6">
-            <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-softwareUpdate}" />
+            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_SoftwareUpdate}}" />
 
             <StackPanel Classes="config-row" Orientation="Horizontal">
-                <TextBlock Classes="config-label" Text="{DynamicResource ui-sets-content-currentVersion}" />
+                <TextBlock Classes="config-label" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_CurrentVersion}}" />
                 <TextBlock Classes="config-label-muted" Foreground="#222222" Text="{Binding CurrentVersion}" />
             </StackPanel>
             <StackPanel Classes="config-row" Orientation="Horizontal">
-                <TextBlock Classes="config-label" Text="{DynamicResource ui-sets-content-lastCheckTime}" />
+                <TextBlock Classes="config-label" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_LastCheckTime}}" />
                 <TextBlock Classes="config-label-muted" Foreground="#222222" Text="{Binding LastUpdateCheckText}" />
             </StackPanel>
 
@@ -25,11 +26,11 @@
                 <Button
                     Classes="settings-button"
                     Command="{Binding CheckUpdateCommand}"
-                    Content="{DynamicResource ui-sets-content-checkUpdate}" />
+                    Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_CheckUpdate}}" />
                 <Button
                     Classes="settings-button"
                     Command="{Binding ShowNewVersionDialogCommand}"
-                    Content="{DynamicResource ui-sets-content-hasNewVersion}"
+                    Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_HasNewVersion}}"
                     Foreground="#FE5472"
                     IsVisible="{Binding HasUpdate}" />
             </StackPanel>
@@ -39,23 +40,23 @@
                     Classes="link-button"
                     Command="{Binding OpenUrlCommand}"
                     CommandParameter="https://github.com/Milkitic/Osu-Player"
-                    Content="{DynamicResource ui-sets-content-projectUrl}" />
+                    Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_ProjectUrl}}" />
                 <Button
                     Classes="link-button"
                     Command="{Binding OpenUrlCommand}"
                     CommandParameter="https://github.com/Milkitic/Osu-Player/issues/new"
-                    Content="{DynamicResource ui-sets-content-feedback}" />
+                    Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_Feedback}}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Spacing="8">
                 <Button
                     Classes="link-button"
                     Command="{Binding OpenUrlCommand}"
                     CommandParameter="https://github.com/Milkitic/Osu-Player/blob/master/LICENSE"
-                    Content="{DynamicResource ui-sets-content-licenseInfo}" />
+                    Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_LicenseInfo}}" />
                 <Button
                     Classes="link-button"
                     Command="{Binding ShowPrivacyPolicyCommand}"
-                    Content="{DynamicResource ui-sets-content-privacyPolicy}" />
+                    Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_PrivacyPolicy}}" />
             </StackPanel>
         </StackPanel>
     </ScrollViewer>

@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Antelcat.I18N.SourceGenerators" Version="1.1.0" />
     <PackageReference Include="Avalonia" Version="12.0.4" />
     <PackageReference Include="Avalonia.Desktop" Version="12.0.4" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="12.0.4" />
@@ -59,7 +60,21 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Update="NLog.config" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="lang\en-US.xaml" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="lang\SR.Designer.cs">
+      <DependentUpon>SR.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="lang\SR.resx">
+      <LogicalName>OsuPlayer.Lang.SR.resources</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Update="lang\SR.en.resx">
+      <LogicalName>OsuPlayer.Lang.SR.en.resources</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

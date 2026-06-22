@@ -2,8 +2,9 @@
     x:Class="OsuPlayer.Windows.AddCollectionWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
     xmlns:controls="clr-namespace:OsuPlayer.Views.UserControls"
-    Title="{DynamicResource ui-win-newCollection}"
+    Title="{I18N {x:Static lang:SRKeys.Ui_Win_NewCollection}}"
     Width="320"
     Height="180"
     MinWidth="320"
@@ -21,7 +22,7 @@
             Background="#323232"
             LeftAreaMargin="8,0,0,0"
             RightAreaMargin="0,0,1,0"
-            Title="{DynamicResource ui-win-newCollection}"
+            Title="{I18N {x:Static lang:SRKeys.Ui_Win_NewCollection}}"
             ShowMinimize="False"
             ShowMaximize="False" />
 
@@ -34,7 +35,7 @@
                     HorizontalAlignment="Right"
                     Classes="settings-button"
                     Click="OnOkClick"
-                    Content="{DynamicResource ui-ok}"
+                    Content="{I18N {x:Static lang:SRKeys.Ui_Ok}}"
                     MinWidth="70" />
             </Grid>
         </Border>

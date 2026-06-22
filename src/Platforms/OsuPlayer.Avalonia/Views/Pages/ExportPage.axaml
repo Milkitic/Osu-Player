@@ -1,7 +1,8 @@
-﻿<UserControl
+<UserControl
     x:Class="OsuPlayer.Views.Pages.ExportPage"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
     xmlns:core="clr-namespace:OsuPlayer.Core;assembly=OsuPlayer.Core"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels"
     x:DataType="vm:ExportPageViewModel">
@@ -12,7 +13,7 @@
         </Style>
     </UserControl.Styles>
     <TabControl Margin="5">
-        <TabItem Header="{DynamicResource ui-exported}">
+        <TabItem Header="{I18N {x:Static lang:SRKeys.Ui_Exported}}">
             <Grid RowDefinitions="Auto,Auto,*">
                 <StackPanel
                     Grid.Row="0"
@@ -27,13 +28,13 @@
                             <Viewbox Width="14" Height="14">
                                 <Path Fill="#303030" Data="M2,3H6L7.2,4.5H12.5V12.5H2Z M3.2,5.5V11.3H11.3V5.5Z" />
                             </Viewbox>
-                            <TextBlock Text="{DynamicResource ui-btn-openDirectory}" />
+                            <TextBlock Text="{I18N {x:Static lang:SRKeys.Ui_Btn_OpenDirectory}}" />
                         </StackPanel>
                     </Button>
                     <TextBlock
                         VerticalAlignment="Center"
                         Foreground="#606060"
-                        Text="{DynamicResource ui-exportPath}" />
+                        Text="{I18N {x:Static lang:SRKeys.Ui_ExportPath}}" />
                     <TextBlock
                         VerticalAlignment="Center"
                         Foreground="#222222"
@@ -48,10 +49,10 @@
                     BorderThickness="0,0,0,1">
                     <Grid ColumnDefinitions="40,3*,2*,*,*">
                         <TextBlock FontWeight="SemiBold" Foreground="#666666" Text="#" />
-                        <TextBlock Grid.Column="1" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-title}" />
-                        <TextBlock Grid.Column="2" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-artist}" />
-                        <TextBlock Grid.Column="3" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-size}" />
-                        <TextBlock Grid.Column="4" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-exportTime}" />
+                        <TextBlock Grid.Column="1" FontWeight="SemiBold" Foreground="#666666" Text="{I18N {x:Static lang:SRKeys.Ui_Title}}" />
+                        <TextBlock Grid.Column="2" FontWeight="SemiBold" Foreground="#666666" Text="{I18N {x:Static lang:SRKeys.Ui_Artist}}" />
+                        <TextBlock Grid.Column="3" FontWeight="SemiBold" Foreground="#666666" Text="{I18N {x:Static lang:SRKeys.Ui_Size}}" />
+                        <TextBlock Grid.Column="4" FontWeight="SemiBold" Foreground="#666666" Text="{I18N {x:Static lang:SRKeys.Ui_ExportTime}}" />
                     </Grid>
                 </Border>
                 <ListBox
@@ -67,10 +68,10 @@
                             <Border Padding="12,10" Background="#FBFBFB" BorderBrush="#E6E6E6" BorderThickness="0,0,0,1">
                                 <Border.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Click="OpenItemFolder_Click" Header="{DynamicResource ui-openFileFolder}" Tag="{Binding}" />
+                                        <MenuItem Click="OpenItemFolder_Click" Header="{I18N {x:Static lang:SRKeys.Ui_OpenFileFolder}}" Tag="{Binding}" />
                                         <Separator />
-                                        <MenuItem Click="ReExportItem_Click" Header="{DynamicResource ui-exportAgain}" Tag="{Binding}" />
-                                        <MenuItem Click="DeleteItem_Click" Header="{DynamicResource ui-deleteExported}" Tag="{Binding}" />
+                                        <MenuItem Click="ReExportItem_Click" Header="{I18N {x:Static lang:SRKeys.Ui_ExportAgain}}" Tag="{Binding}" />
+                                        <MenuItem Click="DeleteItem_Click" Header="{I18N {x:Static lang:SRKeys.Ui_DeleteExported}}" Tag="{Binding}" />
                                     </ContextMenu>
                                 </Border.ContextMenu>
                                 <Grid ColumnDefinitions="40,3*,2*,*,*">
@@ -101,9 +102,9 @@
                 </ListBox>
             </Grid>
         </TabItem>
-        <TabItem Header="{DynamicResource ui-exporting}">
+        <TabItem Header="{I18N {x:Static lang:SRKeys.Ui_Exporting}}">
             <Border Padding="20">
-                <TextBlock Foreground="#7A7A7A" Text="{DynamicResource ui-exporting}" />
+                <TextBlock Foreground="#7A7A7A" Text="{I18N {x:Static lang:SRKeys.Ui_Exporting}}" />
             </Border>
         </TabItem>
     </TabControl>

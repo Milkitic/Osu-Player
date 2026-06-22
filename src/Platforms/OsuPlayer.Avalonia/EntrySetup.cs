@@ -12,6 +12,8 @@ using OsuPlayer.Core.Scanning;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data;
 using OsuPlayer.Instances;
+using OsuPlayer.Lang;
+using OsuPlayer.Localization;
 using OsuPlayer.Media.Audio;
 using OsuPlayer.Playback;
 using OsuPlayer.Playback.Playlist;
@@ -30,6 +32,9 @@ public static class EntrySetup
     public static IServiceCollection ConfigureServices(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
+
+        LocalizationService.Instance.ConfigureStringResolver(static key => SR.ResourceManager.GetString(key) ?? key);
+        LocalizationService.Instance.ConfigureCultureApplier(static culture => SR.Culture = culture);
 
         services.AddLogging(static loggingBuilder =>
         {
@@ -67,6 +72,8 @@ public static class EntrySetup
         services.AddSingleton<BeatmapLoader>();
 
         services.AddSingleton<IAppNotificationService>(AppNotificationService.Instance);
+        services.AddSingleton<ILanguagePreferenceStore, AppSettingsLanguagePreferenceStore>();
+        services.AddSingleton<LanguageManager>();
         services.AddTransient<INavigationService, FrameNavigationService>();
         services.AddSingleton<IUiThreadDispatcher>(_ => Execute.UiThreadDispatcher);
         services.AddSingleton<IUserPreferences>(_ =>

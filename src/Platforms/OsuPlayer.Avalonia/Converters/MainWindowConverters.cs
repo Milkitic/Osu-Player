@@ -6,6 +6,7 @@ using Avalonia.Data.Converters;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using OsuPlayer.Lang;
 
 namespace OsuPlayer.Converters;
 
@@ -57,7 +58,7 @@ public class LyricWindowShownConverter : IValueConverter
         {
             var param = System.Convert.ToString(parameter);
             if (param == "string")
-                return shown ? I18NUtil.GetString("ui-closeDesktopLyric") : I18NUtil.GetString("ui-openDesktopLyric");
+                return shown ? I18NUtil.GetString(SRKeys.Ui_CloseDesktopLyric) : I18NUtil.GetString(SRKeys.Ui_OpenDesktopLyric);
             if (param == "bool")
                 return shown;
         }
@@ -73,7 +74,7 @@ public class LyricWindowLockedConverter : IValueConverter
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is bool locked)
-            return locked ? I18NUtil.GetString("ui-unlockLyric") : I18NUtil.GetString("ui-lockLyric");
+            return locked ? I18NUtil.GetString(SRKeys.Ui_UnlockLyric) : I18NUtil.GetString(SRKeys.Ui_LockLyric);
         return null;
     }
 
