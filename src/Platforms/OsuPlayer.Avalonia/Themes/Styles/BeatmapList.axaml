@@ -69,27 +69,23 @@
             </ControlTemplate>
         </Setter>
     </Style>
-    <!-- Card root: default scale + transition -->
     <Style Selector="Button.beatmap-card-button Grid.beatmap-card-root">
         <Setter Property="RenderTransformOrigin" Value="50%,50%" />
         <Setter Property="RenderTransform" Value="scale(1)" />
         <Setter Property="Transitions">
             <Transitions>
-                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="0,0,0.2,1" />
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.3" Easing="QuinticEaseOut" />
             </Transitions>
         </Setter>
     </Style>
-    <!-- Card shadow: default no shadow + transition -->
     <Style Selector="Button.beatmap-card-button Border.beatmap-card-shadow">
         <Setter Property="BoxShadow" Value="0 0 0 0 #00000000" />
         <Setter Property="Transitions">
             <Transitions>
-                <BoxShadowsTransition Property="BoxShadow" Duration="0:0:0.2" Easing="0,0,0.2,1" />
+                <BoxShadowsTransition Property="BoxShadow" Duration="0:0:0.3" Easing="QuinticEaseOut" />
             </Transitions>
         </Setter>
     </Style>
-
-    <!-- Hover: scale up + shadow -->
     <Style Selector="Button.beatmap-card-button:pointerover Border.beatmap-card-shadow">
         <Setter Property="BoxShadow" Value="0 0 10 0 #4D000000" />
     </Style>
