@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using KeyAsio.Core.Audio.Caching;
 using KeyAsio.Core.OsuAudio.Hitsounds.Playback;
+using KeyAsioAudioFileReader = KeyAsio.Core.Audio.Wave.AudioFileReader;
 using Microsoft.Extensions.Logging;
 using NAudio.Wave;
 
@@ -20,6 +21,7 @@ public sealed class OsuPlaybackEventAudioCache
     private readonly Lock _gate = new();
     private readonly Dictionary<PlaybackEvent, CachedAudio?> _eventCache = new();
     private readonly Dictionary<string, CachedAudio?> _resourceCache = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, TimeSpan?> _resourceDurationCache = new(StringComparer.OrdinalIgnoreCase);
 
     private string _beatmapFolder = "";
     private string _userSkinFolder = "";
@@ -45,6 +47,7 @@ public sealed class OsuPlaybackEventAudioCache
             _contextVersion++;
             _eventCache.Clear();
             _resourceCache.Clear();
+            _resourceDurationCache.Clear();
         }
     }
 
@@ -55,6 +58,7 @@ public sealed class OsuPlaybackEventAudioCache
             _contextVersion++;
             _eventCache.Clear();
             _resourceCache.Clear();
+            _resourceDurationCache.Clear();
         }
     }
 
@@ -99,20 +103,64 @@ public sealed class OsuPlaybackEventAudioCache
         }
     }
 
+    public TimeSpan? GetAudioDuration(PlaybackEvent playbackEvent,
+        CancellationToken cancellationToken = default)
+    {
+        if (!CanResolveAudio(playbackEvent))
+        {
+            return null;
+        }
+
+        CacheContext context;
+        lock (_gate)
+        {
+            context = CreateContextSnapshot();
+        }
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var (path, _) = ResolvePath(playbackEvent, context);
+        if (path == null)
+        {
+            return null;
+        }
+
+        lock (_gate)
+        {
+            ThrowIfContextChanged(context);
+            if (_resourceDurationCache.TryGetValue(path, out var duration))
+            {
+                return duration;
+            }
+        }
+
+        TimeSpan? loadedDuration;
+        try
+        {
+            using var reader = new KeyAsioAudioFileReader(path);
+            loadedDuration = reader.TotalTime;
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogWarning(ex, "Failed to read osu audio resource duration: {Path}", path);
+            loadedDuration = null;
+        }
+
+        lock (_gate)
+        {
+            ThrowIfContextChanged(context);
+            _resourceDurationCache[path] = loadedDuration;
+        }
+
+        return loadedDuration;
+    }
+
     private Task<CachedAudio?> LoadAsync(
         PlaybackEvent playbackEvent,
         CacheContext context,
         CancellationToken cancellationToken)
     {
-        if (playbackEvent is ControlEvent
-            {
-                ControlEventType: ControlEventType.LoopStop or ControlEventType.Volume or ControlEventType.Balance
-            })
-        {
-            return Task.FromResult<CachedAudio?>(null);
-        }
-
-        if (string.IsNullOrWhiteSpace(playbackEvent.Filename))
+        if (!CanResolveAudio(playbackEvent))
         {
             return Task.FromResult<CachedAudio?>(null);
         }
@@ -180,6 +228,15 @@ public sealed class OsuPlaybackEventAudioCache
 
         var defaultPath = ResolveFromFolder(context.DefaultHitsoundFolder, filename);
         return (defaultPath, SkinCategory);
+    }
+
+    private static bool CanResolveAudio(PlaybackEvent playbackEvent)
+    {
+        return playbackEvent is not ControlEvent
+               {
+                   ControlEventType: ControlEventType.LoopStop or ControlEventType.Volume or ControlEventType.Balance
+               }
+               && !string.IsNullOrWhiteSpace(playbackEvent.Filename);
     }
 
     private static string? ResolveFromFolder(string folder, string filename)

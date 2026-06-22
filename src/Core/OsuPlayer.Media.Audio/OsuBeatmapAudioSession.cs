@@ -102,16 +102,23 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
         _options = options;
         var resources = options.Resources;
 
-        var musicSource = await CreateMusicSourceAsync(osuFile, resources, cancellationToken)
+        var musicSourceResult = await CreateMusicSourceAsync(osuFile, resources, cancellationToken)
             .ConfigureAwait(false);
 
-        await _musicTransport.LoadAsync(musicSource, ownsSource: true, cancellationToken).ConfigureAwait(false);
+        await _musicTransport.LoadAsync(musicSourceResult.Source, ownsSource: true, cancellationToken)
+            .ConfigureAwait(false);
 
         _eventAudioCache.SetContext(resources.BeatmapFolder, resources.UserSkinFolder,
             resources.DefaultHitsoundFolder, _playbackEngine.SourceWaveFormat);
         ApplyOptions(options);
 
         var playbackEvents = await BuildPlaybackEventsAsync(osuFile, options, cancellationToken).ConfigureAwait(false);
+        if (musicSourceResult.IsSilent)
+        {
+            await ReloadSilentMusicSourceWithPlaybackEventDurationAsync(osuFile, playbackEvents, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
         lock (_timelineGate)
         {
             _playbackEvents = playbackEvents;
@@ -290,34 +297,38 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
         return events.OrderBy(static k => k.Offset).ToArray();
     }
 
-    private async Task<IMusicPlaybackSource> CreateMusicSourceAsync(
+    private async Task<MusicSourceLoadResult> CreateMusicSourceAsync(
         OsuFile osuFile,
         BeatmapResources resources,
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(resources.AudioFilename))
         {
-            return CreateSilentMusicSource(osuFile);
+            return new MusicSourceLoadResult(CreateSilentMusicSource(osuFile), IsSilent: true);
         }
 
         var musicPath = Path.Combine(resources.BeatmapFolder, resources.AudioFilename);
         if (!File.Exists(musicPath))
         {
             _logger?.LogWarning("Beatmap music file is missing, using silent track: {MusicPath}", musicPath);
-            return CreateSilentMusicSource(osuFile);
+            return new MusicSourceLoadResult(CreateSilentMusicSource(osuFile), IsSilent: true);
         }
 
-        return await AudioFileMusicPlaybackSource.CreateAsync(
+        var source = await AudioFileMusicPlaybackSource.CreateAsync(
             _audioCacheManager,
             musicPath,
             _playbackEngine.SourceWaveFormat,
             _rateProcessorFactory,
             cancellationToken).ConfigureAwait(false);
+
+        return new MusicSourceLoadResult(source, IsSilent: false);
     }
 
     private IMusicPlaybackSource CreateSilentMusicSource(OsuFile osuFile)
+        => CreateSilentMusicSource(CalculateDurationFromBeatmap(osuFile));
+
+    private IMusicPlaybackSource CreateSilentMusicSource(TimeSpan duration)
     {
-        var duration = CalculateDurationFromBeatmap(osuFile);
         if (duration <= TimeSpan.Zero)
         {
             duration = MinimumSchedulerDelay;
@@ -325,6 +336,49 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
 
         return SilentMusicPlaybackSource.Create(duration,
             _playbackEngine.SourceWaveFormat, _rateProcessorFactory);
+    }
+
+    private async Task ReloadSilentMusicSourceWithPlaybackEventDurationAsync(
+        OsuFile osuFile,
+        IReadOnlyList<PlaybackEvent> playbackEvents,
+        CancellationToken cancellationToken)
+    {
+        var beatmapDuration = CalculateDurationFromBeatmap(osuFile);
+        var eventDuration = CalculateDurationFromPlaybackEvents(playbackEvents, cancellationToken);
+        var duration = eventDuration > beatmapDuration ? eventDuration : beatmapDuration;
+        if (duration <= _musicTransport.Duration)
+        {
+            return;
+        }
+
+        var musicSource = CreateSilentMusicSource(duration);
+        await _musicTransport.LoadAsync(musicSource, ownsSource: true, cancellationToken).ConfigureAwait(false);
+    }
+
+    private TimeSpan CalculateDurationFromPlaybackEvents(
+        IReadOnlyList<PlaybackEvent> playbackEvents,
+        CancellationToken cancellationToken)
+    {
+        double maxEndTimeMs = 0;
+        foreach (var playbackEvent in playbackEvents)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            maxEndTimeMs = Math.Max(maxEndTimeMs, playbackEvent.Offset);
+
+            var audioDuration = _eventAudioCache.GetAudioDuration(playbackEvent, cancellationToken);
+            if (audioDuration is not { } duration || duration <= TimeSpan.Zero)
+            {
+                continue;
+            }
+
+            var endTimeMs = playbackEvent.Offset + duration.TotalMilliseconds;
+            if (!double.IsNaN(endTimeMs) && !double.IsInfinity(endTimeMs))
+            {
+                maxEndTimeMs = Math.Max(maxEndTimeMs, endTimeMs);
+            }
+        }
+
+        return TimeSpan.FromMilliseconds(maxEndTimeMs);
     }
 
     private async Task SchedulerLoopAsync(CancellationToken cancellationToken)
@@ -558,4 +612,6 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
             maxTimeMs = Math.Max(maxTimeMs, osuFile.TimingPoints.MaxTime);
         return TimeSpan.FromMilliseconds(maxTimeMs);
     }
+
+    private readonly record struct MusicSourceLoadResult(IMusicPlaybackSource Source, bool IsSilent);
 }
