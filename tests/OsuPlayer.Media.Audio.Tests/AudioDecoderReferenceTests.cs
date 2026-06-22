@@ -139,6 +139,17 @@ public sealed class AudioDecoderReferenceTests
         Assert.Equal(expectedStartSkip, info.TotalDiscardSamples);
     }
 
+    [Fact]
+    public void Mp3GaplessInfo_ReadsLavcInfoHeaderAfterId3Padding()
+    {
+        var mp3 = InsertPaddingAfterId3(CreateLavcInfoMp3Frame(576, 0), paddingLength: 32, paddingByte: 0x55);
+
+        Assert.True(Mp3GaplessInfo.TryRead(mp3, out var info));
+        Assert.Equal(48_000, info.SampleRate);
+        Assert.Equal(1_105, info.StartSkipSamples);
+        Assert.Equal(0, info.EndDiscardSamples);
+    }
+
     private static async Task<AudioAlignmentResult> EvaluateCaseAsync(
         AudioReferenceCase testCase,
         bool validate,
@@ -353,6 +364,17 @@ public sealed class AudioDecoderReferenceTests
         data[9] = id3PayloadLength;
         frame.CopyTo(data.AsSpan(10 + id3PayloadLength));
 
+        return data;
+    }
+
+    private static byte[] InsertPaddingAfterId3(byte[] mp3, int paddingLength, byte paddingByte)
+    {
+        const int id3Length = 15;
+
+        var data = new byte[mp3.Length + paddingLength];
+        mp3.AsSpan(0, id3Length).CopyTo(data);
+        data.AsSpan(id3Length, paddingLength).Fill(paddingByte);
+        mp3.AsSpan(id3Length).CopyTo(data.AsSpan(id3Length + paddingLength));
         return data;
     }
 
