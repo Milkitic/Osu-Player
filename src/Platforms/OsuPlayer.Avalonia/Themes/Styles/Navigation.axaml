@@ -3,8 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:OsuPlayer.Controls">
 
-    <!--  nav-button:WPF 导航 IconRadioButton 样式  -->
-    <Style Selector=":is(Button).nav-button">
+    <!--  nav-button: WPF 导航按钮样式，仅用于内置按钮类型，避免覆盖 IconRadioButton 的 ControlTheme。  -->
+    <Style Selector="ToggleButton.nav-button, Button.nav-button, RadioButton.nav-button">
         <Setter Property="Foreground" Value="#FEFEFEFE" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -29,30 +29,30 @@
                 </Grid>
             </ControlTemplate>
         </Setter>
+    </Style>
 
-        <Style Selector="^:pointerover">
-            <Setter Property="Background" Value="White" />
-            <Setter Property="Foreground" Value="#303030" />
-        </Style>
-        <Style Selector="^:pointerover /template/ Rectangle#innerRectangle">
-            <Setter Property="Opacity" Value="1" />
-        </Style>
+    <Style Selector="ToggleButton.nav-button:pointerover /template/ Rectangle#innerRectangle, Button.nav-button:pointerover /template/ Rectangle#innerRectangle, RadioButton.nav-button:pointerover /template/ Rectangle#innerRectangle">
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="ToggleButton.nav-button:pointerover, Button.nav-button:pointerover, RadioButton.nav-button:pointerover">
+        <Setter Property="Background" Value="White" />
+        <Setter Property="Foreground" Value="#303030" />
+    </Style>
 
-        <Style Selector="^:pressed">
-            <Setter Property="Background" Value="#F0F0F0" />
-            <Setter Property="Foreground" Value="#303030" />
-        </Style>
-        <Style Selector="^:pressed /template/ Rectangle#innerRectangle">
-            <Setter Property="Opacity" Value="1" />
-        </Style>
+    <Style Selector="ToggleButton.nav-button:pressed, Button.nav-button:pressed, RadioButton.nav-button:pressed">
+        <Setter Property="Background" Value="#F0F0F0" />
+        <Setter Property="Foreground" Value="#303030" />
+    </Style>
+    <Style Selector="ToggleButton.nav-button:pressed /template/ Rectangle#innerRectangle, Button.nav-button:pressed /template/ Rectangle#innerRectangle, RadioButton.nav-button:pressed /template/ Rectangle#innerRectangle">
+        <Setter Property="Opacity" Value="1" />
+    </Style>
 
-        <Style Selector="^:checked">
-            <Setter Property="Background" Value="#F8F8F8" />
-            <Setter Property="Foreground" Value="#303030" />
-        </Style>
-        <Style Selector="^:checked /template/ Rectangle#innerRectangle">
-            <Setter Property="Opacity" Value="1" />
-        </Style>
+    <Style Selector="ToggleButton.nav-button:checked /template/ Rectangle#innerRectangle, Button.nav-button:checked /template/ Rectangle#innerRectangle, RadioButton.nav-button:checked /template/ Rectangle#innerRectangle">
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="ToggleButton.nav-button:checked, Button.nav-button:checked, RadioButton.nav-button:checked">
+        <Setter Property="Background" Value="#F8F8F8" />
+        <Setter Property="Foreground" Value="#303030" />
     </Style>
 
     <Style Selector="Label.nav-header">
