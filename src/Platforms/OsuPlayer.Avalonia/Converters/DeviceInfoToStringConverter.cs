@@ -3,8 +3,9 @@ using System.Globalization;
 using Avalonia;
 using Avalonia.Data.Converters;
 using KeyAsio.Core.Audio;
-using OsuPlayer.Utils;
 using OsuPlayer.Lang;
+using OsuPlayer.Localization;
+using OsuPlayer.Utils;
 
 namespace OsuPlayer.Converters;
 
@@ -14,7 +15,7 @@ public class DeviceInfoToStringConverter : IValueConverter
     {
         if (value is not DeviceDescription b) return value;
         if (DeviceComparer.Instance.Equals(b, DeviceDescription.WasapiDefault))
-            return I18NUtil.GetString(SRKeys.Ui_Sets_Content_SystemDefault);
+            return LocalizationService.Instance[SRKeys.Ui_Sets_Content_SystemDefault];
         return $"({b.WavePlayerType}) {b.FriendlyName}";
     }
 

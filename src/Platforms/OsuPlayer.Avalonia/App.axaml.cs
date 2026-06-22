@@ -93,11 +93,11 @@ public partial class App : Application
         var showItem = new NativeMenuItem("Show / Hide Osu Player");
         showItem.Click += (_, _) => ToggleMainWindow();
         menu.Items.Add(showItem);
-        var settingsItem = new NativeMenuItem(I18NUtil.GetString(SRKeys.Ui_Sets));
+        var settingsItem = new NativeMenuItem(LocalizationService.Instance[SRKeys.Ui_Sets]);
         settingsItem.Click += (_, _) => OpenSettingsWindow();
         menu.Items.Add(settingsItem);
         menu.Items.Add(new NativeMenuItemSeparator());
-        var exitItem = new NativeMenuItem(I18NUtil.GetString(SRKeys.Ui_Exit));
+        var exitItem = new NativeMenuItem(LocalizationService.Instance[SRKeys.Ui_Exit]);
         exitItem.Click += (_, _) => ExitApp();
         menu.Items.Add(exitItem);
 

@@ -10,10 +10,11 @@ using OsuPlayer.Core;
 using OsuPlayer.Core.ObjectModel;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
+using OsuPlayer.Lang;
+using OsuPlayer.Localization;
 using OsuPlayer.Presentation.Interaction;
 using OsuPlayer.Services;
 using OsuPlayer.Shared;
-using OsuPlayer.Lang;
 
 namespace OsuPlayer.ViewModels;
 
@@ -80,7 +81,7 @@ public partial class ExportPageViewModel : ObservableObject
                 StartProcess("Explorer", "/select," + dataModel.ExportFile);
                 break;
             default:
-                AppNotificationService.Instance.Push(I18NUtil.GetString(SRKeys.Err_DirNotFound));
+                AppNotificationService.Instance.Push(LocalizationService.Instance[SRKeys.Err_DirNotFound]);
                 break;
         }
     }

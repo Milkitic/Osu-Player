@@ -4,9 +4,10 @@ using System.Threading.Tasks;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data;
 using OsuPlayer.Data.Models;
+using OsuPlayer.Lang;
+using OsuPlayer.Localization;
 using OsuPlayer.Shared;
 using OsuPlayer.Shared.Models;
-using OsuPlayer.Lang;
 
 namespace OsuPlayer.Services;
 
@@ -95,7 +96,7 @@ public sealed class NotifyingPlayerDataService : IPlayerDataService
             var collection = await _inner.GetCollectionByIdAsync(id);
             if (collection is null)
             {
-                _notifications.Push(I18NUtil.GetString(SRKeys.Err_CollectionNotInDb), I18NUtil.GetString(SRKeys.Text_Error));
+                _notifications.Push(LocalizationService.Instance[SRKeys.Err_CollectionNotInDb], LocalizationService.Instance[SRKeys.Text_Error]);
             }
 
             return collection!;
