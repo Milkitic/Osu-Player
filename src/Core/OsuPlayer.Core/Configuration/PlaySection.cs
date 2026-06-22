@@ -6,12 +6,12 @@ namespace OsuPlayer.Core.Configuration;
 
 public partial class PlaySection : ObservableObject
 {
-    public const int AudioBackendFixedOffset = -23;
+    public const int OsuFixedOffset = -25;
 
     public int GeneralOffset { get; set; }
 
     [JsonIgnore]
-    public int GeneralActualOffset => GeneralOffset + AudioBackendFixedOffset;
+    public int GeneralActualOffset => GeneralOffset + OsuFixedOffset;
 
     public bool ReplacePlayList { get; set; } = true;
     public bool UsePlayerV2 { get; set; } = false;
