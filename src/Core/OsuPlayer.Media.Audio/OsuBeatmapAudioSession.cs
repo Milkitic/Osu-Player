@@ -102,23 +102,8 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
         _options = options;
         var resources = options.Resources;
 
-        IMusicPlaybackSource musicSource;
-        if (string.IsNullOrWhiteSpace(resources.AudioFilename))
-        {
-            var duration = CalculateDurationFromBeatmap(osuFile);
-            musicSource = SilentMusicPlaybackSource.Create(duration,
-                _playbackEngine.SourceWaveFormat, _rateProcessorFactory);
-        }
-        else
-        {
-            var musicPath = Path.Combine(resources.BeatmapFolder, resources.AudioFilename);
-            musicSource = await AudioFileMusicPlaybackSource.CreateAsync(
-                _audioCacheManager,
-                musicPath,
-                _playbackEngine.SourceWaveFormat,
-                _rateProcessorFactory,
-                cancellationToken).ConfigureAwait(false);
-        }
+        var musicSource = await CreateMusicSourceAsync(osuFile, resources, cancellationToken)
+            .ConfigureAwait(false);
 
         await _musicTransport.LoadAsync(musicSource, ownsSource: true, cancellationToken).ConfigureAwait(false);
 
@@ -303,6 +288,43 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
         }
 
         return events.OrderBy(static k => k.Offset).ToArray();
+    }
+
+    private async Task<IMusicPlaybackSource> CreateMusicSourceAsync(
+        OsuFile osuFile,
+        BeatmapResources resources,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(resources.AudioFilename))
+        {
+            return CreateSilentMusicSource(osuFile);
+        }
+
+        var musicPath = Path.Combine(resources.BeatmapFolder, resources.AudioFilename);
+        if (!File.Exists(musicPath))
+        {
+            _logger?.LogWarning("Beatmap music file is missing, using silent track: {MusicPath}", musicPath);
+            return CreateSilentMusicSource(osuFile);
+        }
+
+        return await AudioFileMusicPlaybackSource.CreateAsync(
+            _audioCacheManager,
+            musicPath,
+            _playbackEngine.SourceWaveFormat,
+            _rateProcessorFactory,
+            cancellationToken).ConfigureAwait(false);
+    }
+
+    private IMusicPlaybackSource CreateSilentMusicSource(OsuFile osuFile)
+    {
+        var duration = CalculateDurationFromBeatmap(osuFile);
+        if (duration <= TimeSpan.Zero)
+        {
+            duration = MinimumSchedulerDelay;
+        }
+
+        return SilentMusicPlaybackSource.Create(duration,
+            _playbackEngine.SourceWaveFormat, _rateProcessorFactory);
     }
 
     private async Task SchedulerLoopAsync(CancellationToken cancellationToken)

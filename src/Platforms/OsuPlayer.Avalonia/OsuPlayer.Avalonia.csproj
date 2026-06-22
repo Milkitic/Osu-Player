@@ -11,6 +11,10 @@
     <AssemblyName>OsuPlayer</AssemblyName>
   </PropertyGroup>
 
+  <PropertyGroup Condition="$(Configuration)=='Debug'">
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
   <ItemGroup>
     <Folder Include="Models\" />
     <AvaloniaResource Include="osuPlayer.ico" />
