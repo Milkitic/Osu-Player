@@ -5,9 +5,7 @@
     xmlns:lang="clr-namespace:OsuPlayer.Lang"
     x:Name="Self"
     x:CompileBindings="False">
-    <Button
-        Classes="beatmap-card-button"
-        Click="Card_Click">
+    <Button Classes="beatmap-card-button" Click="Card_Click">
         <Button.ContextMenu>
             <ContextMenu>
                 <MenuItem Click="PlayWithDifficulty_Click">
@@ -16,10 +14,22 @@
                     </MenuItem.Header>
                 </MenuItem>
                 <Separator />
-                <MenuItem Click="SearchByCondition_Click" CommandParameter="Title" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchTitle}}" />
-                <MenuItem Click="SearchByCondition_Click" CommandParameter="Artist" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchArtist}}" />
-                <MenuItem Click="SearchByCondition_Click" CommandParameter="Source" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchSource}}" />
-                <MenuItem Click="SearchByCondition_Click" CommandParameter="Creator" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchCreator}}" />
+                <MenuItem
+                    Click="SearchByCondition_Click"
+                    CommandParameter="Title"
+                    Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchTitle}}" />
+                <MenuItem
+                    Click="SearchByCondition_Click"
+                    CommandParameter="Artist"
+                    Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchArtist}}" />
+                <MenuItem
+                    Click="SearchByCondition_Click"
+                    CommandParameter="Source"
+                    Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchSource}}" />
+                <MenuItem
+                    Click="SearchByCondition_Click"
+                    CommandParameter="Creator"
+                    Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchCreator}}" />
                 <Separator />
                 <MenuItem Click="OpenFolder_Click">
                     <MenuItem.Header>
@@ -44,10 +54,16 @@
         </Button.ContextMenu>
         <ToolTip.Tip>
             <Grid>
-                <Border Padding="5" Background="White" BoxShadow="0 0 5 0 #4C000000" />
+                <Border
+                    Padding="5"
+                    Background="White"
+                    BoxShadow="0 0 5 0 #4C000000" />
                 <Border Padding="5" Background="#F8FFFFFF">
                     <StackPanel>
-                        <Border Height="150" Margin="5" Background="#F0F0F0">
+                        <Border
+                            Height="150"
+                            Margin="5"
+                            Background="#F0F0F0">
                             <Image
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
@@ -76,23 +92,19 @@
             </Grid>
         </ToolTip.Tip>
         <Grid
-            Classes="beatmap-card-root"
             Width="160"
             Height="220"
-            RenderTransformOrigin="0.5,0.5">
-            <Grid.RenderTransform>
-                <ScaleTransform ScaleX="1" ScaleY="1" />
-            </Grid.RenderTransform>
+            Classes="beatmap-card-root">
             <Border
-                Classes="beatmap-card-shadow"
                 Margin="3"
-                Background="#FBFBFB" />
+                Background="#FBFBFB"
+                Classes="beatmap-card-shadow" />
             <Border
-                Classes="beatmap-card-main"
                 Margin="3"
                 Background="#FBFBFB"
                 BorderBrush="#20646464"
-                BorderThickness="1">
+                BorderThickness="1"
+                Classes="beatmap-card-main">
                 <Grid RowDefinitions="Auto,Auto,Auto,*">
                     <Border
                         Grid.Row="0"

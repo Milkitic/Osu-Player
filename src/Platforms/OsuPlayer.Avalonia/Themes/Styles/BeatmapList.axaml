@@ -69,16 +69,35 @@
             </ControlTemplate>
         </Setter>
     </Style>
-    <Style Selector="Button.beatmap-card-button:pointerover Border.beatmap-card-shadow">
-        <Setter Property="BoxShadow" Value="0 1 10 0 #4D000000" />
-    </Style>
-    <Style Selector="Button.beatmap-card-button:pointerover Grid.beatmap-card-root">
-        <Setter Property="RenderTransform">
-            <Setter.Value>
-                <ScaleTransform ScaleX="1.04" ScaleY="1.04" />
-            </Setter.Value>
+    <!-- Card root: default scale + transition -->
+    <Style Selector="Button.beatmap-card-button Grid.beatmap-card-root">
+        <Setter Property="RenderTransformOrigin" Value="50%,50%" />
+        <Setter Property="RenderTransform" Value="scale(1)" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="0,0,0.2,1" />
+            </Transitions>
         </Setter>
     </Style>
+    <!-- Card shadow: default no shadow + transition -->
+    <Style Selector="Button.beatmap-card-button Border.beatmap-card-shadow">
+        <Setter Property="BoxShadow" Value="0 0 0 0 #00000000" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <BoxShadowsTransition Property="BoxShadow" Duration="0:0:0.2" Easing="0,0,0.2,1" />
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <!-- Hover: scale up + shadow -->
+    <Style Selector="Button.beatmap-card-button:pointerover Border.beatmap-card-shadow">
+        <Setter Property="BoxShadow" Value="0 0 10 0 #4D000000" />
+    </Style>
+    <Style Selector="Button.beatmap-card-button:pointerover Grid.beatmap-card-root">
+        <Setter Property="RenderTransform" Value="scale(1.05)" />
+    </Style>
+    
+    <!-- Pressed: dim content -->
     <Style Selector="Button.beatmap-card-button:pressed Border.beatmap-card-main">
         <Setter Property="Opacity" Value="0.7" />
     </Style>
