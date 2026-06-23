@@ -27,6 +27,7 @@ public class OsuPlayerDbContext : DbContext
 
     static OsuPlayerDbContext()
     {
+        SqliteNativeProvider.EnsureInitialized();
         ConfigureDapperCompatibility();
     }
 

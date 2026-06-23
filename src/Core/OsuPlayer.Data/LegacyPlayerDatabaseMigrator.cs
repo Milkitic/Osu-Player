@@ -15,15 +15,15 @@ internal class LegacyPlayerDatabaseMigrator
     private const string LegacySchema = "legacy";
     private readonly ILogger _logger;
 
-    private static readonly TableMigration[] TableMigrations =
-    {
+    private static readonly TableMigration[] s_tableMigrations =
+    [
         new("beatmap", "beatmaps"),
         new("map_info", "beatmap_play_settings"),
         new("collection", "collections"),
         new("collection_relation", "collection_beatmaps"),
         new("map_thumb", "beatmap_thumbnails"),
         new("sb_info", "storyboard_assets")
-    };
+    ];
 
     public LegacyPlayerDatabaseMigrator(ILogger logger)
     {
@@ -44,6 +44,8 @@ internal class LegacyPlayerDatabaseMigrator
             return;
         }
 
+        SqliteNativeProvider.EnsureInitialized();
+
         using var appConnection = new SqliteConnection(CreateConnectionString(appFullPath));
         appConnection.Open();
 
@@ -61,7 +63,7 @@ internal class LegacyPlayerDatabaseMigrator
             _logger.LogInformation("Legacy player.db contains EF migration history; importing compatible tables.");
         }
 
-        if (!TableMigrations.Any(migration => migration.HasSourceTable(legacyConnection, "main")))
+        if (!s_tableMigrations.Any(migration => migration.HasSourceTable(legacyConnection, "main")))
         {
             _logger.LogInformation("Skip legacy player.db import because no known legacy tables were found.");
             return;
@@ -75,7 +77,7 @@ internal class LegacyPlayerDatabaseMigrator
             var copiedRows = 0;
             var ignoredRows = 0;
 
-            foreach (var migration in TableMigrations)
+            foreach (var migration in s_tableMigrations)
             {
                 var result = CopyTable(appConnection, transaction, migration);
                 copiedRows += result.InsertedRows;

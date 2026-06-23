@@ -7,6 +7,17 @@ namespace OsuPlayer.Data.Tests;
 public sealed class LegacyPlayerDatabaseMigratorTests
 {
     [Fact]
+    public void EnsureInitialized_configures_sqlite_provider()
+    {
+        SqliteNativeProvider.EnsureInitialized();
+
+        using var connection = new SqliteConnection("Data Source=:memory:");
+        connection.Open();
+
+        Assert.False(string.IsNullOrWhiteSpace(connection.ServerVersion));
+    }
+
+    [Fact]
     public async Task MigrateIfRequired_imports_legacy_dapper_schema_and_marks_history()
     {
         using var temp = new TempDatabaseFiles();
