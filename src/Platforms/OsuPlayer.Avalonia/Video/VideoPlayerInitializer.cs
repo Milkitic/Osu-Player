@@ -1,5 +1,5 @@
 using System;
-using Avalonia.VlcVideoPlayer;
+using FFmpegVideoPlayer.Core;
 
 namespace OsuPlayer.Video;
 
