@@ -152,22 +152,10 @@
                                 Classes="nav-button"
                                 Classes.collapsed="{Binding IsNavigationCollapsed}"
                                 Click="OnNavClick"
-                                Content="{I18N {x:Static lang:SRKeys.Ui_Nav_Search}}"
-                                GroupName="MainNav"
-                                IconTemplate="{StaticResource NavSearchTempl}"
-                                IsChecked="True"
-                                Tag="Search" />
-
-                            <!--  音乐 (Find)  -->
-                            <ui:IconRadioButton
-                                x:Name="FindNavButton"
-                                CheckedIconColor="#508030"
-                                Classes="nav-button"
-                                Classes.collapsed="{Binding IsNavigationCollapsed}"
-                                Click="OnNavClick"
-                                Content="{I18N {x:Static lang:SRKeys.Ui_Nav_Music}}"
+                                Content="{I18N {x:Static lang:SRKeys.Ui_Nav_Explore}}"
                                 GroupName="MainNav"
                                 IconTemplate="{StaticResource NavCompassTempl}"
+                                IsChecked="True"
                                 Tag="Find" />
 
                             <!--  我的 分类标题  -->
