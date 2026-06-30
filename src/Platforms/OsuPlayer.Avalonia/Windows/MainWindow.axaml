@@ -2,9 +2,9 @@
     x:Class="OsuPlayer.Windows.MainWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:lang="clr-namespace:OsuPlayer.Lang"
     xmlns:controls="clr-namespace:OsuPlayer.Views.UserControls"
     xmlns:data="clr-namespace:OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
     xmlns:ui="clr-namespace:OsuPlayer.Controls"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels"
     Title="Osu Player"
@@ -16,7 +16,10 @@
     ExtendClientAreaTitleBarHeightHint="40"
     ExtendClientAreaToDecorationsHint="True"
     Icon="avares://OsuPlayer/osuPlayer.ico"
-    WindowDecorations="BorderOnly"
+    WindowDecorations="{OnPlatform BorderOnly,
+                                   Windows=Full,
+                                   x:TypeArguments=WindowDecorations}"
+    WindowDecorationsTheme="{StaticResource EmptyWindowDrawnDecorationsTheme}"
     WindowStartupLocation="CenterScreen">
 
     <Design.DataContext>
@@ -51,7 +54,8 @@
                     VerticalAlignment="Center"
                     BorderBrush="#28DDDDDD"
                     BorderThickness="1"
-                    CornerRadius="16">
+                    CornerRadius="16"
+                    WindowDecorationProperties.ElementRole="User">
                     <StackPanel Orientation="Horizontal">
                         <Button
                             Width="25"
@@ -59,7 +63,8 @@
                             Margin="3,0"
                             Classes="titlebar-btn"
                             Click="BtnSettings_Click"
-                            ToolTip.Tip="{I18N {x:Static lang:SRKeys.Ui_Sets}}">
+                            ToolTip.Tip="{I18N {x:Static lang:SRKeys.Ui_Sets}}"
+                            WindowDecorationProperties.ElementRole="User">
                             <Viewbox Width="21" Height="21">
                                 <ContentControl Template="{StaticResource SettingsTempl}" />
                             </Viewbox>
@@ -70,7 +75,8 @@
                             Margin="3,0"
                             Classes="titlebar-btn"
                             Click="BtnMini_Click"
-                            ToolTip.Tip="Mini">
+                            ToolTip.Tip="Mini"
+                            WindowDecorationProperties.ElementRole="User">
                             <Viewbox Width="16" Height="16">
                                 <ContentControl Template="{StaticResource MiniModeTempl}" />
                             </Viewbox>
@@ -302,9 +308,7 @@
                 <!--  内容区  -->
                 <Grid Grid.Column="1">
                     <controls:AnimationControl x:Name="Animation" />
-                    <Border
-                        Background="#B0FFFFFF"
-                        IsVisible="{Binding Content, ElementName=MainFrame, Converter={StaticResource NullToHiddenConverter}}">
+                    <Border Background="#B0FFFFFF" IsVisible="{Binding Content, ElementName=MainFrame, Converter={StaticResource NullToHiddenConverter}}">
                         <ContentControl x:Name="MainFrame" />
                     </Border>
                 </Grid>

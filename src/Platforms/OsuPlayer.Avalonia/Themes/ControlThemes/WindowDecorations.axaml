@@ -1,0 +1,27 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:chrome="clr-namespace:Avalonia.Controls.Chrome;assembly=Avalonia.Controls">
+
+    <ControlTheme x:Key="EmptyWindowDrawnDecorationsTheme" TargetType="chrome:WindowDrawnDecorations">
+        <Setter Property="DefaultTitleBarHeight" Value="32" />
+        <Setter Property="Template">
+            <WindowDrawnDecorationsTemplate>
+                <chrome:WindowDrawnDecorationsContent>
+                    <chrome:WindowDrawnDecorationsContent.Overlay>
+                        <DockPanel
+                            Height="{TemplateBinding TitleBarHeight}"
+                            Margin="{TemplateBinding ShadowThickness}"
+                            VerticalAlignment="Top" />
+                    </chrome:WindowDrawnDecorationsContent.Overlay>
+                </chrome:WindowDrawnDecorationsContent>
+            </WindowDrawnDecorationsTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <ControlTheme
+        x:Key="{x:Type chrome:WindowDrawnDecorations}"
+        BasedOn="{StaticResource EmptyWindowDrawnDecorationsTheme}"
+        TargetType="chrome:WindowDrawnDecorations" />
+
+</ResourceDictionary>
