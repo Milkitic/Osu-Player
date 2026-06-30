@@ -1,6 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Style Selector="UserControl.settings-page">
-        <Setter Property="Background" Value="White" />
+        <Setter Property="Background" Value="Transparent" />
     </Style>
 
     <Style Selector="UserControl.settings-page &gt; ScrollViewer &gt; StackPanel &gt; TextBlock.config-title">

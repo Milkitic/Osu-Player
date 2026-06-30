@@ -11,9 +11,12 @@
     MinWidth="580"
     MinHeight="400"
     WindowStartupLocation="CenterOwner"
-    WindowDecorations="None"
     ExtendClientAreaToDecorationsHint="True"
-    ExtendClientAreaTitleBarHeightHint="32">
+    ExtendClientAreaTitleBarHeightHint="32"
+    WindowDecorations="{OnPlatform BorderOnly,
+                                   Windows=Full,
+                                   x:TypeArguments=WindowDecorations}"
+    WindowDecorationsTheme="{StaticResource EmptyWindowDrawnDecorationsTheme}">
     <Grid Background="#323232"
           Margin="{Binding $parent[Window].OffScreenMargin}"
           RowDefinitions="Auto,*">
@@ -30,21 +33,32 @@
         <Grid Grid.Row="1" ColumnDefinitions="150,*">
             <Border Grid.Column="0" Background="#2B2B2B">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                    <StackPanel Margin="0,8,0,8" Spacing="2">
-                        <TextBlock Margin="12,0,0,8" Foreground="#B8B8B8" Text="{I18N {x:Static lang:SRKeys.Ui_Sets}}" />
-                        <ToggleButton x:Name="GeneralButton" Classes="nav-button" Click="OnNavClick" IsChecked="True" Tag="General" Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Common}}" />
-                        <ToggleButton x:Name="PlayButton" Classes="nav-button" Click="OnNavClick" Tag="Play" Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Playing}}" />
-                        <ToggleButton x:Name="InterfaceButton" Classes="nav-button" Click="OnNavClick" Tag="Interface" Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Interface}}" />
-                        <ToggleButton x:Name="HotKeyButton" Classes="nav-button" Click="OnNavClick" Tag="HotKey" Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_HotKey}}" />
-                        <ToggleButton x:Name="LyricButton" Classes="nav-button" Click="OnNavClick" Tag="Lyric" Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Lyric}}" />
-                        <ToggleButton x:Name="ExportButton" Classes="nav-button" Click="OnNavClick" Tag="Export" Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Export}}" />
-                        <ToggleButton x:Name="AboutButton" Classes="nav-button" Click="OnNavClick" Tag="About" Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_About}}" />
+                    <StackPanel Margin="0,0,0,8">
+                        <Label Classes="nav-header">
+                            <TextBlock Margin="5,0,0,0" Text="{I18N {x:Static lang:SRKeys.Ui_Sets}}" />
+                        </Label>
+                        <RadioButton x:Name="GeneralButton" Classes="nav-button settings-nav-button" Click="OnNavClick" GroupName="SettingsNav" IsChecked="True" Tag="General" Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Common}}" />
+                        <RadioButton x:Name="PlayButton" Classes="nav-button settings-nav-button" Click="OnNavClick" GroupName="SettingsNav" Tag="Play" Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Playing}}" />
+                        <RadioButton x:Name="InterfaceButton" Classes="nav-button settings-nav-button" Click="OnNavClick" GroupName="SettingsNav" Tag="Interface" Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Interface}}" />
+                        <RadioButton x:Name="HotKeyButton" Classes="nav-button settings-nav-button" Click="OnNavClick" GroupName="SettingsNav" Tag="HotKey" Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_HotKey}}" />
+                        <RadioButton x:Name="LyricButton" Classes="nav-button settings-nav-button" Click="OnNavClick" GroupName="SettingsNav" Tag="Lyric" Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Lyric}}" />
+                        <RadioButton x:Name="ExportButton" Classes="nav-button settings-nav-button" Click="OnNavClick" GroupName="SettingsNav" Tag="Export" Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Export}}" />
+                        <RadioButton x:Name="AboutButton" Classes="nav-button settings-nav-button" Click="OnNavClick" GroupName="SettingsNav" Tag="About" Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_About}}" />
                     </StackPanel>
                 </ScrollViewer>
             </Border>
 
-            <Border Grid.Column="1" Background="#FEFEFE" Padding="0">
-                <ContentControl x:Name="MainFrame" />
+            <Border Grid.Column="1" Background="#FEFEFE">
+                <Grid>
+                    <Grid.Background>
+                        <ImageBrush
+                            Opacity="0.3"
+                            Source="{StaticResource TextureSource2}"
+                            Stretch="None"
+                            TileMode="Tile" />
+                    </Grid.Background>
+                    <ContentControl x:Name="MainFrame" />
+                </Grid>
             </Border>
         </Grid>
     </Grid>

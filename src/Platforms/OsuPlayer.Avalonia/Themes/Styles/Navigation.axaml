@@ -20,7 +20,7 @@
                         Fill="{TemplateBinding Background}"
                         Opacity="0" />
                     <ContentPresenter
-                        Margin="0"
+                        Margin="{TemplateBinding Padding}"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         Content="{TemplateBinding Content}"
@@ -53,6 +53,12 @@
     <Style Selector="ToggleButton.nav-button:checked, Button.nav-button:checked, RadioButton.nav-button:checked">
         <Setter Property="Background" Value="#F8F8F8" />
         <Setter Property="Foreground" Value="#303030" />
+    </Style>
+
+    <Style Selector="ToggleButton.settings-nav-button, RadioButton.settings-nav-button">
+        <Setter Property="Height" Value="39" />
+        <Setter Property="Margin" Value="0,0,0,1" />
+        <Setter Property="Padding" Value="50,0,0,0" />
     </Style>
 
     <Style Selector="Label.nav-header">
