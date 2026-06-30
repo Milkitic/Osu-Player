@@ -156,7 +156,7 @@
                                 GroupName="MainNav"
                                 IconTemplate="{StaticResource NavCompassTempl}"
                                 IsChecked="True"
-                                Tag="Find" />
+                                Tag="Search" />
 
                             <!--  我的 分类标题  -->
                             <Label
