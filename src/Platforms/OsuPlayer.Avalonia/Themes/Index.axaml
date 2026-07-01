@@ -9,6 +9,7 @@
                 <ResourceInclude Source="avares://OsuPlayer/Themes/ControlThemes/CommonTextBox.axaml" />
                 <ResourceInclude Source="avares://OsuPlayer/Themes/ControlThemes/ContentDialog.axaml" />
                 <ResourceInclude Source="avares://OsuPlayer/Themes/ControlThemes/DialogHost.axaml" />
+                <ResourceInclude Source="avares://OsuPlayer/Themes/ControlThemes/WindowDecorations.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Styles.Resources>
