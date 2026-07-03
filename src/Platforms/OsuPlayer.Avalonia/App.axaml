@@ -24,7 +24,12 @@
     </Application.Resources>
 
     <Application.Styles>
-        <FluentTheme />
+        <FluentTheme>
+            <FluentTheme.Palettes>
+                <ColorPaletteResources x:Key="Light" Accent="#FFFD629A" />
+                <ColorPaletteResources x:Key="Dark" Accent="#FFFD629A" />
+            </FluentTheme.Palettes>
+        </FluentTheme>
         <dialogHostAvalonia:DialogHostStyles />
 
         <!--  Global Font Styling  -->

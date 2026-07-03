@@ -12,7 +12,7 @@
         <vm:ExportGroupToBoolConverter x:Key="ExportGroupConv" />
     </UserControl.Resources>
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="10" Spacing="6">
+        <StackPanel Margin="10">
             <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_ExportPath}}" />
             <StackPanel Classes="config-row" Orientation="Horizontal">
                 <TextBlock Classes="config-label" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_MusicDirectory}}" />

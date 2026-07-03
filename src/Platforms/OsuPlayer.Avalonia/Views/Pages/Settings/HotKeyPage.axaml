@@ -31,7 +31,7 @@
         </Style>
     </UserControl.Styles>
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="10" Spacing="6">
+        <StackPanel Margin="10">
             <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_HotKeySettings}}" />
             <ItemsControl ItemsSource="{Binding Entries}">
                 <ItemsControl.ItemTemplate>

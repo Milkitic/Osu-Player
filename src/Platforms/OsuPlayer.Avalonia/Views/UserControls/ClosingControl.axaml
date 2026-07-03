@@ -3,7 +3,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:lang="clr-namespace:OsuPlayer.Lang">
-    <StackPanel Margin="10,0,10,0" Spacing="6">
+    <StackPanel Margin="10,5,10,0">
         <RadioButton
             x:Name="RadioMinimum"
             HorizontalAlignment="Left"
