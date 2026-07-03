@@ -8,10 +8,13 @@ using Avalonia.Interactivity;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OsuPlayer.Controls;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
+using OsuPlayer.Lang;
+using OsuPlayer.Localization;
 using OsuPlayer.Playback;
 using OsuPlayer.Presentation.Interaction;
 using OsuPlayer.Services;
@@ -25,16 +28,21 @@ namespace OsuPlayer.Windows;
 
 public partial class MainWindow : Window
 {
+    private const string MainWindowDialogIdentifier = "MainWindowDialog";
     private readonly INavigationService _nav;
     private readonly IPlayerDataService? _playerData;
     private readonly ObservablePlayController? _controller;
     private readonly ILogger<MainWindow>? _logger;
     private ConfigWindow? _configWindow;
+    private bool _disposed;
+    private bool _forceExit;
+    private bool _isClosingDialogOpen;
     private bool _playbackRestored;
 
     public MainWindow()
     {
         InitializeComponent();
+        Closing += Window_Closing;
         _nav = null!;
     }
 
@@ -47,6 +55,7 @@ public partial class MainWindow : Window
         ILogger<MainWindow> logger)
     {
         InitializeComponent();
+        Closing += Window_Closing;
         DataContext = viewModel;
         _nav = navigationService;
         _playerData = playerData;
@@ -225,6 +234,109 @@ public partial class MainWindow : Window
     private void BtnMini_Click(object? sender, RoutedEventArgs e)
     {
         WindowState = WindowState.Minimized;
+    }
+
+    public void ForceClose()
+    {
+        _forceExit = true;
+        Close();
+    }
+
+    private async void Window_Closing(object? sender, WindowClosingEventArgs e)
+    {
+        var settings = AppSettings.Default;
+        if (!_forceExit && settings?.General.ExitWhenClosed == null)
+        {
+            e.Cancel = true;
+            await ShowClosingDialogAsync();
+            return;
+        }
+
+        if (!_forceExit && settings?.General.ExitWhenClosed == false)
+        {
+            e.Cancel = true;
+            HideToTray();
+            return;
+        }
+
+        if (_disposed)
+        {
+            return;
+        }
+
+        e.Cancel = true;
+        await DisposeBeforeExitAsync();
+        _forceExit = true;
+        Close();
+    }
+
+    private async Task ShowClosingDialogAsync()
+    {
+        if (_isClosingDialogOpen)
+        {
+            return;
+        }
+
+        _isClosingDialogOpen = true;
+        try
+        {
+            var closingControl = new ClosingControl();
+            var dialog = new ContentDialog
+            {
+                Width = 280,
+                Height = 180,
+                Header = LocalizationService.Instance[SRKeys.Ui_Win_Closing],
+                HeaderShowClose = true,
+                FooterButtonStyle = FooterButtonStyle.Yes,
+                FooterYesButtonText = LocalizationService.Instance[SRKeys.Ui_Ok],
+                Content = closingControl
+            };
+
+            var result = await this.ShowContentDialog(dialog, MainWindowDialogIdentifier);
+            if (result is true)
+            {
+                ApplyClosingChoice(closingControl);
+            }
+        }
+        finally
+        {
+            _isClosingDialogOpen = false;
+        }
+    }
+
+    private void ApplyClosingChoice(ClosingControl closingControl)
+    {
+        if (AppSettings.Default != null && closingControl.AsDefault.IsChecked == true)
+        {
+            AppSettings.Default.General.ExitWhenClosed = closingControl.RadioMinimum.IsChecked != true;
+            AppSettings.SaveDefault();
+        }
+
+        if (closingControl.RadioMinimum.IsChecked == true)
+        {
+            HideToTray();
+            return;
+        }
+
+        ForceClose();
+    }
+
+    private void HideToTray()
+    {
+        WindowState = WindowState.Minimized;
+        Hide();
+    }
+
+    private async Task DisposeBeforeExitAsync()
+    {
+        _configWindow?.Close();
+
+        if (_controller != null)
+        {
+            await _controller.DisposeAsync().ConfigureAwait(false);
+        }
+
+        _disposed = true;
     }
 
     private void Controller_ThumbClicked(object? sender, EventArgs e)

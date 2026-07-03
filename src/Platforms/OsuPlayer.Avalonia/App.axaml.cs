@@ -150,6 +150,12 @@ public partial class App : Application
 
     private static void ExitApp()
     {
+        if (s_mainWindow != null)
+        {
+            s_mainWindow.ForceClose();
+            return;
+        }
+
         if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime)
         {
             lifetime.Shutdown();

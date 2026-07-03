@@ -26,16 +26,17 @@
         <vm:MainWindowViewModel />
     </Design.DataContext>
 
-    <Grid Margin="{Binding $parent[Window].OffScreenMargin}" RowDefinitions="Auto,*">
-        <Grid.Background>
-            <ImageBrush
-                AlignmentX="Left"
-                AlignmentY="Top"
-                DestinationRect="0,0,500,500"
-                Source="{StaticResource TextureSource1}"
-                Stretch="None"
-                TileMode="Tile" />
-        </Grid.Background>
+    <ui:CustomDialogHost AutoIdentifier="MainWindowDialog" CloseOnClickAway="False">
+        <Grid Margin="{Binding $parent[Window].OffScreenMargin}" RowDefinitions="Auto,*">
+            <Grid.Background>
+                <ImageBrush
+                    AlignmentX="Left"
+                    AlignmentY="Top"
+                    DestinationRect="0,0,500,500"
+                    Source="{StaticResource TextureSource1}"
+                    Stretch="None"
+                    TileMode="Tile" />
+            </Grid.Background>
 
         <!--  标题栏  -->
         <controls:WindowTitleBar
@@ -305,5 +306,6 @@
             <!--  播放控制栏  -->
             <controls:PlayController x:Name="PlayBarController" Grid.Row="1" />
         </Grid>
-    </Grid>
+        </Grid>
+    </ui:CustomDialogHost>
 </Window>
