@@ -14,12 +14,13 @@ using OsuPlayer.Data.Models;
 using OsuPlayer.Playback;
 using OsuPlayer.Services;
 using OsuPlayer.ViewModels;
-using OsuPlayer.Windows;
 
 namespace OsuPlayer.Views.UserControls;
 
 public partial class SelectCollectionControl : UserControl
 {
+    public event EventHandler? CloseRequested;
+
     private readonly IPlayerDataService? _playerData;
     private readonly SelectCollectionPageViewModel? _viewModel;
 
@@ -51,15 +52,7 @@ public partial class SelectCollectionControl : UserControl
             return;
         }
 
-        if (TopLevel.GetTopLevel(this) is not Window owner)
-        {
-            AppNotificationService.Instance.Push("ui-addNewCollection");
-            return;
-        }
-
-        var dialog = new AddCollectionWindow(_playerData);
-        await dialog.ShowDialog(owner);
-        await RefreshListAsync();
+        await FrontDialogService.ShowAddCollectionAsync(this, _playerData, RefreshAllCollectionViewsAsync);
     }
 
     private async void BtnClose_Click(object? sender, RoutedEventArgs e)
@@ -71,6 +64,12 @@ public partial class SelectCollectionControl : UserControl
             {
                 await AddToCollectionAsync(col, entries);
             }
+        }
+
+        if (CloseRequested != null)
+        {
+            CloseRequested.Invoke(this, EventArgs.Empty);
+            return;
         }
 
         if (TopLevel.GetTopLevel(this) is Window win)
@@ -92,6 +91,16 @@ public partial class SelectCollectionControl : UserControl
         if (_viewModel == null || _playerData == null) return;
         var cols = await _playerData.GetCollectionsAsync();
         _viewModel.Collections = new ObservableCollection<Collection>(cols.OrderByDescending(k => k.CreateTime));
+    }
+
+    private async Task RefreshAllCollectionViewsAsync()
+    {
+        await RefreshListAsync();
+
+        if (FrontDialogService.GetMainWindow() is { } mainWindow)
+        {
+            await mainWindow.UpdateCollectionsAsync();
+        }
     }
 
     public static async Task<bool> AddToCollectionAsync(Collection col, IList<Beatmap> entries)

@@ -76,15 +76,17 @@ public partial class PlayListControlVm : ObservableObject
     }
 
     [RelayCommand]
-    private void SaveCollection()
+    private async Task SaveCollectionAsync()
     {
-        AppNotificationService.Instance.Push("ui-ctxMenu-saveTo");
+        if (SelectedMap == null) return;
+        await FrontDialogService.ShowSelectCollectionAsync(null, SelectedMap);
     }
 
     [RelayCommand]
-    private void SaveAllCollection()
+    private async Task SaveAllCollectionAsync()
     {
-        AppNotificationService.Instance.Push("ui-btn-saveAll");
+        if (Controller?.PlayList.SongList is not { Count: > 0 } entries) return;
+        await FrontDialogService.ShowSelectCollectionAsync(null, entries);
     }
 
     [RelayCommand]

@@ -67,12 +67,16 @@ public sealed class BeatmapActionService : IBeatmapActionService
     {
         var map = await ResolveAsync(beatmap, highestDifficulty: false);
         if (map == null) return;
-        _notifications.Push("Save to collection is not yet implemented in Avalonia version.");
+        await FrontDialogService.ShowSelectCollectionAsync(null, map);
     }
 
     public async Task SaveToCollectionWithDifficultyPickerAsync(IMapIdentifiable? beatmap)
     {
-        _notifications.Push("Save to collection is not yet implemented in Avalonia version.");
+        var selected = await PickDifficultyAsync(beatmap);
+        if (selected != null)
+        {
+            await FrontDialogService.ShowSelectCollectionAsync(null, selected);
+        }
     }
 
     public async Task ExportAsync(IMapIdentifiable? beatmap, bool highestDifficulty = false)

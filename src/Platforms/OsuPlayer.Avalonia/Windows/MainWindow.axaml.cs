@@ -28,7 +28,6 @@ namespace OsuPlayer.Windows;
 
 public partial class MainWindow : Window
 {
-    private const string MainWindowDialogIdentifier = "MainWindowDialog";
     private readonly INavigationService _nav;
     private readonly IPlayerDataService? _playerData;
     private readonly ObservablePlayController? _controller;
@@ -184,9 +183,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        var dialog = new AddCollectionWindow(_playerData);
-        await dialog.ShowDialog(this);
-        await UpdateCollectionsAsync();
+        await FrontDialogService.ShowAddCollectionAsync(this, _playerData, UpdateCollectionsAsync);
     }
 
     private void OnCollapseClick(object? sender, RoutedEventArgs e)
@@ -292,7 +289,7 @@ public partial class MainWindow : Window
                 Content = closingControl
             };
 
-            var result = await this.ShowContentDialog(dialog, MainWindowDialogIdentifier);
+            var result = await this.ShowContentDialog(dialog, FrontDialogService.MainWindowDialogIdentifier);
             if (result is true)
             {
                 ApplyClosingChoice(closingControl);
@@ -352,9 +349,7 @@ public partial class MainWindow : Window
             var entry = await _playerData.GetBeatmapByIdentifiableAsync(detail.GetIdentity());
             if (entry == null) return;
 
-            var dialog = new SelectCollectionWindow(entry);
-            await dialog.ShowDialog(this);
-            await UpdateCollectionsAsync();
+            await FrontDialogService.ShowSelectCollectionAsync(this, entry, UpdateCollectionsAsync);
         }
     }
 
