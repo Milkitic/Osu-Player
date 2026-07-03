@@ -141,6 +141,9 @@ public static class EntrySetup
         services.AddTransient<HotKeyPage>();
         services.AddTransient<ConfigWindow>();
 
+        services.AddTransient<OsuPlayer.ViewModels.Pages.SettingsPageViewModel>();
+        services.AddTransient<Views.Pages.SettingsPage>();
+
         return services;
     }
 }

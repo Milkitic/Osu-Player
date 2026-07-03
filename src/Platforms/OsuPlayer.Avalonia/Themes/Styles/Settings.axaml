@@ -17,6 +17,37 @@
         <Setter Property="Margin" Value="5,15,0,10" />
     </Style>
 
+    <Style Selector="TextBlock.section-title">
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Foreground" Value="#1A1A1A" />
+        <Setter Property="Margin" Value="0,20,0,8" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+    </Style>
+
+    <Style Selector="TextBox.hotkey-box">
+        <Setter Property="Width" Value="150" />
+        <Setter Property="MinHeight" Value="27" />
+        <Setter Property="Padding" Value="8,0" />
+        <Setter Property="Background" Value="White" />
+        <Setter Property="BorderBrush" Value="#B0B0B0" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+    </Style>
+    <Style Selector="TextBox.hotkey-box:focus">
+        <Setter Property="BorderBrush" Value="#5D9CEC" />
+        <Setter Property="Background" Value="#F7FBFF" />
+    </Style>
+    <Style Selector="Border.hotkey-frame">
+        <Setter Property="Padding" Value="2" />
+        <Setter Property="CornerRadius" Value="2" />
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="Border.hotkey-frame.editing">
+        <Setter Property="Background" Value="#EAF4FF" />
+    </Style>
+
     <Style Selector="TextBlock.config-label">
         <Setter Property="FontSize" Value="13" />
         <Setter Property="Foreground" Value="#606060" />

@@ -1,0 +1,514 @@
+<UserControl
+    x:Class="OsuPlayer.Views.Pages.SettingsPage"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:OsuPlayer.Converters"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
+    xmlns:localization="clr-namespace:OsuPlayer.Localization"
+    xmlns:vm="clr-namespace:OsuPlayer.ViewModels.Pages"
+    xmlns:vmSettings="clr-namespace:OsuPlayer.ViewModels.Pages.Settings"
+    xmlns:shared="clr-namespace:OsuPlayer.Shared.Models;assembly=OsuPlayer.Shared"
+    x:DataType="vm:SettingsPageViewModel">
+
+    <UserControl.Resources>
+        <vmSettings:LyricSourceToBoolConverter x:Key="LyricSourceConv" />
+        <vmSettings:LyricProvideTypeToBoolConverter x:Key="LyricProvideTypeConv" />
+        <vmSettings:ExportNamingToBoolConverter x:Key="ExportNamingConv" />
+        <vmSettings:ExportGroupToBoolConverter x:Key="ExportGroupConv" />
+        <converters:DeviceInfoToStringConverter x:Key="DeviceInfoToStringConverter" />
+        <localization:I18NValueConverter x:Key="I18NConv" />
+    </UserControl.Resources>
+
+    <Grid ColumnDefinitions="200,*">
+        <!--  左侧导航  -->
+        <Border
+            Grid.Column="0"
+            Background="#F3F3F3"
+            BorderBrush="#E0E0E0"
+            BorderThickness="0,0,1,0">
+            <DockPanel>
+                <TextBlock
+                    DockPanel.Dock="Top"
+                    Margin="16,16,16,10"
+                    FontSize="15"
+                    FontWeight="SemiBold"
+                    Foreground="#303030"
+                    Text="{I18N {x:Static lang:SRKeys.Ui_Sets}}" />
+                <ListBox
+                    x:Name="NavList"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    ItemsSource="{Binding NavItems}"
+                    Padding="4,0"
+                    SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
+                    SelectionChanged="NavList_SelectionChanged">
+                    <ListBox.Styles>
+                        <Style Selector="ListBoxItem">
+                            <Setter Property="Padding" Value="14,8" />
+                            <Setter Property="FontSize" Value="13" />
+                            <Setter Property="Foreground" Value="#404040" />
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="HorizontalContentAlignment" Value="Left" />
+                        </Style>
+                        <Style Selector="ListBoxItem:pointerover">
+                            <Setter Property="Background" Value="#EAEAEA" />
+                        </Style>
+                        <Style Selector="ListBoxItem:selected">
+                            <Setter Property="Background" Value="#E3E3E3" />
+                            <Setter Property="Foreground" Value="#303030" />
+                            <Setter Property="FontWeight" Value="SemiBold" />
+                        </Style>
+                        <Style Selector="ListBoxItem:selected /template/ Border#SelectionIndicator">
+                            <Setter Property="IsVisible" Value="False" />
+                        </Style>
+                    </ListBox.Styles>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:SettingsNavItem">
+                            <TextBlock Text="{Binding LabelKey, Converter={StaticResource I18NConv}}" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <!--  右侧：滚动内容 + 吸顶 header  -->
+        <Grid Grid.Column="1" Background="#FFFFFF">
+            <ScrollViewer
+                x:Name="ContentScroll"
+                HorizontalScrollBarVisibility="Disabled"
+                VerticalScrollBarVisibility="Auto">
+                <StackPanel
+                    x:Name="ContentStack"
+                    Margin="0,0,0,40">
+
+                    <!--  ============ General ============ -->
+                    <StackPanel x:Name="Section_General" Tag="General" Margin="24,0">
+                        <TextBlock Classes="section-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Common}}" />
+                        <StackPanel Margin="0,8,0,0">
+                            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_Startup}}" />
+                            <CheckBox
+                                Classes="config-check"
+                                HorizontalAlignment="Left"
+                                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_RunOnStartup}}"
+                                IsChecked="{Binding General.RunOnStartup, Mode=TwoWay}" />
+
+                            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_OsuDbLocation}}" />
+                            <StackPanel Classes="config-row" Orientation="Horizontal">
+                                <TextBox
+                                    Classes="config-box"
+                                    Width="250"
+                                    Height="27"
+                                    IsReadOnly="True"
+                                    Text="{Binding General.DbPath, Mode=OneWay}" />
+                                <Button
+                                    Classes="settings-button"
+                                    Width="27"
+                                    Height="27"
+                                    Command="{Binding General.BrowseDbCommand}"
+                                    IsEnabled="{Binding General.ScannerViewModel.IsScanning, Converter={StaticResource NegativeBooleanConverter}}">
+                                    <Viewbox Width="12" Height="12">
+                                        <Path Fill="#303030" Data="M2,3H6L7.2,4.5H12.5V12.5H2Z M3.2,5.5V11.3H11.3V5.5Z" />
+                                    </Viewbox>
+                                </Button>
+                                <Button
+                                    Classes="settings-button"
+                                    Command="{Binding General.SyncNowCommand}"
+                                    Content="{I18N {x:Static lang:SRKeys.Ui_Btn_SyncManually}}"
+                                    IsEnabled="{Binding General.ScannerViewModel.IsScanning, Converter={StaticResource NegativeBooleanConverter}}" />
+                            </StackPanel>
+
+                            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_CustomSongPath}}" />
+                            <StackPanel Classes="config-row" Orientation="Horizontal">
+                                <TextBox
+                                    Classes="config-box"
+                                    Width="250"
+                                    Height="27"
+                                    IsReadOnly="True"
+                                    Text="{Binding General.CustomSongsPath, Mode=OneWay}" />
+                                <Button
+                                    Classes="settings-button"
+                                    Width="27"
+                                    Height="27"
+                                    Command="{Binding General.BrowseCustomCommand}"
+                                    IsEnabled="{Binding General.ScannerViewModel.IsScanning, Converter={StaticResource NegativeBooleanConverter}}">
+                                    <Viewbox Width="12" Height="12">
+                                        <Path Fill="#303030" Data="M2,3H6L7.2,4.5H12.5V12.5H2Z M3.2,5.5V11.3H11.3V5.5Z" />
+                                    </Viewbox>
+                                </Button>
+                                <Button
+                                    Classes="settings-button"
+                                    Command="{Binding General.ScanNowCommand}"
+                                    Content="{I18N {x:Static lang:SRKeys.Ui_Btn_ScanManually}}"
+                                    IsVisible="{Binding General.ScannerViewModel.IsScanning, Converter={StaticResource BoolFalseToVisibleConverter}}" />
+                                <ProgressBar
+                                    Width="60"
+                                    Height="4"
+                                    IsIndeterminate="True"
+                                    IsVisible="{Binding General.ScannerViewModel.IsScanning, Converter={StaticResource BoolTrueToVisibleConverter}}" />
+                                <TextBlock
+                                    Classes="config-label"
+                                    VerticalAlignment="Center"
+                                    IsVisible="{Binding General.ScannerViewModel.IsScanning, Converter={StaticResource BoolTrueToVisibleConverter}}"
+                                    Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_Scanning3Dot}}" />
+                                <Button
+                                    Classes="link-button"
+                                    Command="{Binding General.CancelScanCommand}"
+                                    Content="{I18N {x:Static lang:SRKeys.Ui_Btn_CancelScan}}"
+                                    IsVisible="{Binding General.ScannerViewModel.IsScanning, Converter={StaticResource BoolTrueToVisibleConverter}}" />
+                            </StackPanel>
+
+                            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_CloseWindow}}" />
+                            <RadioButton
+                                Classes="config-radio"
+                                HorizontalAlignment="Left"
+                                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_MinToNotificationPanel}}"
+                                GroupName="close"
+                                IsChecked="{Binding General.IsMinimizeWhenClosed, Mode=TwoWay}" />
+                            <RadioButton
+                                Classes="config-radio"
+                                HorizontalAlignment="Left"
+                                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_ExitProgram}}"
+                                GroupName="close"
+                                IsChecked="{Binding General.IsExitWhenClosed, Mode=TwoWay}" />
+                            <CheckBox
+                                Classes="config-check"
+                                Margin="8,10,0,0"
+                                HorizontalAlignment="Left"
+                                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_SetAsDefaultOptions}}"
+                                IsChecked="{Binding General.SetAsDefaultOptions, Mode=TwoWay}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!--  ============ Play ============ -->
+                    <StackPanel x:Name="Section_Play" Tag="Play" Margin="24,0">
+                        <TextBlock Classes="section-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Playing}}" />
+                        <StackPanel Margin="0,8,0,0">
+                            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_GlobalHitsoundDelay}}" />
+                            <StackPanel Classes="config-row" Orientation="Horizontal">
+                                <Slider
+                                    Width="300"
+                                    Margin="0,-10"
+                                    Classes="osu-slider"
+                                    Maximum="200"
+                                    Minimum="-200"
+                                    Value="{Binding Play.GeneralOffset, Mode=TwoWay}" />
+                                <TextBox
+                                    Width="48"
+                                    VerticalAlignment="Center"
+                                    Classes="config-box"
+                                    Text="{Binding Play.GeneralOffset, Mode=TwoWay}" />
+                            </StackPanel>
+
+                            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_AutoPlay}}" />
+                            <CheckBox
+                                HorizontalAlignment="Left"
+                                Classes="config-check"
+                                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_AutoPlayOnProgramStartup}}"
+                                IsChecked="{Binding Play.AutoPlay, Mode=TwoWay}" />
+
+                            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_PlayProgress}}" />
+                            <CheckBox
+                                HorizontalAlignment="Left"
+                                Classes="config-check"
+                                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_ResumePlaylistOnProgramStartup}}"
+                                IsChecked="{Binding Play.Memory, Mode=TwoWay}" />
+
+                            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_AudioPlayDevice}}" />
+                            <ComboBox
+                                Width="320"
+                                HorizontalAlignment="Left"
+                                Classes="config-box"
+                                ItemsSource="{Binding Play.AvailableDevices}"
+                                SelectedItem="{Binding Play.SelectedDevice, Mode=TwoWay}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Converter={StaticResource DeviceInfoToStringConverter}}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!--  ============ Interface ============ -->
+                    <StackPanel x:Name="Section_Interface" Tag="Interface" Margin="24,0">
+                        <TextBlock Classes="section-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Interface}}" />
+                        <StackPanel Margin="0,8,0,0">
+                            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_Language}}" />
+                            <ComboBox
+                                Classes="config-box"
+                                Width="220"
+                                HorizontalAlignment="Left"
+                                ItemsSource="{Binding Interface.LanguageManager.AvailableLanguages}"
+                                SelectedItem="{Binding Interface.LanguageManager.SelectedLanguageItem, Mode=TwoWay}" />
+
+                            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_MinimalEffectMode}}" />
+                            <CheckBox
+                                Classes="config-check"
+                                HorizontalAlignment="Left"
+                                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_MinimalEffectMode}}"
+                                IsChecked="{Binding Interface.MinimalMode, Mode=TwoWay}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!--  ============ HotKey ============ -->
+                    <StackPanel x:Name="Section_HotKey" Tag="HotKey" Margin="24,0">
+                        <TextBlock Classes="section-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_HotKey}}" />
+                        <StackPanel Margin="0,8,0,0">
+                            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_HotKeySettings}}" />
+                            <ItemsControl ItemsSource="{Binding HotKey.Entries}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vmSettings:HotKeyEntry">
+                                        <Grid Classes="config-grid" ColumnDefinitions="150,*">
+                                            <TextBlock
+                                                Grid.Column="0"
+                                                Classes="config-label"
+                                                Text="{Binding DisplayName}" />
+                                            <Border Grid.Column="1" Classes="hotkey-frame">
+                                                <TextBox
+                                                    Classes="hotkey-box"
+                                                    GotFocus="HotKeyTextBox_GotFocus"
+                                                    KeyDown="HotKeyTextBox_KeyDown"
+                                                    LostFocus="HotKeyTextBox_LostFocus"
+                                                    Tag="{Binding Type}"
+                                                    Text="{Binding HotKeyText, Mode=TwoWay}" />
+                                            </Border>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!--  ============ Lyric ============ -->
+                    <StackPanel x:Name="Section_Lyric" Tag="Lyric" Margin="24,0">
+                        <TextBlock Classes="section-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Lyric}}" />
+                        <StackPanel Margin="0,8,0,0">
+                            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_DesktopLyric}}" />
+                            <CheckBox
+                                Classes="config-check"
+                                HorizontalAlignment="Left"
+                                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_EnableDesktopLyric}}"
+                                IsChecked="{Binding Lyric.EnableLyric, Mode=TwoWay}" />
+
+                            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_LyricSource}}" />
+                            <RadioButton
+                                Classes="config-radio"
+                                Content="{I18N {x:Static lang:SRKeys.Ui_Auto}}"
+                                GroupName="source"
+                                IsChecked="{Binding Lyric.LyricSource, Converter={StaticResource LyricSourceConv}, ConverterParameter={x:Static shared:LyricSource.Auto}, Mode=TwoWay}" />
+                            <RadioButton
+                                Classes="config-radio"
+                                Content="{I18N {x:Static lang:SRKeys.Ui_NeteaseMusic}}"
+                                GroupName="source"
+                                IsChecked="{Binding Lyric.LyricSource, Converter={StaticResource LyricSourceConv}, ConverterParameter={x:Static shared:LyricSource.Netease}, Mode=TwoWay}" />
+                            <RadioButton
+                                Classes="config-radio"
+                                Content="{I18N {x:Static lang:SRKeys.Ui_KugouMusic}}"
+                                GroupName="source"
+                                IsChecked="{Binding Lyric.LyricSource, Converter={StaticResource LyricSourceConv}, ConverterParameter={x:Static shared:LyricSource.Kugou}, Mode=TwoWay}" />
+                            <RadioButton
+                                Classes="config-radio"
+                                Content="{I18N {x:Static lang:SRKeys.Ui_QqMusic}}"
+                                GroupName="source"
+                                IsChecked="{Binding Lyric.LyricSource, Converter={StaticResource LyricSourceConv}, ConverterParameter={x:Static shared:LyricSource.QqMusic}, Mode=TwoWay}" />
+
+                            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_Translation}}" />
+                            <RadioButton
+                                Classes="config-radio"
+                                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_DisplayAllLyrics}}"
+                                GroupName="provide"
+                                IsChecked="{Binding Lyric.ProvideType, Converter={StaticResource LyricProvideTypeConv}, ConverterParameter={x:Static shared:LyricProvideType.PreferBoth}, Mode=TwoWay}" />
+                            <RadioButton
+                                Classes="config-radio"
+                                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_PreferOriginLyricNeteaseOnly}}"
+                                GroupName="provide"
+                                IsChecked="{Binding Lyric.ProvideType, Converter={StaticResource LyricProvideTypeConv}, ConverterParameter={x:Static shared:LyricProvideType.Original}, Mode=TwoWay}" />
+                            <RadioButton
+                                Classes="config-radio"
+                                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_PreferTranslateLyricNeteaseOnly}}"
+                                GroupName="provide"
+                                IsChecked="{Binding Lyric.ProvideType, Converter={StaticResource LyricProvideTypeConv}, ConverterParameter={x:Static shared:LyricProvideType.PreferTranslated}, Mode=TwoWay}" />
+
+                            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_MatchMode}}" />
+                            <CheckBox
+                                Classes="config-check"
+                                HorizontalAlignment="Left"
+                                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_EnableStrictMatching}}"
+                                IsChecked="{Binding Lyric.StrictMode, Mode=TwoWay}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!--  ============ Export ============ -->
+                    <StackPanel x:Name="Section_Export" Tag="Export" Margin="24,0">
+                        <TextBlock Classes="section-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Export}}" />
+                        <StackPanel Margin="0,8,0,0">
+                            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_ExportPath}}" />
+                            <StackPanel Classes="config-row" Orientation="Horizontal">
+                                <TextBlock Classes="config-label" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_MusicDirectory}}" />
+                                <TextBox
+                                    Classes="config-box"
+                                    Width="250"
+                                    Height="27"
+                                    IsReadOnly="True"
+                                    Text="{Binding Export.MusicPath, Mode=OneWay}" />
+                                <Button
+                                    Classes="settings-button"
+                                    Width="27"
+                                    Height="27"
+                                    Command="{Binding Export.BrowseMusicCommand}">
+                                    <Viewbox Width="12" Height="12">
+                                        <Path Fill="#303030" Data="M2,3H6L7.2,4.5H12.5V12.5H2Z M3.2,5.5V11.3H11.3V5.5Z" />
+                                    </Viewbox>
+                                </Button>
+                            </StackPanel>
+                            <StackPanel Classes="config-row" Orientation="Horizontal">
+                                <TextBlock Classes="config-label" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_BgDirectory}}" />
+                                <TextBox
+                                    Classes="config-box"
+                                    Width="250"
+                                    Height="27"
+                                    IsReadOnly="True"
+                                    Text="{Binding Export.BgPath, Mode=OneWay}" />
+                                <Button
+                                    Classes="settings-button"
+                                    Width="27"
+                                    Height="27"
+                                    Command="{Binding Export.BrowseBgCommand}">
+                                    <Viewbox Width="12" Height="12">
+                                        <Path Fill="#303030" Data="M2,3H6L7.2,4.5H12.5V12.5H2Z M3.2,5.5V11.3H11.3V5.5Z" />
+                                    </Viewbox>
+                                </Button>
+                            </StackPanel>
+
+                            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_FileNamingFormat}}" />
+                            <RadioButton
+                                Classes="config-radio"
+                                GroupName="naming"
+                                IsChecked="{Binding Export.NamingStyle, Converter={StaticResource ExportNamingConv}, ConverterParameter={x:Static shared:ExportNamingStyle.Title}, Mode=TwoWay}">
+                                <TextBlock Text="{I18N {x:Static lang:SRKeys.Ui_Title}}" />
+                            </RadioButton>
+                            <RadioButton
+                                Classes="config-radio"
+                                GroupName="naming"
+                                IsChecked="{Binding Export.NamingStyle, Converter={StaticResource ExportNamingConv}, ConverterParameter={x:Static shared:ExportNamingStyle.ArtistTitle}, Mode=TwoWay}">
+                                <TextBlock>
+                                    <Run Text="{I18N {x:Static lang:SRKeys.Ui_Artist}}" />
+                                    <Run Text=" - " />
+                                    <Run Text="{I18N {x:Static lang:SRKeys.Ui_Title}}" />
+                                </TextBlock>
+                            </RadioButton>
+                            <RadioButton
+                                Classes="config-radio"
+                                GroupName="naming"
+                                IsChecked="{Binding Export.NamingStyle, Converter={StaticResource ExportNamingConv}, ConverterParameter={x:Static shared:ExportNamingStyle.TitleArtist}, Mode=TwoWay}">
+                                <TextBlock>
+                                    <Run Text="{I18N {x:Static lang:SRKeys.Ui_Title}}" />
+                                    <Run Text=" - " />
+                                    <Run Text="{I18N {x:Static lang:SRKeys.Ui_Artist}}" />
+                                </TextBlock>
+                            </RadioButton>
+
+                            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_DirectoryGrouping}}" />
+                            <RadioButton
+                                Classes="config-radio"
+                                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_DirNoGroup}}"
+                                GroupName="grouping"
+                                IsChecked="{Binding Export.GroupStyle, Converter={StaticResource ExportGroupConv}, ConverterParameter={x:Static shared:ExportGroupStyle.None}, Mode=TwoWay}" />
+                            <RadioButton
+                                Classes="config-radio"
+                                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_DirGroupByArtist}}"
+                                GroupName="grouping"
+                                IsChecked="{Binding Export.GroupStyle, Converter={StaticResource ExportGroupConv}, ConverterParameter={x:Static shared:ExportGroupStyle.Artist}, Mode=TwoWay}" />
+                            <RadioButton
+                                Classes="config-radio"
+                                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_DirGroupByMapper}}"
+                                GroupName="grouping"
+                                IsChecked="{Binding Export.GroupStyle, Converter={StaticResource ExportGroupConv}, ConverterParameter={x:Static shared:ExportGroupStyle.Mapper}, Mode=TwoWay}" />
+                            <RadioButton
+                                Classes="config-radio"
+                                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_DirGroupBySource}}"
+                                GroupName="grouping"
+                                IsChecked="{Binding Export.GroupStyle, Converter={StaticResource ExportGroupConv}, ConverterParameter={x:Static shared:ExportGroupStyle.Source}, Mode=TwoWay}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!--  ============ About ============ -->
+                    <StackPanel x:Name="Section_About" Tag="About" Margin="24,0">
+                        <TextBlock Classes="section-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_About}}" />
+                        <StackPanel Margin="0,8,0,0">
+                            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_SoftwareUpdate}}" />
+
+                            <StackPanel Classes="config-row" Orientation="Horizontal">
+                                <TextBlock Classes="config-label" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_CurrentVersion}}" />
+                                <TextBlock Classes="config-label-muted" Foreground="#222222" Text="{Binding About.CurrentVersion}" />
+                            </StackPanel>
+                            <StackPanel Classes="config-row" Orientation="Horizontal">
+                                <TextBlock Classes="config-label" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_LastCheckTime}}" />
+                                <TextBlock Classes="config-label-muted" Foreground="#222222" Text="{Binding About.LastUpdateCheckText}" />
+                            </StackPanel>
+
+                            <StackPanel
+                                Margin="0,8"
+                                Orientation="Horizontal"
+                                Spacing="8">
+                                <Button
+                                    Classes="settings-button"
+                                    Command="{Binding About.CheckUpdateCommand}"
+                                    Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_CheckUpdate}}" />
+                                <Button
+                                    Classes="settings-button"
+                                    Command="{Binding About.ShowNewVersionDialogCommand}"
+                                    Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_HasNewVersion}}"
+                                    Foreground="#FE5472"
+                                    IsVisible="{Binding About.HasUpdate}" />
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button
+                                    Classes="link-button"
+                                    Command="{Binding About.OpenUrlCommand}"
+                                    CommandParameter="https://github.com/Milkitic/Osu-Player"
+                                    Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_ProjectUrl}}" />
+                                <Button
+                                    Classes="link-button"
+                                    Command="{Binding About.OpenUrlCommand}"
+                                    CommandParameter="https://github.com/Milkitic/Osu-Player/issues/new"
+                                    Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_Feedback}}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button
+                                    Classes="link-button"
+                                    Command="{Binding About.OpenUrlCommand}"
+                                    CommandParameter="https://github.com/Milkitic/Osu-Player/blob/master/LICENSE"
+                                    Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_LicenseInfo}}" />
+                                <Button
+                                    Classes="link-button"
+                                    Command="{Binding About.ShowPrivacyPolicyCommand}"
+                                    Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_PrivacyPolicy}}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+
+                </StackPanel>
+            </ScrollViewer>
+
+            <!--  吸顶 header: 覆盖在 ScrollViewer 上方,显示当前 section 标题  -->
+            <Border
+                x:Name="StickyHeader"
+                VerticalAlignment="Top"
+                Background="#F9F9F9"
+                BorderBrush="#E5E5E5"
+                BorderThickness="0,0,0,1"
+                IsHitTestVisible="False"
+                Padding="24,10"
+                IsVisible="False">
+                <TextBlock
+                    x:Name="StickyHeaderText"
+                    FontSize="15"
+                    FontWeight="SemiBold"
+                    Foreground="#303030" />
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

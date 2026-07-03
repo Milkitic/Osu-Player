@@ -206,7 +206,7 @@ public partial class MainWindow : Window
         "Recent" => typeof(RecentPlayPage),
         "Export" => typeof(OsuPlayer.Views.Pages.ExportPage),
         "Find" => typeof(FindPage),
-        "Settings" => typeof(InterfacePage),
+        "Settings" => typeof(SettingsPage),
         _ => throw new ArgumentOutOfRangeException(nameof(tag), tag, "Unknown navigation tag")
     };
 
@@ -225,7 +225,7 @@ public partial class MainWindow : Window
 
     private void BtnSettings_Click(object? sender, RoutedEventArgs e)
     {
-        OpenSettingsWindow();
+        NavigateTo("Settings");
     }
 
     private void BtnMini_Click(object? sender, RoutedEventArgs e)
