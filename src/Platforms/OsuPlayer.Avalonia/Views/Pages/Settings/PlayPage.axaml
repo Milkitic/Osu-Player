@@ -2,11 +2,11 @@
     x:Class="OsuPlayer.Views.Pages.Settings.PlayPage"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:lang="clr-namespace:OsuPlayer.Lang"
     xmlns:converters="clr-namespace:OsuPlayer.Converters"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels.Pages.Settings"
-    Classes="settings-page"
-    x:DataType="vm:PlayPageViewModel">
+    x:DataType="vm:PlayPageViewModel"
+    Classes="settings-page">
     <UserControl.Resources>
         <converters:DeviceInfoToStringConverter x:Key="DeviceInfoToStringConverter" />
     </UserControl.Resources>
@@ -16,32 +16,37 @@
             <StackPanel Classes="config-row" Orientation="Horizontal">
                 <Slider
                     Width="300"
+                    Margin="0,-10"
                     Classes="osu-slider"
                     Maximum="200"
                     Minimum="-200"
                     Value="{Binding GeneralOffset, Mode=TwoWay}" />
-                <TextBox Classes="config-box" Width="48" Text="{Binding GeneralOffset, Mode=TwoWay}" />
+                <TextBox
+                    Width="48"
+                    VerticalAlignment="Center"
+                    Classes="config-box"
+                    Text="{Binding GeneralOffset, Mode=TwoWay}" />
             </StackPanel>
 
             <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_AutoPlay}}" />
             <CheckBox
-                Classes="config-check"
                 HorizontalAlignment="Left"
+                Classes="config-check"
                 Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_AutoPlayOnProgramStartup}}"
                 IsChecked="{Binding AutoPlay, Mode=TwoWay}" />
 
             <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_PlayProgress}}" />
             <CheckBox
-                Classes="config-check"
                 HorizontalAlignment="Left"
+                Classes="config-check"
                 Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_ResumePlaylistOnProgramStartup}}"
                 IsChecked="{Binding Memory, Mode=TwoWay}" />
 
             <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_AudioPlayDevice}}" />
             <ComboBox
-                Classes="config-box"
                 Width="320"
                 HorizontalAlignment="Left"
+                Classes="config-box"
                 ItemsSource="{Binding AvailableDevices}"
                 SelectedItem="{Binding SelectedDevice, Mode=TwoWay}">
                 <ComboBox.ItemTemplate>

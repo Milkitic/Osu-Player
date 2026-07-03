@@ -7,6 +7,7 @@
     <Style Selector="ToggleButton.nav-button, Button.nav-button, RadioButton.nav-button">
         <Setter Property="Foreground" Value="#FEFEFEFE" />
         <Setter Property="Background" Value="Transparent" />
+        <Setter Property="FontSize" Value="14" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="Height" Value="39" />
         <Setter Property="Padding" Value="13,0,0,0" />
@@ -24,7 +25,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         Content="{TemplateBinding Content}"
-                        FontSize="13"
+                        FontSize="{TemplateBinding FontSize}"
                         Foreground="{TemplateBinding Foreground}" />
                 </Grid>
             </ControlTemplate>
