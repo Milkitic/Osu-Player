@@ -20,7 +20,7 @@
         <Setter Property="Margin" Value="0" />
         <Setter Property="Padding" Value="10,0" />
         <Setter Property="Height" Value="36" />
-        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontSize" Value="14" />
         <Setter Property="CornerRadius" Value="2" />
         <Setter Property="ClipToBounds" Value="False" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />

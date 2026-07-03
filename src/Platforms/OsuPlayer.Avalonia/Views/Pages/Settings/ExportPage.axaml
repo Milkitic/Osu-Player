@@ -54,19 +54,30 @@
             <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_FileNamingFormat}}" />
             <RadioButton
                 Classes="config-radio"
-                Content="Title"
                 GroupName="naming"
-                IsChecked="{Binding NamingStyle, Converter={StaticResource ExportNamingConv}, ConverterParameter={x:Static shared:ExportNamingStyle.Title}, Mode=TwoWay}" />
+                IsChecked="{Binding NamingStyle, Converter={StaticResource ExportNamingConv}, ConverterParameter={x:Static shared:ExportNamingStyle.Title}, Mode=TwoWay}">
+                <TextBlock Text="{I18N {x:Static lang:SRKeys.Ui_Title}}" />
+            </RadioButton>
             <RadioButton
                 Classes="config-radio"
-                Content="Artist - Title"
                 GroupName="naming"
-                IsChecked="{Binding NamingStyle, Converter={StaticResource ExportNamingConv}, ConverterParameter={x:Static shared:ExportNamingStyle.ArtistTitle}, Mode=TwoWay}" />
+                IsChecked="{Binding NamingStyle, Converter={StaticResource ExportNamingConv}, ConverterParameter={x:Static shared:ExportNamingStyle.ArtistTitle}, Mode=TwoWay}">
+                <TextBlock>
+                    <Run Text="{I18N {x:Static lang:SRKeys.Ui_Artist}}" />
+                    <Run Text=" - " />
+                    <Run Text="{I18N {x:Static lang:SRKeys.Ui_Title}}" />
+                </TextBlock>
+            </RadioButton>
             <RadioButton
                 Classes="config-radio"
-                Content="Title - Artist"
                 GroupName="naming"
-                IsChecked="{Binding NamingStyle, Converter={StaticResource ExportNamingConv}, ConverterParameter={x:Static shared:ExportNamingStyle.TitleArtist}, Mode=TwoWay}" />
+                IsChecked="{Binding NamingStyle, Converter={StaticResource ExportNamingConv}, ConverterParameter={x:Static shared:ExportNamingStyle.TitleArtist}, Mode=TwoWay}">
+                <TextBlock>
+                    <Run Text="{I18N {x:Static lang:SRKeys.Ui_Title}}" />
+                    <Run Text=" - " />
+                    <Run Text="{I18N {x:Static lang:SRKeys.Ui_Artist}}" />
+                </TextBlock>
+            </RadioButton>
 
             <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_DirectoryGrouping}}" />
             <RadioButton

@@ -10,6 +10,8 @@
     Height="440"
     MinWidth="580"
     MinHeight="400"
+    CanMinimize="False"
+    CanMaximize="False"
     WindowStartupLocation="CenterOwner"
     ExtendClientAreaToDecorationsHint="True"
     ExtendClientAreaTitleBarHeightHint="32"

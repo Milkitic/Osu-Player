@@ -2,8 +2,8 @@
     x:Class="OsuPlayer.Views.Pages.SearchPage"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:lang="clr-namespace:OsuPlayer.Lang"
     xmlns:core="clr-namespace:OsuPlayer.Core;assembly=OsuPlayer.Core"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
     xmlns:panelComponent="clr-namespace:OsuPlayer.Controls.PanelComponent"
     xmlns:ui="clr-namespace:OsuPlayer.Controls"
     xmlns:userControls="clr-namespace:OsuPlayer.Views.UserControls"
@@ -58,16 +58,18 @@
     <Grid RowDefinitions="Auto,Auto,*,Auto">
         <TextBox
             Grid.Row="0"
-            Height="40" 
+            Height="40"
             Margin="30,20,30,20"
+            Padding="10,0"
             VerticalAlignment="Top"
             VerticalContentAlignment="Center"
             Background="White"
             BorderBrush="#DDDDDD"
-            BorderThickness="1" CornerRadius="0"
-            FontSize="15" Cursor="IBeam"
+            BorderThickness="1"
+            CornerRadius="0"
+            Cursor="IBeam"
+            FontSize="14"
             Foreground="#555555"
-            Padding="10,0"
             PlaceholderText="{I18N {x:Static lang:SRKeys.Ui_Hint_SearchPageBox}}"
             Text="{Binding SearchText, Mode=TwoWay}" />
 
@@ -77,9 +79,7 @@
             HorizontalAlignment="Right"
             Orientation="Horizontal"
             Spacing="0">
-            <ui:CommonButton
-                Classes="search-settings search-play"
-                Command="{Binding PlayAllCommand}" />
+            <ui:CommonButton Classes="search-settings search-play" Command="{Binding PlayAllCommand}" />
             <ui:CommonButton
                 Classes="search-settings"
                 Command="{Binding QueueAllCommand}"
@@ -127,11 +127,11 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate x:DataType="core:BeatmapDataModel">
                             <Border
-                                Classes="beatmap-list-row"
                                 Margin="2,0,2,-1"
                                 Background="#80FFFFFF"
                                 BorderBrush="#20303030"
                                 BorderThickness="1"
+                                Classes="beatmap-list-row"
                                 CornerRadius="3">
                                 <Border.ContextMenu>
                                     <ContextMenu>
@@ -141,24 +141,46 @@
                                             </MenuItem.Header>
                                         </MenuItem>
                                         <Separator />
-                                        <MenuItem Click="SearchByCondition_Click" CommandParameter="Title" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchTitle}}" Tag="{Binding}" />
-                                        <MenuItem Click="SearchByCondition_Click" CommandParameter="Artist" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchArtist}}" Tag="{Binding}" />
-                                        <MenuItem Click="SearchByCondition_Click" CommandParameter="Source" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchSource}}" Tag="{Binding}" />
-                                        <MenuItem Click="SearchByCondition_Click" CommandParameter="Creator" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchCreator}}" Tag="{Binding}" />
+                                        <MenuItem
+                                            Click="SearchByCondition_Click"
+                                            CommandParameter="Title"
+                                            Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchTitle}}"
+                                            Tag="{Binding}" />
+                                        <MenuItem
+                                            Click="SearchByCondition_Click"
+                                            CommandParameter="Artist"
+                                            Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchArtist}}"
+                                            Tag="{Binding}" />
+                                        <MenuItem
+                                            Click="SearchByCondition_Click"
+                                            CommandParameter="Source"
+                                            Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchSource}}"
+                                            Tag="{Binding}" />
+                                        <MenuItem
+                                            Click="SearchByCondition_Click"
+                                            CommandParameter="Creator"
+                                            Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchCreator}}"
+                                            Tag="{Binding}" />
                                         <Separator />
                                         <MenuItem Click="OpenFolder_Click" Tag="{Binding}">
                                             <MenuItem.Header>
                                                 <TextBlock><Run Text="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_OpenSourceFolder}}" /><Run Text=" (Ctrl+O)" /></TextBlock>
                                             </MenuItem.Header>
                                         </MenuItem>
-                                        <MenuItem Click="OpenScorePage_Click" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_OpenScorePage}}" Tag="{Binding}" />
+                                        <MenuItem
+                                            Click="OpenScorePage_Click"
+                                            Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_OpenScorePage}}"
+                                            Tag="{Binding}" />
                                         <Separator />
                                         <MenuItem Click="SaveCollection_Click" Tag="{Binding}">
                                             <MenuItem.Header>
                                                 <TextBlock><Run Text="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SaveTo}}" /><Run Text="... (Ctrl+S)" /></TextBlock>
                                             </MenuItem.Header>
                                         </MenuItem>
-                                        <MenuItem Click="ExportCard_Click" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_Export}}" Tag="{Binding}" />
+                                        <MenuItem
+                                            Click="ExportCard_Click"
+                                            Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_Export}}"
+                                            Tag="{Binding}" />
                                     </ContextMenu>
                                 </Border.ContextMenu>
                                 <Grid ColumnDefinitions="300,200,100,*">
@@ -212,7 +234,7 @@
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
                 <ListBox.ItemTemplate>
-                    <DataTemplate x:DataType="core:BeatmapDataModel" x:CompileBindings="False">
+                    <DataTemplate x:CompileBindings="False" x:DataType="core:BeatmapDataModel">
                         <userControls:BeatmapCard
                             DirectPlayCommand="{Binding $parent[UserControl].DataContext.DirectPlayCommand}"
                             ExportCommand="{Binding $parent[UserControl].DataContext.ExportCommand}"
@@ -232,9 +254,7 @@
             HorizontalAlignment="Center"
             Orientation="Horizontal"
             Spacing="0">
-            <Button
-                Classes="flat-button search-page-button"
-                Click="PreviousPage_Click">
+            <Button Classes="flat-button search-page-button" Click="PreviousPage_Click">
                 <Viewbox Width="12" Height="12">
                     <ContentControl Template="{StaticResource PageArrowLeftControl}" />
                 </Viewbox>
@@ -272,9 +292,7 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <Button
-                Classes="flat-button search-page-button"
-                Click="NextPage_Click">
+            <Button Classes="flat-button search-page-button" Click="NextPage_Click">
                 <Viewbox Width="12" Height="12">
                     <ContentControl Template="{StaticResource PageArrowRightControl}" />
                 </Viewbox>

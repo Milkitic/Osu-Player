@@ -2,13 +2,18 @@
     x:Class="OsuPlayer.Views.UserControls.PlayListControl"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:lang="clr-namespace:OsuPlayer.Lang"
-    xmlns:userControls="clr-namespace:OsuPlayer.Views.UserControls"
     xmlns:controls="clr-namespace:OsuPlayer.Controls"
     xmlns:data="clr-namespace:OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
+    xmlns:userControls="clr-namespace:OsuPlayer.Views.UserControls"
     x:DataType="userControls:PlayListControlVm">
     <Grid>
-        <Border Margin="10" CornerRadius="4" BoxShadow="0 0 10 0 #80000000" Background="{DynamicResource TextureBrush2}" Opacity="0.7" />
+        <Border
+            Margin="10"
+            Background="{DynamicResource TextureBrush2}"
+            BoxShadow="0 0 10 0 #80000000"
+            CornerRadius="4"
+            Opacity="0.7" />
         <Grid Margin="10" Background="#B0F0F0F0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -21,7 +26,10 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         Orientation="Horizontal">
-                        <TextBlock Margin="30,0,0,0" VerticalAlignment="Center" Foreground="#727272">
+                        <TextBlock
+                            Margin="30,0,0,0"
+                            VerticalAlignment="Center"
+                            Foreground="#727272">
                             <Run Text="{I18N {x:Static lang:SRKeys.Ui_Total}}" />
                             <Run Text="{Binding Controller.PlayList.SongList.Count, Mode=OneWay}" />
                             <Run Text="{I18N {x:Static lang:SRKeys.Ui_SongsClassifier}}" />
@@ -68,7 +76,7 @@
                         BorderThickness="0"
                         Click="CloseButton_Click"
                         IconMargin="0"
-                        IconSize="15"
+                        IconSize="14"
                         IconTemplate="{StaticResource CloseTempl}"
                         MouseDownBackground="#D0D0D0"
                         MouseOverBackground="#D4D4D4" />
@@ -114,10 +122,22 @@
                     <ContextMenu>
                         <MenuItem Command="{Binding PlayCommand}" Header="播放(Enter)" />
                         <Separator />
-                        <MenuItem Command="{Binding SearchCommand}" CommandParameter="0" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchTitle}}" />
-                        <MenuItem Command="{Binding SearchCommand}" CommandParameter="1" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchArtist}}" />
-                        <MenuItem Command="{Binding SearchCommand}" CommandParameter="2" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchSource}}" />
-                        <MenuItem Command="{Binding SearchCommand}" CommandParameter="3" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchCreator}}" />
+                        <MenuItem
+                            Command="{Binding SearchCommand}"
+                            CommandParameter="0"
+                            Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchTitle}}" />
+                        <MenuItem
+                            Command="{Binding SearchCommand}"
+                            CommandParameter="1"
+                            Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchArtist}}" />
+                        <MenuItem
+                            Command="{Binding SearchCommand}"
+                            CommandParameter="2"
+                            Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchSource}}" />
+                        <MenuItem
+                            Command="{Binding SearchCommand}"
+                            CommandParameter="3"
+                            Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchCreator}}" />
                         <Separator />
                         <MenuItem Command="{Binding OpenSourceFolderCommand}" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_OpenSourceFolder}}" />
                         <MenuItem Command="{Binding OpenScorePageCommand}" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_OpenScorePage}}" />

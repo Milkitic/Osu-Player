@@ -12,14 +12,19 @@ namespace OsuPlayer.Instances;
 
 public class LyricsInst
 {
-    public LyricProvider LyricProvider { get; private set; }
+    public LyricProvider? LyricProvider { get; private set; }
 
-    public void ReloadLyricProvider(bool useStrict = true)
+    public void ReloadLyricProvider(bool? useStrict = null)
     {
-        AppSettings.Default.Lyric.StrictMode = useStrict;
-        Settings.StrictMatch = useStrict;
+        var lyricSettings = AppSettings.Default?.Lyric ?? new LyricSection();
+        if (useStrict.HasValue)
+        {
+            lyricSettings.StrictMode = useStrict.Value;
+        }
+
+        Settings.StrictMatch = lyricSettings.StrictMode;
         SourceProviderBase provider;
-        switch (AppSettings.Default.Lyric.LyricSource)
+        switch (lyricSettings.LyricSource)
         {
             case LyricSource.Auto:
                 provider = new AutoSourceProvider(new SourceProviderBase[]
@@ -39,10 +44,10 @@ public class LyricsInst
                 provider = new QQMusicSourceProvider();
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(AppSettings.Default.Lyric.LyricSource),
-                    AppSettings.Default.Lyric.LyricSource, null);
+                throw new ArgumentOutOfRangeException(nameof(lyricSettings.LyricSource),
+                    lyricSettings.LyricSource, null);
         }
 
-        LyricProvider = new LyricProvider(provider, LyricProvideType.Original);
+        LyricProvider = new LyricProvider(provider, lyricSettings.ProvideType);
     }
 }

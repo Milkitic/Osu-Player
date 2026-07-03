@@ -28,7 +28,7 @@
         <Setter Property="Margin" Value="5" />
         <Setter Property="Height" Value="28" />
         <Setter Property="CornerRadius" Value="0" />
-        <Setter Property="IconSize" Value="15" />
+        <Setter Property="IconSize" Value="14" />
         <Setter Property="Background" Value="#FAFAFB" />
         <Setter Property="MouseOverBackground" Value="#F0F0F0" />
         <Setter Property="IconMargin" Value="0,0,5,0" />
