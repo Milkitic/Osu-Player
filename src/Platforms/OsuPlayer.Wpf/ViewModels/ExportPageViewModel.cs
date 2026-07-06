@@ -105,7 +105,7 @@ public partial class ExportPageViewModel : ObservableObject
                     dir.Delete();
             }
 
-            await _playerData.TryAddMapExportAsync(dataModel.GetIdentity(), null);
+            await _playerData.TryAddMapExportAsync(dataModel, null);
         }
 
         await Execute.OnUiThreadAsync(InnerUpdateAsync);
@@ -113,7 +113,7 @@ public partial class ExportPageViewModel : ObservableObject
 
     private async Task<Beatmap> ConvertToEntryAsync(BeatmapDataModel dataModel)
     {
-        return (await _playerData.GetBeatmapsFromFolderAsync(dataModel.FolderName))
+        return (await _playerData.GetBeatmapsFromFolderAsync(dataModel.FolderName, dataModel.SourceGame))
             .FirstOrDefault(k => k.Version == dataModel.Version);
     }
 

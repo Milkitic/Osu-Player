@@ -18,7 +18,7 @@ public interface IPlayerDataStore
 
     Task<BeatmapSettings> GetMapFromDbAsync(IMapIdentifiable beatmap);
 
-    Task<bool> TryRemoveFromRecentAsync(MapIdentity identity);
+    Task<bool> TryRemoveFromRecentAsync(IMapIdentifiable identity);
 
     Task<bool> TryRemoveMapFromCollectionAsync(IMapIdentifiable identity, Collection collection);
 
@@ -28,7 +28,7 @@ public interface IPlayerDataStore
     Task<List<Beatmap>> SearchBeatmapByOptionsAsync(string searchText, BeatmapSortMode sortMode, int startIndex,
         int count);
 
-    Task<List<Beatmap>> GetBeatmapsFromFolderAsync(string folderName);
+    Task<List<Beatmap>> GetBeatmapsFromFolderAsync(string folderName, SourceGame? sourceGame = null);
 
     Task<List<Collection>> GetCollectionsAsync();
 
@@ -65,6 +65,8 @@ public interface IPlayerDataStore
     Task<bool> TryAddNewMapsAsync(IEnumerable<Beatmap> beatmaps);
 
     Task SyncMapsFromOsuDbAsync(IEnumerable<Beatmap> beatmaps, bool addOnly);
+
+    Task SyncMapsFromIidxMusicDataAsync(IEnumerable<Beatmap> beatmaps, bool addOnly);
 
     Task<(bool found, string thumbPath)> TryGetMapThumbAsync(Guid beatmapDbId);
 

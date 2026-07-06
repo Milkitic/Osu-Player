@@ -36,6 +36,7 @@ public partial class BeatmapDataModel : NumberableModel, IMapIdentifiable
     public string ExportTime { get; set; }
     public string ExportFile { get; set; }
     public bool InOwnDb { get; set; }
+    public SourceGame SourceGame { get; set; } = SourceGame.Osu;
 
     public Guid BeatmapDbId { get; set; }
 

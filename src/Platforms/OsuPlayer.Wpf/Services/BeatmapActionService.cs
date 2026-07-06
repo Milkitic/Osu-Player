@@ -40,7 +40,7 @@ public sealed class BeatmapActionService : IBeatmapActionService
     public async Task<Beatmap?> GetHighestDifficultyAsync(IMapIdentifiable? beatmap)
     {
         if (beatmap == null) return null;
-        return (await _playerData.GetBeatmapsFromFolderAsync(beatmap.FolderName)).GetHighestDiff();
+        return (await _playerData.GetBeatmapsFromFolderAsync(beatmap.FolderName, beatmap.SourceGame)).GetHighestDiff();
     }
 
     public async Task OpenSourceFolderAsync(IMapIdentifiable? beatmap, bool highestDifficulty = false)
@@ -115,7 +115,7 @@ public sealed class BeatmapActionService : IBeatmapActionService
     private async Task<Beatmap?> PickDifficultyAsync(IMapIdentifiable? beatmap)
     {
         if (beatmap == null) return null;
-        var beatmaps = await _playerData.GetBeatmapsFromFolderAsync(beatmap.GetIdentity().FolderName);
+        var beatmaps = await _playerData.GetBeatmapsFromFolderAsync(beatmap.FolderName, beatmap.SourceGame);
         return await _difficultyPicker.PickAsync(beatmaps);
     }
 

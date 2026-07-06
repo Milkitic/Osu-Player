@@ -88,6 +88,7 @@ public static class EntrySetup
             provider.GetRequiredService<ObservablePlayController>());
 
         services.AddSingleton<OsuDbInst>();
+        services.AddSingleton<IidxMusicDataInst>();
         services.AddSingleton<LyricsInst>();
         services.AddSingleton<UpdateInst>();
         services.AddSingleton<OsuFileScanner>();

@@ -29,7 +29,7 @@ public sealed class PlayerDataService : IPlayerDataStore
         return await db.GetMapFromDbAsync(beatmap);
     }
 
-    public async Task<bool> TryRemoveFromRecentAsync(MapIdentity identity)
+    public async Task<bool> TryRemoveFromRecentAsync(IMapIdentifiable identity)
     {
         await using var db = _createDbContext();
         await db.RemoveFromRecentAsync(identity);
@@ -58,10 +58,10 @@ public sealed class PlayerDataService : IPlayerDataStore
         return await db.SearchBeatmapByOptionsAsync(searchText, sortMode, startIndex, count);
     }
 
-    public async Task<List<Beatmap>> GetBeatmapsFromFolderAsync(string folderName)
+    public async Task<List<Beatmap>> GetBeatmapsFromFolderAsync(string folderName, SourceGame? sourceGame = null)
     {
         await using var db = _createDbContext();
-        return await db.GetBeatmapsFromFolderAsync(folderName);
+        return await db.GetBeatmapsFromFolderAsync(folderName, sourceGame);
     }
 
     public async Task<List<Collection>> GetCollectionsAsync()
@@ -180,6 +180,12 @@ public sealed class PlayerDataService : IPlayerDataStore
     {
         await using var db = _createDbContext();
         await db.SyncMapsFromOsuDbAsync(beatmaps, addOnly);
+    }
+
+    public async Task SyncMapsFromIidxMusicDataAsync(IEnumerable<Beatmap> beatmaps, bool addOnly)
+    {
+        await using var db = _createDbContext();
+        await db.SyncMapsFromIidxMusicDataAsync(beatmaps, addOnly);
     }
 
     public async Task<(bool found, string thumbPath)> TryGetMapThumbAsync(Guid beatmapDbId)

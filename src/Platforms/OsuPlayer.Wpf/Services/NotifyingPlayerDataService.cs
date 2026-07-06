@@ -36,7 +36,7 @@ public sealed class NotifyingPlayerDataService : IPlayerDataService
         }
     }
 
-    public Task<bool> TryRemoveFromRecentAsync(MapIdentity identity)
+    public Task<bool> TryRemoveFromRecentAsync(IMapIdentifiable identity)
         => RunAsync(() => _inner.TryRemoveFromRecentAsync(identity), "Error while removing beatmap from recent",
             false);
 
@@ -59,8 +59,8 @@ public sealed class NotifyingPlayerDataService : IPlayerDataService
         => RunAsync(() => _inner.SearchBeatmapByOptionsAsync(searchText, sortMode, startIndex, count),
             "Error while searching for beatmaps", []);
 
-    public Task<List<Beatmap>> GetBeatmapsFromFolderAsync(string folderName)
-        => RunAsync(() => _inner.GetBeatmapsFromFolderAsync(folderName), "Error while getting beatmaps from folder",
+    public Task<List<Beatmap>> GetBeatmapsFromFolderAsync(string folderName, SourceGame? sourceGame = null)
+        => RunAsync(() => _inner.GetBeatmapsFromFolderAsync(folderName, sourceGame), "Error while getting beatmaps from folder",
             []);
 
     public Task<List<Collection>> GetCollectionsAsync()
@@ -152,6 +152,18 @@ public sealed class NotifyingPlayerDataService : IPlayerDataService
         catch (Exception ex)
         {
             NotifyError(ex, "Error while syncing osu!db maps");
+        }
+    }
+
+    public async Task SyncMapsFromIidxMusicDataAsync(IEnumerable<Beatmap> beatmaps, bool addOnly)
+    {
+        try
+        {
+            await _inner.SyncMapsFromIidxMusicDataAsync(beatmaps, addOnly);
+        }
+        catch (Exception ex)
+        {
+            NotifyError(ex, "Error while syncing IIDX music_data.bin maps");
         }
     }
 

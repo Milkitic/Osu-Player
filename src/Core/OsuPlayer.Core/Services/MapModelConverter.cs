@@ -77,6 +77,7 @@ public class MapModelConverter : IMapModelConverter
                 Version = beatmap.Version,
                 BeatmapFileName = beatmap.BeatmapFileName,
                 InOwnDb = beatmap.InOwnDb,
+                SourceGame = beatmap.SourceGame,
                 BeatmapDbId = beatmap.Id
             };
             try

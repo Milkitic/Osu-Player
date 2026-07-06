@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Iidx\OsuPlayer.Iidx.Abstractions\OsuPlayer.Iidx.Abstractions.csproj" />
     <ProjectReference Include="..\OsuPlayer.Data\OsuPlayer.Data.csproj" />
     <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj" />
   </ItemGroup>

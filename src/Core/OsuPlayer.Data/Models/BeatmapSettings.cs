@@ -12,6 +12,7 @@ public class BeatmapSettingsMap : EntityMap<BeatmapSettings>
         Map(p => p.Version).ToColumn("difficulty_name");
         Map(p => p.FolderName).ToColumn("folder_name");
         Map(p => p.InOwnDb).ToColumn("is_local");
+        Map(p => p.SourceGame).ToColumn("source_game");
         Map(p => p.Offset).ToColumn("audio_offset_ms");
         Map(p => p.LastPlayTime).ToColumn("last_played_at");
         Map(p => p.ExportFile).ToColumn("exported_file_path");
@@ -42,6 +43,7 @@ public class BeatmapSettings : IMapIdentifiable
     public string FolderName { get; set; }
 
     public bool InOwnDb { get; set; }
+    public SourceGame SourceGame { get; set; } = SourceGame.Osu;
 
     public int Offset { get; set; }
 

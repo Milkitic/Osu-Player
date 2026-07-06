@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json.Serialization;
+using OsuPlayer.Shared.Models;
 
 namespace OsuPlayer.Shared;
 
@@ -10,8 +11,10 @@ public interface IMapIdentifiable
     string FolderName { get; }
     string Version { get; }
     bool InOwnDb { get; }
+    SourceGame SourceGame => OsuPlayer.Shared.SourceGame.Osu;
 
     MapIdentity GetIdentity();
+    GameMapIdentity GetGameIdentity() => new(FolderName, Version, InOwnDb, SourceGame);
 }
 
 [DebuggerDisplay("{DebuggerDisplay()}")]
@@ -31,6 +34,7 @@ public readonly struct MapIdentity : IMapIdentifiable, IEquatable<MapIdentity>
     public string FolderName { get; }
     public string Version { get; }
     public bool InOwnDb { get; }
+    public SourceGame SourceGame => OsuPlayer.Shared.SourceGame.Osu;
 
     public static ref readonly MapIdentity Default => ref s_default;
 
@@ -84,6 +88,9 @@ public readonly struct MapIdentity : IMapIdentifiable, IEquatable<MapIdentity>
 
 public static class MapIdentifiableExtension
 {
+    public static GameMapIdentity GetGameIdentity(this IMapIdentifiable map) =>
+        new(map.FolderName, map.Version, map.InOwnDb, map.SourceGame);
+
     public static bool IsMapTemporary(this IMapIdentifiable map)
     {
         return Path.IsPathRooted(map.FolderName);

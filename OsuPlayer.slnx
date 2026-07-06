@@ -72,6 +72,14 @@
       <BuildType Solution="Release 4.6|*" Project="Release" />
     </Project>
   </Folder>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Iidx/">
+    <Project Path="src/Iidx/OsuPlayer.Iidx.Abstractions/OsuPlayer.Iidx.Abstractions.csproj">
+      <BuildType Solution="Analysis|*" Project="Debug" />
+      <BuildType Solution="Release 4.5|*" Project="Debug" />
+      <BuildType Solution="Release 4.6|*" Project="Debug" />
+    </Project>
+  </Folder>
   <Folder Name="/Tests/">
     <Project Path="tests/OsuPlayer.Data.Tests/OsuPlayer.Data.Tests.csproj">
       <BuildType Solution="Analysis|*" Project="Debug" />

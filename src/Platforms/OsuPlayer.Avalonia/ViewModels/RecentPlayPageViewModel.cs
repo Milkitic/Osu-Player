@@ -80,7 +80,7 @@ public partial class RecentPlayPageViewModel : ObservableObject
     [RelayCommand]
     private async Task RemoveAsync(BeatmapDataModel beatmap)
     {
-        if (await _playerData.TryRemoveFromRecentAsync(beatmap.GetIdentity()))
+        if (await _playerData.TryRemoveFromRecentAsync(beatmap))
         {
             Beatmaps?.Remove(beatmap);
         }

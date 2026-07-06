@@ -4,6 +4,7 @@ using Coosu.Beatmap;
 using Coosu.Database.DataTypes;
 using Dapper.FluentMap.Mapping;
 using OsuPlayer.Shared;
+using OsuPlayer.Shared.Models;
 
 namespace OsuPlayer.Data.Models;
 
@@ -35,6 +36,12 @@ public class BeatmapMap : EntityMap<Beatmap>
         Map(p => p.Id).ToColumn("id");
         Map(p => p.InOwnDb).ToColumn("is_local");
         Map(p => p.Version).ToColumn("difficulty_name");
+        Map(p => p.SourceGame).ToColumn("source_game");
+        Map(p => p.IidxMusicId).ToColumn("iidx_music_id");
+        Map(p => p.IidxFileIdentifier).ToColumn("iidx_file_identifier");
+        Map(p => p.IidxBgmVolume).ToColumn("iidx_bgm_volume");
+        Map(p => p.IidxBgaDelay).ToColumn("iidx_bga_delay");
+        Map(p => p.IidxVersion).ToColumn("iidx_version");
     }
 }
 
@@ -109,13 +116,39 @@ public class Beatmap : IMapIdentifiable, IEquatable<Beatmap>
     public string FolderName { get; set; } = "";
     public Guid Id { get; set; } = Guid.NewGuid();
     public bool InOwnDb { get; set; }
+    public SourceGame SourceGame { get; set; } = SourceGame.Osu;
+
+    /// <summary>
+    /// IIDX-specific: music_id from music_data.bin. 0 for osu! entries.
+    /// </summary>
+    public int IidxMusicId { get; set; }
+
+    /// <summary>
+    /// IIDX-specific: 2dx file identifier per difficulty (e.g. SPB/SPN/.../DPL). 0 for osu! entries.
+    /// </summary>
+    public byte IidxFileIdentifier { get; set; }
+
+    /// <summary>
+    /// IIDX-specific: BGM volume override (0x00-0xFF). Null leaves the engine default.
+    /// </summary>
+    public int? IidxBgmVolume { get; set; }
+
+    /// <summary>
+    /// IIDX-specific: BGA delay in milliseconds. Null for osu! entries.
+    /// </summary>
+    public short? IidxBgaDelay { get; set; }
+
+    /// <summary>
+    /// IIDX-specific: game version the entry belongs to (signed short, -1 for omni). Null for osu!.
+    /// </summary>
+    public short? IidxVersion { get; set; }
 
     public string AutoTitle => MetaString.GetUnicode(Title, TitleUnicode) ?? "未知标题";
     public string AutoArtist => MetaString.GetUnicode(Artist, ArtistUnicode) ?? "未知艺术家";
 
     public override int GetHashCode()
     {
-        return (FolderName + Version).GetHashCode();
+        return HashCode.Combine(SourceGame, FolderName, Version, InOwnDb);
     }
 
     public MapIdentity GetIdentity()
@@ -155,7 +188,11 @@ public class Beatmap : IMapIdentifiable, IEquatable<Beatmap>
 
     public bool Equals(Beatmap other)
     {
-        return FolderName == other?.FolderName && Version == other?.Version && InOwnDb == other?.InOwnDb;
+        return other != null &&
+               SourceGame == other.SourceGame &&
+               FolderName == other.FolderName &&
+               Version == other.Version &&
+               InOwnDb == other.InOwnDb;
     }
 
     public override bool Equals(object obj)

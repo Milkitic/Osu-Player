@@ -17,6 +17,7 @@ public class DataModelComparer : IEqualityComparer<BeatmapDataModel>
             return true;
         if (x == null || y == null)
             return false;
+        if (x.SourceGame != y.SourceGame) return false;
         if (x.AutoArtist != y.AutoArtist) return false;
         if (x.AutoTitleSource != y.AutoTitleSource) return false;
         if (x.Creator != y.Creator) return false;
@@ -30,7 +31,7 @@ public class DataModelComparer : IEqualityComparer<BeatmapDataModel>
 
     public int GetHashCode(BeatmapDataModel obj)
     {
-        return obj.FolderName.GetHashCode();
+        return System.HashCode.Combine(obj.SourceGame, obj.FolderName);
     }
 
     //public int GetHashCode(BeatmapViewModel obj)

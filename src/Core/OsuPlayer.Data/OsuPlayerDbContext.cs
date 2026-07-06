@@ -78,7 +78,7 @@ public class OsuPlayerDbContext : DbContext
 
         entity.ToTable("beatmaps");
         entity.HasKey(k => k.Id);
-        entity.HasIndex(k => new { k.FolderName, k.Version, k.InOwnDb })
+        entity.HasIndex(k => new { k.SourceGame, k.FolderName, k.Version, k.InOwnDb })
             .IsUnique()
             .HasDatabaseName("ux_beatmaps_identity");
         entity.HasIndex(k => k.FolderName).HasDatabaseName("ix_beatmaps_folder_name");
@@ -107,6 +107,16 @@ public class OsuPlayerDbContext : DbContext
         entity.Property(k => k.FolderName).HasColumnName("folder_name");
         entity.Property(k => k.AudioFileName).HasColumnName("audio_file_name");
         entity.Property(k => k.InOwnDb).HasColumnName("is_local");
+        entity.Property(k => k.SourceGame).HasColumnName("source_game");
+        entity.Property(k => k.IidxMusicId).HasColumnName("iidx_music_id");
+        entity.Property(k => k.IidxFileIdentifier).HasColumnName("iidx_file_identifier");
+        entity.Property(k => k.IidxBgmVolume).HasColumnName("iidx_bgm_volume");
+        entity.Property(k => k.IidxBgaDelay).HasColumnName("iidx_bga_delay");
+        entity.Property(k => k.IidxVersion).HasColumnName("iidx_version");
+
+        entity.HasIndex(k => k.SourceGame).HasDatabaseName("ix_beatmaps_source_game");
+        entity.HasIndex(k => new { k.SourceGame, k.IidxMusicId })
+            .HasDatabaseName("ix_beatmaps_iidx_source_music_id");
 
         entity.Ignore(k => k.StarRatingStd);
         entity.Ignore(k => k.StarRatingTaiko);
@@ -122,7 +132,7 @@ public class OsuPlayerDbContext : DbContext
 
         entity.ToTable("beatmap_play_settings");
         entity.HasKey(k => k.Id);
-        entity.HasIndex(k => new { k.FolderName, k.Version, k.InOwnDb })
+        entity.HasIndex(k => new { k.SourceGame, k.FolderName, k.Version, k.InOwnDb })
             .IsUnique()
             .HasDatabaseName("ux_beatmap_play_settings_identity");
         entity.HasIndex(k => k.LastPlayTime).HasDatabaseName("ix_beatmap_play_settings_last_played_at");
@@ -131,6 +141,7 @@ public class OsuPlayerDbContext : DbContext
         entity.Property(k => k.Version).HasColumnName("difficulty_name").IsRequired();
         entity.Property(k => k.FolderName).HasColumnName("folder_name").IsRequired();
         entity.Property(k => k.InOwnDb).HasColumnName("is_local");
+        entity.Property(k => k.SourceGame).HasColumnName("source_game");
         entity.Property(k => k.Offset).HasColumnName("audio_offset_ms");
         entity.Property(k => k.LastPlayTime).HasColumnName("last_played_at");
         entity.Property(k => k.ExportFile).HasColumnName("exported_file_path");
@@ -254,6 +265,7 @@ public class OsuPlayerDbContext : DbContext
             LogTemporaryMap(id);
 
             var map = await BeatmapSettings.FirstOrDefaultAsync(k =>
+                k.SourceGame == id.SourceGame &&
                 k.Version == id.Version &&
                 k.FolderName == id.FolderName &&
                 k.InOwnDb == id.InOwnDb);
@@ -269,6 +281,7 @@ public class OsuPlayerDbContext : DbContext
                 Version = id.Version,
                 FolderName = id.FolderName,
                 InOwnDb = id.InOwnDb,
+                SourceGame = id.SourceGame,
                 Offset = 0
             };
 
@@ -314,7 +327,8 @@ public class OsuPlayerDbContext : DbContext
                     map.ExportFile,
                     relation.AddTime)
                 {
-                    InOwnDb = map.InOwnDb
+                    InOwnDb = map.InOwnDb,
+                    SourceGame = map.SourceGame
                 })
             .ToListAsync();
     }
@@ -372,7 +386,7 @@ public class OsuPlayerDbContext : DbContext
         foreach (var beatmap in beatmaps)
         {
             LogTemporaryMap(beatmap);
-            var key = $"{beatmap.FolderName}|{beatmap.Version}|{beatmap.InOwnDb}";
+            var key = GetIdentityKey(beatmap);
 
             if (!settingsLookup.TryGetValue(key, out var map))
             {
@@ -382,6 +396,7 @@ public class OsuPlayerDbContext : DbContext
                     Version = beatmap.Version,
                     FolderName = beatmap.FolderName,
                     InOwnDb = beatmap.InOwnDb,
+                    SourceGame = beatmap.SourceGame,
                     Offset = 0
                 };
                 newSettings.Add(map);
@@ -420,7 +435,8 @@ public class OsuPlayerDbContext : DbContext
             {
                 k.FolderName,
                 k.Version,
-                OwnDb = k.InOwnDb ? 1 : 0
+                OwnDb = k.InOwnDb ? 1 : 0,
+                SourceGame = (int)k.SourceGame
             })
             .Distinct()
             .ToList();
@@ -440,7 +456,7 @@ public class OsuPlayerDbContext : DbContext
             foreach (var chunk in identities.Chunk(MaxIdentitiesPerQuery))
             {
                 var sql = new StringBuilder(@"
- WITH ids(folder_name, difficulty_name, is_local) AS (
+ WITH ids(folder_name, difficulty_name, is_local, source_game) AS (
      VALUES ");
                 var parameters = new DynamicParameters();
 
@@ -451,10 +467,11 @@ public class OsuPlayerDbContext : DbContext
                         sql.Append(", ");
                     }
 
-                    sql.Append($"(@folder{i}, @version{i}, @ownDb{i})");
+                    sql.Append($"(@folder{i}, @version{i}, @ownDb{i}, @sourceGame{i})");
                     parameters.Add($"folder{i}", chunk[i].FolderName);
                     parameters.Add($"version{i}", chunk[i].Version);
                     parameters.Add($"ownDb{i}", chunk[i].OwnDb);
+                    parameters.Add($"sourceGame{i}", chunk[i].SourceGame);
                 }
 
                 sql.Append(@"
@@ -463,6 +480,7 @@ public class OsuPlayerDbContext : DbContext
         b.difficulty_name AS Version,
         b.folder_name AS FolderName,
         b.is_local AS InOwnDb,
+        b.source_game AS SourceGame,
         b.audio_offset_ms AS Offset,
         b.last_played_at AS LastPlayTime,
         b.exported_file_path AS ExportFile
@@ -470,11 +488,12 @@ public class OsuPlayerDbContext : DbContext
         INNER JOIN
         beatmap_play_settings AS b ON b.folder_name = ids.folder_name AND
                                       b.difficulty_name = ids.difficulty_name AND
-                                      b.is_local = ids.is_local;");
+                                      b.is_local = ids.is_local AND
+                                      b.source_game = ids.source_game;");
 
                 foreach (var settings in await dbConnection.QueryAsync<BeatmapSettings>(sql.ToString(), parameters))
                 {
-                    lookup[$"{settings.FolderName}|{settings.Version}|{settings.InOwnDb}"] = settings;
+                    lookup[GetIdentityKey(settings)] = settings;
                 }
             }
 
@@ -774,10 +793,10 @@ ON CONFLICT(beatmap_id) DO UPDATE SET
         try
         {
             return await Beatmaps.AsNoTracking()
-                .Where(k => k.Version == id.Version && k.FolderName == id.FolderName)
+                .Where(k => k.SourceGame == id.SourceGame && k.Version == id.Version && k.FolderName == id.FolderName)
                 .OrderByDescending(k => k.InOwnDb == id.InOwnDb)
                 .FirstOrDefaultAsync() ?? await Beatmaps.AsNoTracking()
-                .Where(k => k.Version == id.Version && k.FolderName == id.FolderName)
+                .Where(k => k.SourceGame == id.SourceGame && k.Version == id.Version && k.FolderName == id.FolderName)
                 .FirstOrDefaultAsync();
         }
         catch (Exception ex)
@@ -792,8 +811,8 @@ ON CONFLICT(beatmap_id) DO UPDATE SET
         var entities = await GetBeatmapsByIdentifiableAsync(reqList);
 
         var newList = reqList.Join(entities,
-            mapInfo => mapInfo.GetIdentity(),
-            entry => entry.GetIdentity(),
+            mapInfo => mapInfo.GetGameIdentity(),
+            entry => entry.GetGameIdentity(),
             (mapInfo, entry) => new
             {
                 entry,
@@ -806,13 +825,19 @@ ON CONFLICT(beatmap_id) DO UPDATE SET
             : newList.OrderByDescending(k => k.addTime).Select(k => k.entry).ToList();
     }
 
-    public async Task<List<Beatmap>> GetBeatmapsFromFolderAsync(string folder)
+    public async Task<List<Beatmap>> GetBeatmapsFromFolderAsync(string folder, SourceGame? sourceGame = null)
     {
         try
         {
-            return await Beatmaps.AsNoTracking()
-                .Where(k => k.FolderName == folder)
-                .ToListAsync();
+            var query = Beatmaps.AsNoTracking()
+                .Where(k => k.FolderName == folder);
+
+            if (sourceGame.HasValue)
+            {
+                query = query.Where(k => k.SourceGame == sourceGame.Value);
+            }
+
+            return await query.ToListAsync();
         }
         catch (Exception ex)
         {
@@ -831,7 +856,8 @@ ON CONFLICT(beatmap_id) DO UPDATE SET
             {
                 k.FolderName,
                 k.Version,
-                OwnDb = k.InOwnDb ? 1 : 0
+                OwnDb = k.InOwnDb ? 1 : 0,
+                SourceGame = (int)k.SourceGame
             })
             .ToList();
 
@@ -852,7 +878,7 @@ ON CONFLICT(beatmap_id) DO UPDATE SET
                 foreach (var chunk in identities.Chunk(MaxIdentitiesPerQuery))
                 {
                     var sql = new StringBuilder(@"
- WITH ids(folder_name, difficulty_name, is_local, ord) AS (
+ WITH ids(folder_name, difficulty_name, is_local, source_game, ord) AS (
      VALUES ");
                     var parameters = new DynamicParameters();
 
@@ -863,10 +889,11 @@ ON CONFLICT(beatmap_id) DO UPDATE SET
                             sql.Append(", ");
                         }
 
-                        sql.Append($"(@folder{i}, @version{i}, @ownDb{i}, @ord{i})");
+                        sql.Append($"(@folder{i}, @version{i}, @ownDb{i}, @sourceGame{i}, @ord{i})");
                         parameters.Add($"folder{i}", chunk[i].FolderName);
                         parameters.Add($"version{i}", chunk[i].Version);
                         parameters.Add($"ownDb{i}", chunk[i].OwnDb);
+                        parameters.Add($"sourceGame{i}", chunk[i].SourceGame);
                         parameters.Add($"ord{i}", i);
                     }
 
@@ -877,7 +904,8 @@ ON CONFLICT(beatmap_id) DO UPDATE SET
         INNER JOIN
         beatmaps AS b ON b.folder_name = ids.folder_name AND 
                         b.difficulty_name = ids.difficulty_name AND 
-                        b.is_local = ids.is_local
+                        b.is_local = ids.is_local AND
+                        b.source_game = ids.source_game
   ORDER BY ids.ord;");
 
                     result.AddRange(await dbConnection.QueryAsync<Beatmap>(sql.ToString(), parameters));
@@ -902,28 +930,44 @@ ON CONFLICT(beatmap_id) DO UPDATE SET
 
     public async Task SyncMapsFromOsuDbAsync(IEnumerable<Beatmap> newList, bool addOnly)
     {
+        await SyncMapsBySourceAsync(SourceGame.Osu, newList, addOnly);
+    }
+
+    public async Task SyncMapsFromIidxMusicDataAsync(IEnumerable<Beatmap> newList, bool addOnly)
+    {
+        await SyncMapsBySourceAsync(SourceGame.Iidx, newList, addOnly);
+    }
+
+    public async Task SyncMapsBySourceAsync(SourceGame sourceGame, IEnumerable<Beatmap> newList, bool addOnly)
+    {
         try
         {
+            var sourceMaps = newList.Select(k =>
+            {
+                k.SourceGame = sourceGame;
+                return k;
+            }).ToList();
+
             if (addOnly)
             {
                 var dbMaps = await Beatmaps.AsNoTracking()
-                    .Where(k => !k.InOwnDb)
+                    .Where(k => !k.InOwnDb && k.SourceGame == sourceGame)
                     .ToListAsync();
-                var except = newList.Except(dbMaps, new Beatmap.Comparer(true));
+                var except = sourceMaps.Except(dbMaps, new Beatmap.Comparer(true));
 
                 await AddNewMapsAsync(except);
             }
             else
             {
-                await RemoveSyncedAllAsync();
-                await AddNewMapsAsync(newList);
+                await RemoveSyncedAllAsync(sourceGame);
+                await AddNewMapsAsync(sourceMaps);
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, addOnly
-                ? "Error while calling SyncMapsFromHoLLyAsync(addonly)."
-                : "Error while calling SyncMapsFromHoLLyAsync().");
+                ? "Error while calling SyncMapsBySourceAsync(addonly)."
+                : "Error while calling SyncMapsBySourceAsync().");
             throw;
         }
     }
@@ -955,7 +999,13 @@ INSERT OR IGNORE INTO beatmaps (
     tags,
     folder_name,
     audio_file_name,
-    is_local
+    is_local,
+    source_game,
+    iidx_music_id,
+    iidx_file_identifier,
+    iidx_bgm_volume,
+    iidx_bga_delay,
+    iidx_version
 ) VALUES (
     @Id,
     @Artist,
@@ -980,7 +1030,13 @@ INSERT OR IGNORE INTO beatmaps (
     @SongTags,
     @FolderName,
     @AudioFileName,
-    @InOwnDb
+    @InOwnDb,
+    @SourceGame,
+    @IidxMusicId,
+    @IidxFileIdentifier,
+    @IidxBgmVolume,
+    @IidxBgaDelay,
+    @IidxVersion
 );";
 
         var rows = beatmaps.Select(k => new
@@ -1008,7 +1064,13 @@ INSERT OR IGNORE INTO beatmaps (
             k.SongTags,
             k.FolderName,
             k.AudioFileName,
-            k.InOwnDb
+            k.InOwnDb,
+            SourceGame = (int)k.SourceGame,
+            k.IidxMusicId,
+            k.IidxFileIdentifier,
+            k.IidxBgmVolume,
+            k.IidxBgaDelay,
+            k.IidxVersion
         }).ToList();
 
         if (rows.Count == 0)
@@ -1053,6 +1115,11 @@ INSERT OR IGNORE INTO beatmaps (
         await Beatmaps.Where(k => !k.InOwnDb).ExecuteDeleteAsync();
     }
 
+    public async Task RemoveSyncedAllAsync(SourceGame sourceGame)
+    {
+        await Beatmaps.Where(k => !k.InOwnDb && k.SourceGame == sourceGame).ExecuteDeleteAsync();
+    }
+
     private async Task AddCollectionAsync(Collection collection)
     {
         Collections.Add(new Collection
@@ -1075,6 +1142,7 @@ INSERT OR IGNORE INTO beatmaps (
         try
         {
             var map = await BeatmapSettings.FirstOrDefaultAsync(k =>
+                k.SourceGame == id.SourceGame &&
                 k.Version == id.Version &&
                 k.FolderName == id.FolderName &&
                 k.InOwnDb == id.InOwnDb);
@@ -1087,6 +1155,7 @@ INSERT OR IGNORE INTO beatmaps (
                     Version = id.Version,
                     FolderName = id.FolderName,
                     InOwnDb = id.InOwnDb,
+                    SourceGame = id.SourceGame,
                     Offset = 0
                 };
                 BeatmapSettings.Add(map);
@@ -1109,6 +1178,9 @@ INSERT OR IGNORE INTO beatmaps (
             _logger.LogDebug("需确认加入自定义目录后才可继续");
         }
     }
+
+    private static string GetIdentityKey(IMapIdentifiable map) =>
+        $"{(int)map.SourceGame}|{map.FolderName}|{map.Version}|{map.InOwnDb}";
 
     private static void ConfigureDapperCompatibility()
     {

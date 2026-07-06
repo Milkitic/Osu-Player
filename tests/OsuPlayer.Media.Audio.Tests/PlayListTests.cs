@@ -100,11 +100,11 @@ public class PlayListTests
         public Task<Beatmap> GetBeatmapByIdentifiableAsync(IMapIdentifiable beatmap)
             => Task.FromResult<Beatmap>(null!);
 
-        public Task<bool> TryRemoveFromRecentAsync(MapIdentity identity) => Task.FromResult(false);
+        public Task<bool> TryRemoveFromRecentAsync(IMapIdentifiable identity) => Task.FromResult(false);
         public Task<bool> TryRemoveMapFromCollectionAsync(IMapIdentifiable identity, Collection collection) => Task.FromResult(false);
         public Task<PaginationQueryResult<Beatmap>> SearchBeatmapPageAsync(string searchText, BeatmapSortMode sortMode, int startIndex, int count) => Task.FromResult(new PaginationQueryResult<Beatmap>([], 0));
         public Task<List<Beatmap>> SearchBeatmapByOptionsAsync(string searchText, BeatmapSortMode sortMode, int startIndex, int count) => Task.FromResult(new List<Beatmap>());
-        public Task<List<Beatmap>> GetBeatmapsFromFolderAsync(string folderName) => Task.FromResult(new List<Beatmap>());
+        public Task<List<Beatmap>> GetBeatmapsFromFolderAsync(string folderName, SourceGame? sourceGame = null) => Task.FromResult(new List<Beatmap>());
         public Task<List<Collection>> GetCollectionsAsync() => Task.FromResult(new List<Collection>());
         public Task<List<Collection>> GetCollectionsByMapAsync(BeatmapSettings beatmapSettings) => Task.FromResult(new List<Collection>());
         public Task<bool> TryAddCollectionAsync(string collectionName, bool isLocked) => Task.FromResult(false);
@@ -123,6 +123,7 @@ public class PlayListTests
         public Task<bool> TryRemoveLocalAllAsync() => Task.FromResult(false);
         public Task<bool> TryAddNewMapsAsync(IEnumerable<Beatmap> beatmaps) => Task.FromResult(false);
         public Task SyncMapsFromOsuDbAsync(IEnumerable<Beatmap> beatmaps, bool addOnly) => Task.CompletedTask;
+        public Task SyncMapsFromIidxMusicDataAsync(IEnumerable<Beatmap> beatmaps, bool addOnly) => Task.CompletedTask;
         public Task<(bool found, string thumbPath)> TryGetMapThumbAsync(System.Guid beatmapDbId) => Task.FromResult((false, string.Empty));
         public Task<bool> TrySetMapThumbAsync(System.Guid beatmapDbId, string thumbPath) => Task.FromResult(false);
     }

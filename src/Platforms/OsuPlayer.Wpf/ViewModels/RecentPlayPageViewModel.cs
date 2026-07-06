@@ -81,7 +81,7 @@ public partial class RecentPlayPageViewModel : ObservableObject
     private async Task RemoveAsync(BeatmapDataModel beatmap)
     {
         if (beatmap == null) return;
-        if (await _playerData.TryRemoveFromRecentAsync(beatmap.GetIdentity()))
+        if (await _playerData.TryRemoveFromRecentAsync(beatmap))
         {
             Beatmaps.Remove(beatmap);
         }

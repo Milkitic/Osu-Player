@@ -137,7 +137,7 @@ public class PlayerSessionServiceTests
         public Task<Beatmap> GetBeatmapByIdentifiableAsync(IMapIdentifiable beatmap)
             => Task.FromResult<Beatmap>(null!);
 
-        public Task<bool> TryRemoveFromRecentAsync(MapIdentity identity) => Task.FromResult(false);
+        public Task<bool> TryRemoveFromRecentAsync(IMapIdentifiable identity) => Task.FromResult(false);
 
         public Task<bool> TryRemoveMapFromCollectionAsync(IMapIdentifiable identity, Collection collection)
             => Task.FromResult(false);
@@ -150,7 +150,7 @@ public class PlayerSessionServiceTests
             int startIndex, int count)
             => Task.FromResult(new List<Beatmap>());
 
-        public Task<List<Beatmap>> GetBeatmapsFromFolderAsync(string folderName)
+        public Task<List<Beatmap>> GetBeatmapsFromFolderAsync(string folderName, SourceGame? sourceGame = null)
             => Task.FromResult(new List<Beatmap>());
 
         public Task<List<Collection>> GetCollectionsAsync() => Task.FromResult(new List<Collection>());
@@ -193,6 +193,7 @@ public class PlayerSessionServiceTests
         public Task<bool> TryAddNewMapsAsync(IEnumerable<Beatmap> beatmaps) => Task.FromResult(false);
 
         public Task SyncMapsFromOsuDbAsync(IEnumerable<Beatmap> beatmaps, bool addOnly) => Task.CompletedTask;
+        public Task SyncMapsFromIidxMusicDataAsync(IEnumerable<Beatmap> beatmaps, bool addOnly) => Task.CompletedTask;
 
         public Task<(bool found, string thumbPath)> TryGetMapThumbAsync(Guid beatmapDbId)
             => Task.FromResult((false, string.Empty));
