@@ -30,6 +30,8 @@ namespace OsuPlayer.Media.Audio;
 /// </remarks>
 public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
 {
+    private static readonly TimeSpan PositionFeedbackInterval = TimeSpan.FromMilliseconds(16);
+
     private readonly ILogger<OsuMixPlayer> _logger;
 
     private readonly IPlaybackEngine _engine;
@@ -390,7 +392,7 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
             while (!ct.IsCancellationRequested)
             {
                 RaisePositionUpdated(Position);
-                await Task.Delay(250, ct).ConfigureAwait(false);
+                await Task.Delay(PositionFeedbackInterval, ct).ConfigureAwait(false);
             }
         });
     }
