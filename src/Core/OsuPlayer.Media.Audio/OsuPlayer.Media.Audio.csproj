@@ -15,10 +15,7 @@
 
   <ItemGroup>
     <Content Include="default\**\*.wav" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="runtimes\win-x86\SoundTouch\SoundTouch.dll" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="runtimes\win-x64\SoundTouch\SoundTouch.dll" CopyToOutputDirectory="PreserveNewest" />
-    <Resource Include="runtimes\win-x86\SoundTouch\COPYING.TXT" CopyToOutputDirectory="PreserveNewest" />
-    <Resource Include="runtimes\win-x64\SoundTouch\COPYING.TXT" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="runtimes\**\*.dll" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

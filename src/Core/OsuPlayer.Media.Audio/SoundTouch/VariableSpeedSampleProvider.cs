@@ -8,7 +8,7 @@ namespace OsuPlayer.Media.Audio.SoundTouch;
 internal sealed class VariableSpeedSampleProvider : ISampleProvider, IDisposable
 {
     private readonly ISampleProvider _sourceProvider;
-    private readonly SoundTouchProcessor _soundTouch;
+    private readonly SoundTouch _soundTouch;
     private readonly Lock _gate = new();
     private readonly float[] _sourceReadBuffer;
     private readonly float[] _soundTouchReadBuffer;
@@ -24,7 +24,7 @@ internal sealed class VariableSpeedSampleProvider : ISampleProvider, IDisposable
         ILogger logger)
     {
         _sourceProvider = sourceProvider;
-        _soundTouch = new SoundTouchProcessor();
+        _soundTouch = new SoundTouch();
         CurrentOptions = options;
 
         logger.LogDebug("SoundTouch Version {Version}", _soundTouch.VersionString);

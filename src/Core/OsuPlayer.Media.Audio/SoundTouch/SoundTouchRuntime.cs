@@ -30,7 +30,21 @@ internal static class SoundTouchRuntime
 
     internal static string GetNativeLibraryPath()
     {
-        var runtimeFolder = Environment.Is64BitProcess ? "win-x64" : "win-x86";
-        return Path.Combine(_runtimeRoot, runtimeFolder, "SoundTouch", "SoundTouch.dll");
+        var runtimeFolder = RuntimeInformation.ProcessArchitecture switch
+        {
+            Architecture.X64 => "win-x64",
+            Architecture.X86 => "win-x86",
+            _ => throw new PlatformNotSupportedException(
+                $"SoundTouch playback-rate processing is not configured for {RuntimeInformation.ProcessArchitecture} runtimes."),
+        };
+
+        var runtimeDirectory = Path.Combine(_runtimeRoot, runtimeFolder);
+        var nativeLibraryPath = Path.Combine(runtimeDirectory, "SoundTouch.dll");
+        if (File.Exists(nativeLibraryPath))
+        {
+            return nativeLibraryPath;
+        }
+
+        return Path.Combine(runtimeDirectory, "SoundTouch", "SoundTouch.dll");
     }
 }
