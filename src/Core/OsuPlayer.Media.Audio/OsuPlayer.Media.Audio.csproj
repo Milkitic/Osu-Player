@@ -11,11 +11,11 @@
     <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj" />
     <ProjectReference Include="..\..\..\dependencies\KeyASIO.Net\src\Core\KeyAsio.Core.Audio\KeyAsio.Core.Audio.csproj" />
     <ProjectReference Include="..\..\..\dependencies\KeyASIO.Net\src\Core\KeyAsio.Core.OsuAudio\KeyAsio.Core.OsuAudio.csproj" />
+    <ProjectReference Include="..\..\..\dependencies\ManagedSoundTouch\ManagedSoundTouch\ManagedSoundTouch.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="default\**\*.wav" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="runtimes\**\*.dll" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

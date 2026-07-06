@@ -112,7 +112,6 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
     {
         try
         {
-            ConfigureSoundTouchRuntime();
             StartAudioEngine();
             _musicTransport = new StandaloneMusicTransport(_engine);
             _session = new OsuBeatmapAudioSession(_engine, _musicTransport, _audioCacheManager,
@@ -409,10 +408,5 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
     private void RaisePositionUpdated(TimeSpan position)
     {
         PositionUpdated?.Invoke(position);
-    }
-
-    private static void ConfigureSoundTouchRuntime()
-    {
-        SoundTouchRuntime.Configure(Path.Combine(AppContext.BaseDirectory, "runtimes"));
     }
 }

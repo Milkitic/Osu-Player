@@ -1,6 +1,6 @@
 using System;
 using System.Threading;
-using Microsoft.Extensions.Logging;
+using ManagedSoundTouch;
 using NAudio.Wave;
 
 namespace OsuPlayer.Media.Audio.SoundTouch;
@@ -8,7 +8,7 @@ namespace OsuPlayer.Media.Audio.SoundTouch;
 internal sealed class VariableSpeedSampleProvider : ISampleProvider, IDisposable
 {
     private readonly ISampleProvider _sourceProvider;
-    private readonly SoundTouch _soundTouch;
+    private readonly SoundProcessor _soundProcessor = new();
     private readonly Lock _gate = new();
     private readonly float[] _sourceReadBuffer;
     private readonly float[] _soundTouchReadBuffer;
@@ -20,21 +20,15 @@ internal sealed class VariableSpeedSampleProvider : ISampleProvider, IDisposable
     public VariableSpeedSampleProvider(
         ISampleProvider sourceProvider,
         int readDurationMilliseconds,
-        SoundTouchRateOptions options,
-        ILogger logger)
+        SoundTouchRateOptions options)
     {
         _sourceProvider = sourceProvider;
-        _soundTouch = new SoundTouch();
         CurrentOptions = options;
 
-        logger.LogDebug("SoundTouch Version {Version}", _soundTouch.VersionString);
-        logger.LogDebug("Use QuickSeek: {UseQuickSeek}", _soundTouch.GetUseQuickSeek());
-        logger.LogDebug("Use AntiAliasing: {UseAntiAliasing}", _soundTouch.GetUseAntiAliasing());
-
         SetSoundTouchProfile(options);
-        _soundTouch.SetSampleRate(WaveFormat.SampleRate);
+        _soundProcessor.SetSampleRate(WaveFormat.SampleRate);
         _channelCount = WaveFormat.Channels;
-        _soundTouch.SetChannels(_channelCount);
+        _soundProcessor.SetChannels(_channelCount);
         _sourceReadBuffer = new float[WaveFormat.SampleRate * _channelCount * readDurationMilliseconds / 1000];
         _soundTouchReadBuffer = new float[_sourceReadBuffer.Length * 10];
     }
@@ -84,7 +78,7 @@ internal sealed class VariableSpeedSampleProvider : ISampleProvider, IDisposable
 
             if (_repositionRequested)
             {
-                _soundTouch.Clear();
+                _soundProcessor.Clear();
                 _repositionRequested = false;
             }
 
@@ -93,17 +87,17 @@ internal sealed class VariableSpeedSampleProvider : ISampleProvider, IDisposable
             var maxOutputFrames = _soundTouchReadBuffer.Length / _channelCount;
             while (samplesRead < alignedCount)
             {
-                if (_soundTouch.NumberOfSamplesAvailable == 0)
+                if (_soundProcessor.NumSamples == 0)
                 {
                     var readFromSource = _sourceProvider.Read(_sourceReadBuffer, 0, _sourceReadBuffer.Length);
                     if (readFromSource > 0)
                     {
-                        _soundTouch.PutSamples(_sourceReadBuffer, readFromSource / _channelCount);
+                        _soundProcessor.PutSamples(_sourceReadBuffer, readFromSource / _channelCount);
                     }
                     else
                     {
                         reachedEndOfSource = true;
-                        _soundTouch.Flush();
+                        _soundProcessor.Flush();
                     }
                 }
 
@@ -113,7 +107,7 @@ internal sealed class VariableSpeedSampleProvider : ISampleProvider, IDisposable
                     break;
                 }
 
-                var received = _soundTouch.ReceiveSamples(_soundTouchReadBuffer, desiredSampleFrames) * _channelCount;
+                var received = _soundProcessor.ReceiveSamples(_soundTouchReadBuffer, desiredSampleFrames) * _channelCount;
                 Array.Copy(_soundTouchReadBuffer, 0, buffer, offset + samplesRead, received);
                 samplesRead += received;
 
@@ -133,20 +127,20 @@ internal sealed class VariableSpeedSampleProvider : ISampleProvider, IDisposable
             {
                 if (options.PreservePitch)
                 {
-                    _soundTouch.SetRate(1.0f);
-                    _soundTouch.SetPitchOctaves(0f);
-                    _soundTouch.SetTempo(_playbackRate);
+                    _soundProcessor.SetRate(1.0);
+                    _soundProcessor.SetPitchOctaves(0f);
+                    _soundProcessor.SetTempo(_playbackRate);
                 }
                 else
                 {
-                    _soundTouch.SetTempo(1.0f);
-                    _soundTouch.SetRate(_playbackRate);
+                    _soundProcessor.SetTempo(1.0);
+                    _soundProcessor.SetRate(_playbackRate);
                 }
             }
 
             CurrentOptions = options;
-            _soundTouch.SetUseAntiAliasing(options.UseAntiAliasing);
-            _soundTouch.SetUseQuickSeek(options.UseQuickSeek);
+            _soundProcessor.SetUseAntiAliasing(options.UseAntiAliasing);
+            _soundProcessor.SetUseQuickSeek(options.UseQuickSeek);
         }
     }
 
@@ -165,7 +159,7 @@ internal sealed class VariableSpeedSampleProvider : ISampleProvider, IDisposable
         {
             if (_disposed) return;
             _disposed = true;
-            _soundTouch.Dispose();
+            _soundProcessor.Dispose();
         }
     }
 
@@ -175,11 +169,11 @@ internal sealed class VariableSpeedSampleProvider : ISampleProvider, IDisposable
 
         if (CurrentOptions.PreservePitch)
         {
-            _soundTouch.SetTempo(value);
+            _soundProcessor.SetTempo(value);
         }
         else
         {
-            _soundTouch.SetRate(value);
+            _soundProcessor.SetRate(value);
         }
     }
 
