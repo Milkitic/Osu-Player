@@ -1,3 +1,4 @@
+using KeyAsio.Core.Audio;
 using KeyAsio.Core.Audio.SampleProviders.BalancePans;
 
 namespace OsuPlayer.Media.Audio;
@@ -18,6 +19,8 @@ public sealed class OsuAudioSessionOptions
     public int GeneralOffsetMilliseconds { get; set; }
     public bool EnableNightcoreBeats { get; set; }
     public bool DisableStoryboardSamples { get; set; }
+    public float PreservePitchRateCompensationMilliseconds { get; set; } =
+        PlaybackRateState.DefaultPreservePitchCompensationMilliseconds;
 
     public float HitsoundVolume { get; set; } = 1;
     public float SampleVolume { get; set; } = 1;

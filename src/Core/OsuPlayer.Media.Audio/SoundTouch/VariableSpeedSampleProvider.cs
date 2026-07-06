@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using ManagedSoundTouch;
+using Microsoft.Extensions.Logging;
 using NAudio.Wave;
 
 namespace OsuPlayer.Media.Audio.SoundTouch;
@@ -20,7 +21,8 @@ internal sealed class VariableSpeedSampleProvider : ISampleProvider, IDisposable
     public VariableSpeedSampleProvider(
         ISampleProvider sourceProvider,
         int readDurationMilliseconds,
-        SoundTouchRateOptions options)
+        SoundTouchRateOptions options,
+        ILogger? logger = null)
     {
         _sourceProvider = sourceProvider;
         CurrentOptions = options;

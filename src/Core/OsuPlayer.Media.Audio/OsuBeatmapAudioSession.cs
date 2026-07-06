@@ -103,6 +103,19 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
         }
     }
 
+    public float PreservePitchRateCompensationMilliseconds
+    {
+        get => _options?.PreservePitchRateCompensationMilliseconds
+               ?? PlaybackRateState.DefaultPreservePitchCompensationMilliseconds;
+        set
+        {
+            if (_options != null)
+            {
+                _options.PreservePitchRateCompensationMilliseconds = value;
+            }
+        }
+    }
+
     public async Task LoadAsync(OsuFile osuFile, OsuAudioSessionOptions options,
         CancellationToken cancellationToken = default)
     {
@@ -190,7 +203,7 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
 
     public Task SetPlaybackRateAsync(PlaybackRateState rateState, CancellationToken cancellationToken = default)
     {
-        return _musicTransport.SetPlaybackRateAsync(rateState, cancellationToken);
+        return _musicTransport.SetPlaybackRateAsync(ApplyPlaybackRateOptions(rateState), cancellationToken);
     }
 
     public async Task SetNightcoreBeatsAsync(bool enabled, CancellationToken cancellationToken = default)
@@ -655,6 +668,16 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
         return musicPosition
                - TimeSpan.FromMilliseconds(_options.ManualOffsetMilliseconds)
                + TimeSpan.FromMilliseconds(_options.GeneralOffsetMilliseconds);
+    }
+
+    private PlaybackRateState ApplyPlaybackRateOptions(PlaybackRateState rateState)
+    {
+        return _options == null
+            ? rateState
+            : rateState with
+            {
+                PreservePitchCompensationMilliseconds = _options.PreservePitchRateCompensationMilliseconds
+            };
     }
 
     private void StartSchedulerLoop()

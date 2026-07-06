@@ -147,6 +147,76 @@ public sealed class OsuBeatmapAudioSessionTests
         }
     }
 
+    [Fact]
+    public async Task SetPlaybackRateAsync_UsesSessionPreservePitchRateCompensation()
+    {
+        var root = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+
+        var mapPath = Path.Combine(root, "map.osu");
+        await File.WriteAllTextAsync(mapPath, """
+                                             osu file format v14
+
+                                             [General]
+                                             Mode: 0
+
+                                             [Metadata]
+                                             Title:Rate Compensation
+                                             Artist:Test Artist
+                                             Creator:Test Creator
+                                             Version:Normal
+                                             BeatmapID:1
+                                             BeatmapSetID:1
+
+                                             [Difficulty]
+                                             HPDrainRate:5
+                                             CircleSize:4
+                                             OverallDifficulty:5
+                                             ApproachRate:9
+                                             SliderMultiplier:1.4
+                                             SliderTickRate:1
+
+                                             [TimingPoints]
+                                             0,500,4,2,0,100,1,0
+
+                                             [HitObjects]
+                                             256,192,1234,1,0,0:0:0:0:
+                                             """);
+
+        var audioCacheManager = new AudioCacheManager(NullLogger<AudioCacheManager>.Instance);
+        var playbackEngine = new FakePlaybackEngine();
+        await using var session = new OsuBeatmapAudioSession(
+            playbackEngine,
+            new StandaloneMusicTransport(playbackEngine),
+            audioCacheManager);
+
+        try
+        {
+            var osuFile = await OsuFile.ReadFromFileAsync(mapPath, options => options.ExcludeSection("Editor"));
+            await session.LoadAsync(osuFile, new OsuAudioSessionOptions
+            {
+                Resources = new BeatmapResources
+                {
+                    BeatmapFolder = root,
+                    BeatmapFilename = Path.GetFileName(mapPath),
+                    AudioFilename = "",
+                    DefaultHitsoundFolder = "",
+                    UserSkinFolder = "",
+                },
+                PreservePitchRateCompensationMilliseconds = 12.5f,
+            });
+
+            await session.SetPlaybackRateAsync(new PlaybackRateState(1.0f, true));
+
+            Assert.Equal(12.5f, session.RateState.PreservePitchCompensationMilliseconds);
+        }
+        finally
+        {
+            audioCacheManager.ClearAll();
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
     private static void WriteWave(string path, float sample, int frameCount)
     {
         using var writer = new WaveFileWriter(path, new WaveFormat(44_100, 16, 2));

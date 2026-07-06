@@ -46,6 +46,8 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
     private PlayStatus _playStatus = PlayStatus.Unknown;
     private int _manualOffset;
     private bool _isLooping;
+    private float _preservePitchRateCompensationMilliseconds =
+        PlaybackRateState.DefaultPreservePitchCompensationMilliseconds;
 
     public event Action<PlayStatus>? PlayStatusChanged;
     public event Action<TimeSpan>? PositionUpdated;
@@ -64,6 +66,24 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
     public TimeSpan Position => _session?.Position ?? TimeSpan.Zero;
     public float PlaybackRate => _musicTransport?.RateState.Rate ?? 1f;
     public bool KeepTune => _musicTransport?.RateState.PreservePitch ?? false;
+    public float PreservePitchRateCompensationMilliseconds
+    {
+        get => _preservePitchRateCompensationMilliseconds;
+        set
+        {
+            _preservePitchRateCompensationMilliseconds = value;
+            if (_sessionOptions != null)
+            {
+                _sessionOptions.PreservePitchRateCompensationMilliseconds = value;
+            }
+
+            if (_session != null)
+            {
+                _session.PreservePitchRateCompensationMilliseconds = value;
+            }
+        }
+    }
+
     public bool IsLooping
     {
         get => _isLooping;
@@ -251,8 +271,12 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
 
     public async Task SetPlaybackRate(float rate, bool keepTune)
     {
-        AppSettings.Default.Play.PlaybackRate = rate;
-        AppSettings.Default.Play.PlayUseTempo = keepTune;
+        var playSection = AppSettings.Default?.Play;
+        if (playSection != null)
+        {
+            playSection.PlaybackRate = rate;
+            playSection.PlayUseTempo = keepTune;
+        }
 
         var session = RequireSession();
         var enableNightcoreBeats = NightcoreRules.ShouldEnableNightcoreBeats(rate, keepTune);
@@ -345,6 +369,7 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
             },
             GeneralOffsetMilliseconds = playSection?.GeneralActualOffset ?? 0,
             ManualOffsetMilliseconds = ManualOffset,
+            PreservePitchRateCompensationMilliseconds = PreservePitchRateCompensationMilliseconds,
             EnableNightcoreBeats = NightcoreRules.ShouldEnableNightcoreBeats(
                 playSection?.PlaybackRate ?? 1,
                 playSection?.PlayUseTempo ?? false),

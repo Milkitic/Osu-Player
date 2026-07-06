@@ -45,6 +45,35 @@ public sealed class MusicPlaybackSourceClockTests
     }
 
     [Theory]
+    [InlineData(1.5, true, 5, -5)]
+    [InlineData(0.75, true, 5, 5)]
+    [InlineData(1.25, true, 5, -2.5)]
+    [InlineData(0.875, true, 5, 2.5)]
+    [InlineData(1.5, true, 10, -10)]
+    [InlineData(0.75, true, 10, 10)]
+    [InlineData(1.5, true, 0, 0)]
+    [InlineData(0.75, true, 0, 0)]
+    [InlineData(1.5, false, 5, 0)]
+    [InlineData(0.75, false, 5, 0)]
+    public void PlaybackTimelineClock_AppliesConfigurablePreservePitchRateCompensation(
+        double rate,
+        bool preservePitch,
+        float baseCompensationMilliseconds,
+        double expectedCompensationMilliseconds)
+    {
+        long now = 0;
+        var clock = new PlaybackTimelineClock(TimeSpan.FromSeconds(10), () => now, 1000);
+
+        clock.Seek(TimeSpan.FromMilliseconds(1000));
+        clock.SetRate(new PlaybackRateState((float)rate, preservePitch, baseCompensationMilliseconds));
+
+        Assert.Equal(TimeSpan.FromMilliseconds(1000), clock.SourcePosition);
+        Assert.InRange(clock.Position.TotalMilliseconds,
+            1000 + expectedCompensationMilliseconds - 0.001,
+            1000 + expectedCompensationMilliseconds + 0.001);
+    }
+
+    [Theory]
     [InlineData(false)]
     [InlineData(true)]
     public async Task AudioFileMusicPlaybackSource_PositionDoesNotJumpWhenRateProcessorPrefetches(bool preservePitch)
