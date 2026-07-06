@@ -1,0 +1,70 @@
+<UserControl
+    x:Class="OsuPlayer.Views.Pages.Settings.LyricPage"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
+    xmlns:shared="clr-namespace:OsuPlayer.Shared.Models;assembly=OsuPlayer.Shared"
+    xmlns:vm="clr-namespace:OsuPlayer.ViewModels.Pages.Settings"
+    Classes="settings-page"
+    x:DataType="vm:LyricPageViewModel">
+    <UserControl.Resources>
+        <vm:LyricSourceToBoolConverter x:Key="LyricSourceConv" />
+        <vm:LyricProvideTypeToBoolConverter x:Key="LyricProvideTypeConv" />
+    </UserControl.Resources>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="10">
+            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_DesktopLyric}}" />
+            <CheckBox
+                Classes="config-check"
+                HorizontalAlignment="Left"
+                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_EnableDesktopLyric}}"
+                IsChecked="{Binding EnableLyric, Mode=TwoWay}" />
+
+            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_LyricSource}}" />
+            <RadioButton
+                Classes="config-radio"
+                Content="{I18N {x:Static lang:SRKeys.Ui_Auto}}"
+                GroupName="source"
+                IsChecked="{Binding LyricSource, Converter={StaticResource LyricSourceConv}, ConverterParameter={x:Static shared:LyricSource.Auto}, Mode=TwoWay}" />
+            <RadioButton
+                Classes="config-radio"
+                Content="{I18N {x:Static lang:SRKeys.Ui_NeteaseMusic}}"
+                GroupName="source"
+                IsChecked="{Binding LyricSource, Converter={StaticResource LyricSourceConv}, ConverterParameter={x:Static shared:LyricSource.Netease}, Mode=TwoWay}" />
+            <RadioButton
+                Classes="config-radio"
+                Content="{I18N {x:Static lang:SRKeys.Ui_KugouMusic}}"
+                GroupName="source"
+                IsChecked="{Binding LyricSource, Converter={StaticResource LyricSourceConv}, ConverterParameter={x:Static shared:LyricSource.Kugou}, Mode=TwoWay}" />
+            <RadioButton
+                Classes="config-radio"
+                Content="{I18N {x:Static lang:SRKeys.Ui_QqMusic}}"
+                GroupName="source"
+                IsChecked="{Binding LyricSource, Converter={StaticResource LyricSourceConv}, ConverterParameter={x:Static shared:LyricSource.QqMusic}, Mode=TwoWay}" />
+
+            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_Translation}}" />
+            <RadioButton
+                Classes="config-radio"
+                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_DisplayAllLyrics}}"
+                GroupName="provide"
+                IsChecked="{Binding ProvideType, Converter={StaticResource LyricProvideTypeConv}, ConverterParameter={x:Static shared:LyricProvideType.PreferBoth}, Mode=TwoWay}" />
+            <RadioButton
+                Classes="config-radio"
+                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_PreferOriginLyricNeteaseOnly}}"
+                GroupName="provide"
+                IsChecked="{Binding ProvideType, Converter={StaticResource LyricProvideTypeConv}, ConverterParameter={x:Static shared:LyricProvideType.Original}, Mode=TwoWay}" />
+            <RadioButton
+                Classes="config-radio"
+                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_PreferTranslateLyricNeteaseOnly}}"
+                GroupName="provide"
+                IsChecked="{Binding ProvideType, Converter={StaticResource LyricProvideTypeConv}, ConverterParameter={x:Static shared:LyricProvideType.PreferTranslated}, Mode=TwoWay}" />
+
+            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_MatchMode}}" />
+            <CheckBox
+                Classes="config-check"
+                HorizontalAlignment="Left"
+                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_EnableStrictMatching}}"
+                IsChecked="{Binding StrictMode, Mode=TwoWay}" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

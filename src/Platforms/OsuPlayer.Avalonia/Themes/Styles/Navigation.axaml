@@ -1,0 +1,139 @@
+<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:OsuPlayer.Controls">
+
+    <!--  nav-button: WPF 导航按钮样式，仅用于内置按钮类型，避免覆盖 IconRadioButton 的 ControlTheme。  -->
+    <Style Selector="ToggleButton.nav-button, Button.nav-button, RadioButton.nav-button">
+        <Setter Property="Foreground" Value="#FEFEFEFE" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Height" Value="39" />
+        <Setter Property="Padding" Value="13,0,0,0" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid ClipToBounds="True">
+                    <Rectangle
+                        x:Name="innerRectangle"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        Fill="{TemplateBinding Background}"
+                        Opacity="0" />
+                    <ContentPresenter
+                        Margin="{TemplateBinding Padding}"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Content="{TemplateBinding Content}"
+                        FontSize="{TemplateBinding FontSize}"
+                        Foreground="{TemplateBinding Foreground}" />
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="ToggleButton.nav-button:pointerover /template/ Rectangle#innerRectangle, Button.nav-button:pointerover /template/ Rectangle#innerRectangle, RadioButton.nav-button:pointerover /template/ Rectangle#innerRectangle">
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="ToggleButton.nav-button:pointerover, Button.nav-button:pointerover, RadioButton.nav-button:pointerover">
+        <Setter Property="Background" Value="White" />
+        <Setter Property="Foreground" Value="#303030" />
+    </Style>
+
+    <Style Selector="ToggleButton.nav-button:pressed, Button.nav-button:pressed, RadioButton.nav-button:pressed">
+        <Setter Property="Background" Value="#F0F0F0" />
+        <Setter Property="Foreground" Value="#303030" />
+    </Style>
+    <Style Selector="ToggleButton.nav-button:pressed /template/ Rectangle#innerRectangle, Button.nav-button:pressed /template/ Rectangle#innerRectangle, RadioButton.nav-button:pressed /template/ Rectangle#innerRectangle">
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+
+    <Style Selector="ToggleButton.nav-button:checked /template/ Rectangle#innerRectangle, Button.nav-button:checked /template/ Rectangle#innerRectangle, RadioButton.nav-button:checked /template/ Rectangle#innerRectangle">
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="ToggleButton.nav-button:checked, Button.nav-button:checked, RadioButton.nav-button:checked">
+        <Setter Property="Background" Value="#F8F8F8" />
+        <Setter Property="Foreground" Value="#303030" />
+    </Style>
+
+    <Style Selector="ToggleButton.settings-nav-button, RadioButton.settings-nav-button">
+        <Setter Property="Height" Value="39" />
+        <Setter Property="Margin" Value="0,0,0,1" />
+        <Setter Property="Padding" Value="50,0,0,0" />
+    </Style>
+
+    <Style Selector="Label.nav-header">
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="Foreground" Value="#f8e0dfef" />
+        <Setter Property="Margin" Value="0,10,0,0" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Padding" Value="5,0,0,0" />
+        <Setter Property="Background">
+            <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+                <GradientStop Offset="0" Color="#20FFFFFF" />
+                <GradientStop Offset="1" Color="Transparent" />
+            </LinearGradientBrush>
+        </Setter>
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Height" Duration="0:0:0.3" Easing="QuarticEaseInOut" />
+                <ThicknessTransition Property="Margin" Duration="0:0:0.3" Easing="QuarticEaseInOut" />
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Label.nav-header.collapsed">
+        <Setter Property="Height" Value="0" />
+        <Setter Property="Margin" Value="0" />
+    </Style>
+
+    <Style Selector="Grid.nav-header-grid">
+        <Setter Property="Height" Value="40" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="ClipToBounds" Value="True" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Height" Duration="0:0:0.3" Easing="QuarticEaseInOut" />
+                <ThicknessTransition Property="Margin" Duration="0:0:0.3" Easing="QuarticEaseInOut" />
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Grid.nav-header-grid.collapsed">
+        <Setter Property="Height" Value="0" />
+        <Setter Property="Margin" Value="0" />
+    </Style>
+
+    <Style Selector="controls|IconRadioButton.nav-button">
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Height" Value="39" />
+        <Setter Property="Margin" Value="0,0,0,1" />
+        <Setter Property="Padding" Value="20,0,0,0" />
+        <Setter Property="IconSize" Value="20" />
+        <Setter Property="IconMargin" Value="0,0,8,0" />
+        <Setter Property="MouseOverBackground" Value="White" />
+        <Setter Property="MouseOverForeground" Value="#303030" />
+        <Setter Property="MouseOverIconColor" Value="#DC498D" />
+        <Setter Property="CheckedBackground" Value="#F8F8F8" />
+        <Setter Property="CheckedForeground" Value="#303030" />
+        <Setter Property="CheckedIconColor" Value="#DC498D" />
+        <Setter Property="MouseDownBackground" Value="#A0F0F0F0" />
+        <Setter Property="MouseDownForeground" Value="#303030" />
+        <Setter Property="MouseDownIconColor" Value="#DC498D" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <ThicknessTransition Property="IconMargin" Duration="0:0:0.3" Easing="QuarticEaseInOut" />
+                <ThicknessTransition Property="Padding" Duration="0:0:0.3" Easing="QuarticEaseInOut" />
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="controls|IconRadioButton.nav-button.collapsed">
+        <Setter Property="IconMargin" Value="0,0,150,0" />
+        <Setter Property="Padding" Value="13,0,0,0" />
+    </Style>
+
+</Styles>

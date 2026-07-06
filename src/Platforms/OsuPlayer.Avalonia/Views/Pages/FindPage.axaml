@@ -1,0 +1,14 @@
+<UserControl
+    x:Class="OsuPlayer.Views.Pages.FindPage"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang">
+    <Panel>
+        <TextBlock
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            FontSize="24"
+            Foreground="#AAA"
+            Text="{I18N {x:Static lang:SRKeys.Ui_Nav_Storyboard}}" />
+    </Panel>
+</UserControl>

@@ -1,0 +1,35 @@
+<UserControl
+    x:Class="OsuPlayer.Views.UserControls.MiniPlayController"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--
+        MiniPlayController - D-phase deferral.
+        WPF 原始版本依赖: WindowChrome + BlurEffect + 3 Popup + 11处IsHitTestVisibleInChrome + 自定义Canvas进度条 + MultiBinding。
+        Avalonia 12 没有 WindowChrome / BlurEffect 的完整对应,完整迁移需要D-phase(Mini窗口/视频blur)实现。
+    -->
+    <Border Padding="8" Background="#252526">
+        <StackPanel Spacing="4">
+            <TextBlock
+                FontWeight="Bold"
+                Foreground="White"
+                Text="Mini Player (D-phase)" />
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <Button
+                    Width="24"
+                    Height="24"
+                    Classes="style-image"
+                    Content="⏮" />
+                <Button
+                    Width="24"
+                    Height="24"
+                    Classes="style-image"
+                    Content="▶" />
+                <Button
+                    Width="24"
+                    Height="24"
+                    Classes="style-image"
+                    Content="⏭" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>

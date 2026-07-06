@@ -1,0 +1,28 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style Selector="ScrollBar:vertical /template/ Thumb">
+        <Setter Property="Width" Value="11" />
+        <Setter Property="Background" Value="#F0F0F0" />
+        <Setter Property="BorderBrush" Value="#D0D0D0" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="0" />
+    </Style>
+    <Style Selector="ScrollBar:vertical /template/ Thumb:pointerover">
+        <Setter Property="Background" Value="#E0E0E0" />
+    </Style>
+    <Style Selector="ScrollBar:vertical /template/ Thumb:pressed">
+        <Setter Property="Background" Value="#D0D0D0" />
+    </Style>
+    <Style Selector="ScrollBar:horizontal /template/ Thumb">
+        <Setter Property="Height" Value="11" />
+        <Setter Property="Background" Value="#F0F0F0" />
+        <Setter Property="BorderBrush" Value="#D0D0D0" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="0" />
+    </Style>
+    <Style Selector="ScrollBar:horizontal /template/ Thumb:pointerover">
+        <Setter Property="Background" Value="#E0E0E0" />
+    </Style>
+    <Style Selector="ScrollBar:horizontal /template/ Thumb:pressed">
+        <Setter Property="Background" Value="#D0D0D0" />
+    </Style>
+</Styles>

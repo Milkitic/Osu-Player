@@ -1,0 +1,77 @@
+<UserControl
+    x:Class="OsuPlayer.Views.UserControls.SelectCollectionControl"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:OsuPlayer.Controls"
+    xmlns:data="clr-namespace:OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
+    xmlns:viewModels="clr-namespace:OsuPlayer.ViewModels"
+    x:DataType="viewModels:SelectCollectionPageViewModel">
+    <UserControl.DataContext>
+        <viewModels:SelectCollectionPageViewModel />
+    </UserControl.DataContext>
+    <Grid Margin="-10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <controls:CommonButton
+            Grid.Row="0"
+            Margin="3"
+            Padding="5"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Background="#FAFAFB"
+            Click="BtnAddCollection_Click"
+            Content="{I18N {x:Static lang:SRKeys.Ui_AddNewCollection}}"
+            IconMargin="5"
+            IconSize="18"
+            IconTemplate="{StaticResource NavAddCollectionTempl}" />
+        <ListBox
+            Grid.Row="1"
+            Margin="0,0,1,0"
+            Background="Transparent"
+            BorderThickness="0"
+            ItemsSource="{Binding Collections, Mode=OneWay}">
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="data:Collection">
+                    <controls:CommonButton
+                        Height="58"
+                        MinHeight="26"
+                        Margin="0,0,0,2"
+                        HorizontalContentAlignment="Left"
+                        Background="#FAFAFB"
+                        BorderThickness="0"
+                        Click="BtnClose_Click"
+                        CornerRadius="0">
+                        <Grid HorizontalAlignment="Left">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="58" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Border
+                                Width="45"
+                                Height="45"
+                                Margin="0"
+                                Background="{StaticResource ExtraLightBrush}">
+                                <Image
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Source="{Binding ImagePath, Converter={StaticResource PathToBitmapConverter}}"
+                                    Stretch="UniformToFill" />
+                            </Border>
+                            <TextBlock
+                                Grid.Column="1"
+                                MaxWidth="236"
+                                Margin="0,7"
+                                FontSize="14"
+                                Foreground="#303030"
+                                Text="{Binding Name}"
+                                TextWrapping="Wrap" />
+                        </Grid>
+                    </controls:CommonButton>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</UserControl>

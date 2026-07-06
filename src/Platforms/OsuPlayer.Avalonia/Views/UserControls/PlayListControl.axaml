@@ -1,0 +1,154 @@
+<UserControl
+    x:Class="OsuPlayer.Views.UserControls.PlayListControl"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:OsuPlayer.Controls"
+    xmlns:data="clr-namespace:OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
+    xmlns:userControls="clr-namespace:OsuPlayer.Views.UserControls"
+    x:DataType="userControls:PlayListControlVm">
+    <Grid>
+        <Border
+            Margin="10"
+            Background="{DynamicResource TextureBrush2}"
+            BoxShadow="0 0 10 0 #80000000"
+            CornerRadius="4"
+            Opacity="0.7" />
+        <Grid Margin="10" Background="#B0F0F0F0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Border BorderBrush="#D0D0D0" BorderThickness="0,0,0,1">
+                    <StackPanel
+                        Height="34"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal">
+                        <TextBlock
+                            Margin="30,0,0,0"
+                            VerticalAlignment="Center"
+                            Foreground="#727272">
+                            <Run Text="{I18N {x:Static lang:SRKeys.Ui_Total}}" />
+                            <Run Text="{Binding Controller.PlayList.SongList.Count, Mode=OneWay}" />
+                            <Run Text="{I18N {x:Static lang:SRKeys.Ui_SongsClassifier}}" />
+                        </TextBlock>
+                        <controls:CommonButton
+                            Height="24"
+                            Padding="5,0"
+                            VerticalAlignment="Center"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Command="{Binding SaveAllCollectionCommand}"
+                            Content="{I18N {x:Static lang:SRKeys.Ui_Btn_SaveAll}}"
+                            FontSize="11"
+                            Foreground="#A0A0A0"
+                            MouseDownBackground="Transparent"
+                            MouseDownForeground="#646464"
+                            MouseOverBackground="Transparent"
+                            MouseOverForeground="#808080" />
+                    </StackPanel>
+                </Border>
+                <StackPanel
+                    Margin="4,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+                    <controls:CommonButton
+                        Height="24"
+                        Padding="5,0"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Command="{Binding ClearPlayListCommand}"
+                        Content="{I18N {x:Static lang:SRKeys.Ui_Btn_ClearList}}"
+                        FontSize="11"
+                        Foreground="#A0A0A0"
+                        MouseDownBackground="Transparent"
+                        MouseDownForeground="#646464"
+                        MouseOverBackground="Transparent"
+                        MouseOverForeground="#808080" />
+                    <controls:CommonButton
+                        Width="24"
+                        Height="24"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Click="CloseButton_Click"
+                        IconMargin="0"
+                        IconSize="14"
+                        IconTemplate="{StaticResource CloseTempl}"
+                        MouseDownBackground="#D0D0D0"
+                        MouseOverBackground="#D4D4D4" />
+                </StackPanel>
+            </Grid>
+            <ListBox
+                x:Name="PlayList"
+                Grid.Row="1"
+                Background="Transparent"
+                ItemsSource="{Binding Controller.PlayList.SongList}"
+                SelectionChanged="PlayList_SelectionChanged">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="data:Beatmap">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock
+                                Width="30"
+                                Margin="5,0"
+                                VerticalAlignment="Center"
+                                Foreground="{StaticResource PinkBrushOsu}"
+                                Text="♪" />
+                            <TextBlock
+                                Width="225"
+                                VerticalAlignment="Center"
+                                Foreground="#303030"
+                                Text="{Binding AutoTitle}"
+                                TextTrimming="CharacterEllipsis" />
+                            <TextBlock
+                                Width="180"
+                                VerticalAlignment="Center"
+                                Foreground="#727272"
+                                Text="{Binding AutoArtist}"
+                                TextTrimming="CharacterEllipsis" />
+                            <TextBlock
+                                Width="110"
+                                VerticalAlignment="Center"
+                                Foreground="#484848"
+                                Text="{Binding Creator}"
+                                TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Command="{Binding PlayCommand}" Header="播放(Enter)" />
+                        <Separator />
+                        <MenuItem
+                            Command="{Binding SearchCommand}"
+                            CommandParameter="0"
+                            Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchTitle}}" />
+                        <MenuItem
+                            Command="{Binding SearchCommand}"
+                            CommandParameter="1"
+                            Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchArtist}}" />
+                        <MenuItem
+                            Command="{Binding SearchCommand}"
+                            CommandParameter="2"
+                            Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchSource}}" />
+                        <MenuItem
+                            Command="{Binding SearchCommand}"
+                            CommandParameter="3"
+                            Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchCreator}}" />
+                        <Separator />
+                        <MenuItem Command="{Binding OpenSourceFolderCommand}" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_OpenSourceFolder}}" />
+                        <MenuItem Command="{Binding OpenScorePageCommand}" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_OpenScorePage}}" />
+                        <Separator />
+                        <MenuItem Command="{Binding SaveCollectionCommand}" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SaveTo}}" />
+                        <MenuItem Command="{Binding ExportCommand}" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_Export}}" />
+                        <Separator />
+                        <MenuItem Command="{Binding RemoveCommand}" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_RemoveFromList}}" />
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+            </ListBox>
+        </Grid>
+    </Grid>
+</UserControl>

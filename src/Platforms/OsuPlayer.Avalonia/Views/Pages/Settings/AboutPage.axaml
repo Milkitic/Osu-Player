@@ -1,0 +1,63 @@
+<UserControl
+    x:Class="OsuPlayer.Views.Pages.Settings.AboutPage"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
+    xmlns:vm="clr-namespace:OsuPlayer.ViewModels.Pages.Settings"
+    Classes="settings-page"
+    x:DataType="vm:AboutPageViewModel">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="10">
+            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_SoftwareUpdate}}" />
+
+            <StackPanel Classes="config-row" Orientation="Horizontal">
+                <TextBlock Classes="config-label" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_CurrentVersion}}" />
+                <TextBlock Classes="config-label-muted" Foreground="#222222" Text="{Binding CurrentVersion}" />
+            </StackPanel>
+            <StackPanel Classes="config-row" Orientation="Horizontal">
+                <TextBlock Classes="config-label" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_LastCheckTime}}" />
+                <TextBlock Classes="config-label-muted" Foreground="#222222" Text="{Binding LastUpdateCheckText}" />
+            </StackPanel>
+
+            <StackPanel
+                Margin="0,8"
+                Orientation="Horizontal"
+                Spacing="8">
+                <Button
+                    Classes="settings-button"
+                    Command="{Binding CheckUpdateCommand}"
+                    Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_CheckUpdate}}" />
+                <Button
+                    Classes="settings-button"
+                    Command="{Binding ShowNewVersionDialogCommand}"
+                    Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_HasNewVersion}}"
+                    Foreground="#FE5472"
+                    IsVisible="{Binding HasUpdate}" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button
+                    Classes="link-button"
+                    Command="{Binding OpenUrlCommand}"
+                    CommandParameter="https://github.com/Milkitic/Osu-Player"
+                    Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_ProjectUrl}}" />
+                <Button
+                    Classes="link-button"
+                    Command="{Binding OpenUrlCommand}"
+                    CommandParameter="https://github.com/Milkitic/Osu-Player/issues/new"
+                    Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_Feedback}}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button
+                    Classes="link-button"
+                    Command="{Binding OpenUrlCommand}"
+                    CommandParameter="https://github.com/Milkitic/Osu-Player/blob/master/LICENSE"
+                    Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_LicenseInfo}}" />
+                <Button
+                    Classes="link-button"
+                    Command="{Binding ShowPrivacyPolicyCommand}"
+                    Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_PrivacyPolicy}}" />
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

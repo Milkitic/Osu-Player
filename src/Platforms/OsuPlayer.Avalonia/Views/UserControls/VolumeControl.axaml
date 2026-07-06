@@ -1,0 +1,253 @@
+<UserControl
+    x:Class="OsuPlayer.Views.UserControls.VolumeControl"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
+    xmlns:models="clr-namespace:OsuPlayer.Shared.Models;assembly=OsuPlayer.Shared"
+    xmlns:vm="clr-namespace:OsuPlayer.Views.UserControls"
+    Width="200"
+    x:DataType="vm:VolumeControlVm">
+    <UserControl.DataContext>
+        <vm:VolumeControlVm />
+    </UserControl.DataContext>
+    <UserControl.Styles>
+        <Style Selector="Button.collection-btn">
+            <Setter Property="Background" Value="#EEEEEE" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="BorderBrush" Value="#BBBBBB" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}">
+                        <ContentPresenter
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            Content="{TemplateBinding Content}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="Button.collection-btn:pointerover">
+            <Setter Property="Background" Value="#F8F8F8" />
+        </Style>
+    </UserControl.Styles>
+    <Grid>
+        <Border Margin="10" BoxShadow="0 0 10 0 #80000000" Background="{DynamicResource TextureBrush2}" Opacity="0.7" />
+        <Border Margin="10" Background="#A0FFFFFF">
+            <Grid Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <Slider
+                            x:Name="MasterVolume"
+                            Height="70"
+                            Margin="10,5"
+                            HorizontalAlignment="Center"
+                            Classes="osu-slider-white"
+                            LargeChange="0.1"
+                            Maximum="1"
+                            Orientation="Vertical"
+                            Value="{Binding Shared.AppSettings.Volume.Main, Mode=TwoWay}" />
+                        <TextBlock
+                            Margin="0,-5,0,0"
+                            HorizontalAlignment="Center"
+                            Foreground="#303030"
+                            Text="{I18N {x:Static lang:SRKeys.Ui_VolumeMaster}}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <Slider
+                            x:Name="MusicVolume"
+                            Height="70"
+                            Margin="10,5"
+                            HorizontalAlignment="Center"
+                            Classes="osu-slider-white"
+                            LargeChange="0.1"
+                            Maximum="1"
+                            Orientation="Vertical"
+                            Value="{Binding Shared.AppSettings.Volume.Music, Mode=TwoWay}" />
+                        <TextBlock
+                            Margin="0,-5,0,0"
+                            HorizontalAlignment="Center"
+                            Foreground="#303030"
+                            Text="{I18N {x:Static lang:SRKeys.Ui_VolumeMusic}}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <Slider
+                            x:Name="HitsoundVolume"
+                            Height="70"
+                            Margin="10,5"
+                            HorizontalAlignment="Center"
+                            Classes="osu-slider-white"
+                            LargeChange="0.1"
+                            Maximum="1"
+                            Orientation="Vertical"
+                            Value="{Binding Shared.AppSettings.Volume.Hitsound, Mode=TwoWay}" />
+                        <TextBlock
+                            Margin="0,-5,0,0"
+                            HorizontalAlignment="Center"
+                            Foreground="#303030"
+                            Text="{I18N {x:Static lang:SRKeys.Ui_VolumeSound}}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="3">
+                        <Slider
+                            x:Name="SampleVolume"
+                            Height="70"
+                            Margin="10,5"
+                            HorizontalAlignment="Center"
+                            Classes="osu-slider-white"
+                            LargeChange="0.1"
+                            Maximum="1"
+                            Orientation="Vertical"
+                            Value="{Binding Shared.AppSettings.Volume.Sample, Mode=TwoWay}" />
+                        <TextBlock
+                            Margin="0,-5,0,0"
+                            HorizontalAlignment="Center"
+                            Foreground="#303030"
+                            Text="{I18N {x:Static lang:SRKeys.Ui_VolumeSample}}" />
+                    </StackPanel>
+                </Grid>
+                <Grid Grid.Row="1">
+                    <StackPanel>
+                        <Slider
+                            x:Name="Balance"
+                            Margin="10,5"
+                            Classes="osu-slider-white"
+                            LargeChange="5"
+                            Maximum="100"
+                            Minimum="0"
+                            Orientation="Horizontal"
+                            SmallChange="1"
+                            TickFrequency="1"
+                            Value="{Binding Shared.AppSettings.Volume.BalanceFactor, Mode=TwoWay}" />
+                        <TextBlock
+                            Margin="0,-5,0,0"
+                            HorizontalAlignment="Center"
+                            Foreground="#303030"
+                            Text="{I18N {x:Static lang:SRKeys.Ui_3dSoundEffect}}" />
+                        <Grid Margin="10,2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="#303030"
+                                Text="{I18N {x:Static lang:SRKeys.Ui_BalanceMode}}" />
+                            <ComboBox
+                                x:Name="BalanceMode"
+                                Grid.Column="1"
+                                Height="22"
+                                VerticalContentAlignment="Center"
+                                ItemsSource="{Binding AvailableBalanceModes}"
+                                SelectedItem="{Binding Shared.AppSettings.Volume.BalanceMode, Mode=TwoWay}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </Grid>
+                        <Slider
+                            x:Name="Offset"
+                            Margin="10,5"
+                            Classes="osu-slider-white"
+                            IsVisible="False"
+                            LargeChange="10"
+                            Maximum="200"
+                            Minimum="-200"
+                            Orientation="Horizontal"
+                            SmallChange="1"
+                            TickFrequency="1" />
+                        <TextBlock
+                            Margin="0,-5,0,0"
+                            HorizontalAlignment="Center"
+                            Foreground="#303030"
+                            IsVisible="False"
+                            Text="{I18N {x:Static lang:SRKeys.Ui_CurrentMapOffset}}" />
+                        <Grid Margin="10,2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="#303030"
+                                Text="{I18N {x:Static lang:SRKeys.Ui_LimiterType}}" />
+                            <ComboBox
+                                x:Name="LimiterType"
+                                Grid.Column="1"
+                                Height="22"
+                                VerticalContentAlignment="Center"
+                                ItemsSource="{Binding AvailableLimiterTypes}"
+                                SelectedItem="{Binding Shared.AppSettings.Volume.LimiterType, Mode=TwoWay}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+                <Grid Grid.Row="2" Margin="0,0,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Button
+                        Grid.Column="0"
+                        Click="BtnPlayMod_OnClick"
+                        Content="NM"
+                        Classes="collection-btn"
+                        Tag="{x:Static models:PlayModifier.None}" />
+                    <Button
+                        Grid.Column="1"
+                        Click="BtnPlayMod_OnClick"
+                        Content="DT"
+                        Classes="collection-btn"
+                        Tag="{x:Static models:PlayModifier.DoubleTime}" />
+                    <Button
+                        Grid.Column="2"
+                        Click="BtnPlayMod_OnClick"
+                        Content="NC"
+                        Classes="collection-btn"
+                        Tag="{x:Static models:PlayModifier.NightCore}" />
+                    <Button
+                        Grid.Column="3"
+                        Click="BtnPlayMod_OnClick"
+                        Content="HT"
+                        Classes="collection-btn"
+                        Tag="{x:Static models:PlayModifier.HalfTime}" />
+                    <Button
+                        Grid.Column="4"
+                        Click="BtnPlayMod_OnClick"
+                        Content="DC"
+                        Classes="collection-btn"
+                        Tag="{x:Static models:PlayModifier.DayCore}" />
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

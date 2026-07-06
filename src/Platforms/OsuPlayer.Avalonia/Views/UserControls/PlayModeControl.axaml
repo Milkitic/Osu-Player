@@ -1,0 +1,104 @@
+<UserControl
+    x:Class="OsuPlayer.Views.UserControls.PlayModeControl"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:OsuPlayer.Controls"
+    xmlns:models="clr-namespace:OsuPlayer.Shared.Models;assembly=OsuPlayer.Shared">
+    <Grid>
+        <Border Margin="10" BoxShadow="0 0 10 0 #80000000" Background="{DynamicResource TextureBrush2}" Opacity="0.7" />
+        <Border Margin="10" Background="#A0FFFFFF">
+            <StackPanel>
+                <controls:IconRadioButton
+                    x:Name="ModeSingle"
+                    Height="30"
+                    Padding="0,0,5,0"
+                    Background="Transparent"
+                    CheckedBackground="#80D0D0D0"
+                    Click="Mode_Changed"
+                    Content="单曲播放"
+                    GroupName="PlayMode"
+                    IconMargin="0,0,5,0"
+                    IconSize="18"
+                    IconTemplate="{StaticResource ModeSingleTempl}"
+                    MouseDownBackground="#80D8D8D8"
+                    MouseOverBackground="#80E0E0E0"
+                    Tag="{x:Static models:PlaylistMode.Single}" />
+                <controls:IconRadioButton
+                    x:Name="ModeSingleLoop"
+                    Height="30"
+                    Padding="0,0,5,0"
+                    Background="Transparent"
+                    CheckedBackground="#80D0D0D0"
+                    Click="Mode_Changed"
+                    Content="单曲循环"
+                    GroupName="PlayMode"
+                    IconMargin="0,0,5,0"
+                    IconSize="18"
+                    IconTemplate="{StaticResource ModeSingleLoopTempl}"
+                    MouseDownBackground="#80D8D8D8"
+                    MouseOverBackground="#80E0E0E0"
+                    Tag="{x:Static models:PlaylistMode.SingleLoop}" />
+                <controls:IconRadioButton
+                    x:Name="ModeNormal"
+                    Height="30"
+                    Padding="0,0,5,0"
+                    Background="Transparent"
+                    CheckedBackground="#80D0D0D0"
+                    Click="Mode_Changed"
+                    Content="顺序播放"
+                    GroupName="PlayMode"
+                    IconMargin="0,0,5,0"
+                    IconSize="18"
+                    IconTemplate="{StaticResource ModeNormalTempl}"
+                    MouseDownBackground="#80D8D8D8"
+                    MouseOverBackground="#80E0E0E0"
+                    Tag="{x:Static models:PlaylistMode.Normal}" />
+                <controls:IconRadioButton
+                    x:Name="ModeRandom"
+                    Height="30"
+                    Padding="0,0,5,0"
+                    Background="Transparent"
+                    CheckedBackground="#80D0D0D0"
+                    Click="Mode_Changed"
+                    Content="随机播放"
+                    GroupName="PlayMode"
+                    IconMargin="0,0,5,0"
+                    IconSize="18"
+                    IconTemplate="{StaticResource ModeRandomTempl}"
+                    MouseDownBackground="#80D8D8D8"
+                    MouseOverBackground="#80E0E0E0"
+                    Tag="{x:Static models:PlaylistMode.Random}" />
+                <controls:IconRadioButton
+                    x:Name="ModeLoop"
+                    Height="30"
+                    Padding="0,0,5,0"
+                    Background="Transparent"
+                    CheckedBackground="#80D0D0D0"
+                    Click="Mode_Changed"
+                    Content="循环列表"
+                    GroupName="PlayMode"
+                    IconMargin="0,0,5,0"
+                    IconSize="18"
+                    IconTemplate="{StaticResource ModeLoopTempl}"
+                    MouseDownBackground="#80D8D8D8"
+                    MouseOverBackground="#80E0E0E0"
+                    Tag="{x:Static models:PlaylistMode.Loop}" />
+                <controls:IconRadioButton
+                    x:Name="ModeLoopRandom"
+                    Height="30"
+                    Padding="0,0,5,0"
+                    Background="Transparent"
+                    CheckedBackground="#80D0D0D0"
+                    Click="Mode_Changed"
+                    Content="随机循环"
+                    GroupName="PlayMode"
+                    IconMargin="0,0,5,0"
+                    IconSize="18"
+                    IconTemplate="{StaticResource ModeLoopRandomTempl}"
+                    MouseDownBackground="#80D8D8D8"
+                    MouseOverBackground="#80E0E0E0"
+                    Tag="{x:Static models:PlaylistMode.LoopRandom}" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

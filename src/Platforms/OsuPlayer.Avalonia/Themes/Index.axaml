@@ -1,0 +1,27 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--  Per-control ControlThemes (templated controls)  -->
+    <Styles.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://OsuPlayer/Themes/ControlThemes/CommonButton.axaml" />
+                <ResourceInclude Source="avares://OsuPlayer/Themes/ControlThemes/IconRadioButton.axaml" />
+                <ResourceInclude Source="avares://OsuPlayer/Themes/ControlThemes/CommonTextBox.axaml" />
+                <ResourceInclude Source="avares://OsuPlayer/Themes/ControlThemes/ContentDialog.axaml" />
+                <ResourceInclude Source="avares://OsuPlayer/Themes/ControlThemes/DialogHost.axaml" />
+                <ResourceInclude Source="avares://OsuPlayer/Themes/ControlThemes/WindowDecorations.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Styles.Resources>
+
+    <!--  Class-based / state styles for built-in controls  -->
+    <StyleInclude Source="avares://OsuPlayer/Themes/Styles/Button.axaml" />
+    <StyleInclude Source="avares://OsuPlayer/Themes/Styles/Slider.axaml" />
+    <StyleInclude Source="avares://OsuPlayer/Themes/Styles/Navigation.axaml" />
+    <StyleInclude Source="avares://OsuPlayer/Themes/Styles/ScrollBar.axaml" />
+    <StyleInclude Source="avares://OsuPlayer/Themes/Styles/ContextMenu.axaml" />
+    <StyleInclude Source="avares://OsuPlayer/Themes/Styles/Components.axaml" />
+    <StyleInclude Source="avares://OsuPlayer/Themes/Styles/BeatmapList.axaml" />
+    <StyleInclude Source="avares://OsuPlayer/Themes/Styles/Settings.axaml" />
+
+</Styles>

@@ -1,0 +1,111 @@
+<UserControl
+    x:Class="OsuPlayer.Views.Pages.ExportPage"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
+    xmlns:core="clr-namespace:OsuPlayer.Core;assembly=OsuPlayer.Core"
+    xmlns:vm="clr-namespace:OsuPlayer.ViewModels"
+    x:DataType="vm:ExportPageViewModel">
+    <UserControl.Styles>
+        <Style Selector="ListBox.export-list > ListBoxItem">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0,0,0,1" />
+        </Style>
+    </UserControl.Styles>
+    <TabControl Margin="5">
+        <TabItem Header="{I18N {x:Static lang:SRKeys.Ui_Exported}}">
+            <Grid RowDefinitions="Auto,Auto,*">
+                <StackPanel
+                    Grid.Row="0"
+                    Margin="10"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <Button
+                        Classes="settings-button"
+                        Command="{Binding ItemFolderCommand}"
+                        CommandParameter="{Binding ExportPath}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <Viewbox Width="14" Height="14">
+                                <Path Fill="#303030" Data="M2,3H6L7.2,4.5H12.5V12.5H2Z M3.2,5.5V11.3H11.3V5.5Z" />
+                            </Viewbox>
+                            <TextBlock Text="{I18N {x:Static lang:SRKeys.Ui_Btn_OpenDirectory}}" />
+                        </StackPanel>
+                    </Button>
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Foreground="#606060"
+                        Text="{I18N {x:Static lang:SRKeys.Ui_ExportPath}}" />
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Foreground="#222222"
+                        Text="{Binding ExportPath}" />
+                </StackPanel>
+                <Border
+                    Grid.Row="1"
+                    Margin="5,0,5,0"
+                    Padding="12,8"
+                    Background="#F4F5F7"
+                    BorderBrush="#E4E6EB"
+                    BorderThickness="0,0,0,1">
+                    <Grid ColumnDefinitions="40,3*,2*,*,*">
+                        <TextBlock FontWeight="SemiBold" Foreground="#666666" Text="#" />
+                        <TextBlock Grid.Column="1" FontWeight="SemiBold" Foreground="#666666" Text="{I18N {x:Static lang:SRKeys.Ui_Title}}" />
+                        <TextBlock Grid.Column="2" FontWeight="SemiBold" Foreground="#666666" Text="{I18N {x:Static lang:SRKeys.Ui_Artist}}" />
+                        <TextBlock Grid.Column="3" FontWeight="SemiBold" Foreground="#666666" Text="{I18N {x:Static lang:SRKeys.Ui_Size}}" />
+                        <TextBlock Grid.Column="4" FontWeight="SemiBold" Foreground="#666666" Text="{I18N {x:Static lang:SRKeys.Ui_ExportTime}}" />
+                    </Grid>
+                </Border>
+                <ListBox
+                    x:Name="ExportList"
+                    Grid.Row="2"
+                    Classes="export-list"
+                    Margin="5,0,5,5"
+                    Background="Transparent"
+                    SelectionMode="Multiple"
+                    ItemsSource="{Binding DataModelList}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="core:BeatmapDataModel">
+                            <Border Padding="12,10" Background="#FBFBFB" BorderBrush="#E6E6E6" BorderThickness="0,0,0,1">
+                                <Border.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Click="OpenItemFolder_Click" Header="{I18N {x:Static lang:SRKeys.Ui_OpenFileFolder}}" Tag="{Binding}" />
+                                        <Separator />
+                                        <MenuItem Click="ReExportItem_Click" Header="{I18N {x:Static lang:SRKeys.Ui_ExportAgain}}" Tag="{Binding}" />
+                                        <MenuItem Click="DeleteItem_Click" Header="{I18N {x:Static lang:SRKeys.Ui_DeleteExported}}" Tag="{Binding}" />
+                                    </ContextMenu>
+                                </Border.ContextMenu>
+                                <Grid ColumnDefinitions="40,3*,2*,*,*">
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        Foreground="#9C9C9C"
+                                        Text="{Binding Index}" />
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        Foreground="#222222"
+                                        Text="{Binding AutoTitle}" />
+                                    <TextBlock
+                                        Grid.Column="2"
+                                        Foreground="#9C9C9C"
+                                        Text="{Binding AutoArtist}" />
+                                    <TextBlock
+                                        Grid.Column="3"
+                                        Foreground="#9C9C9C"
+                                        Text="{Binding FileSize}" />
+                                    <TextBlock
+                                        Grid.Column="4"
+                                        Foreground="#222222"
+                                        Text="{Binding ExportTime}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </TabItem>
+        <TabItem Header="{I18N {x:Static lang:SRKeys.Ui_Exporting}}">
+            <Border Padding="20">
+                <TextBlock Foreground="#7A7A7A" Text="{I18N {x:Static lang:SRKeys.Ui_Exporting}}" />
+            </Border>
+        </TabItem>
+    </TabControl>
+</UserControl>

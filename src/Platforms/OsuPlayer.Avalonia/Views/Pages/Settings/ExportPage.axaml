@@ -1,0 +1,105 @@
+<UserControl
+    x:Class="OsuPlayer.Views.Pages.Settings.ExportPage"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
+    xmlns:shared="using:OsuPlayer.Shared.Models"
+    xmlns:vm="clr-namespace:OsuPlayer.ViewModels.Pages.Settings"
+    Classes="settings-page"
+    x:DataType="vm:ExportPageViewModel">
+    <UserControl.Resources>
+        <vm:ExportNamingToBoolConverter x:Key="ExportNamingConv" />
+        <vm:ExportGroupToBoolConverter x:Key="ExportGroupConv" />
+    </UserControl.Resources>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="10">
+            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_ExportPath}}" />
+            <StackPanel Classes="config-row" Orientation="Horizontal">
+                <TextBlock Classes="config-label" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_MusicDirectory}}" />
+                <TextBox
+                    Classes="config-box"
+                    Width="250"
+                    Height="27"
+                    IsReadOnly="True"
+                    Text="{Binding MusicPath, Mode=OneWay}" />
+                <Button
+                    Classes="settings-button"
+                    Width="27"
+                    Height="27"
+                    Command="{Binding BrowseMusicCommand}">
+                    <Viewbox Width="12" Height="12">
+                        <Path Fill="#303030" Data="M2,3H6L7.2,4.5H12.5V12.5H2Z M3.2,5.5V11.3H11.3V5.5Z" />
+                    </Viewbox>
+                </Button>
+            </StackPanel>
+            <StackPanel Classes="config-row" Orientation="Horizontal">
+                <TextBlock Classes="config-label" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_BgDirectory}}" />
+                <TextBox
+                    Classes="config-box"
+                    Width="250"
+                    Height="27"
+                    IsReadOnly="True"
+                    Text="{Binding BgPath, Mode=OneWay}" />
+                <Button
+                    Classes="settings-button"
+                    Width="27"
+                    Height="27"
+                    Command="{Binding BrowseBgCommand}">
+                    <Viewbox Width="12" Height="12">
+                        <Path Fill="#303030" Data="M2,3H6L7.2,4.5H12.5V12.5H2Z M3.2,5.5V11.3H11.3V5.5Z" />
+                    </Viewbox>
+                </Button>
+            </StackPanel>
+
+            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_FileNamingFormat}}" />
+            <RadioButton
+                Classes="config-radio"
+                GroupName="naming"
+                IsChecked="{Binding NamingStyle, Converter={StaticResource ExportNamingConv}, ConverterParameter={x:Static shared:ExportNamingStyle.Title}, Mode=TwoWay}">
+                <TextBlock Text="{I18N {x:Static lang:SRKeys.Ui_Title}}" />
+            </RadioButton>
+            <RadioButton
+                Classes="config-radio"
+                GroupName="naming"
+                IsChecked="{Binding NamingStyle, Converter={StaticResource ExportNamingConv}, ConverterParameter={x:Static shared:ExportNamingStyle.ArtistTitle}, Mode=TwoWay}">
+                <TextBlock>
+                    <Run Text="{I18N {x:Static lang:SRKeys.Ui_Artist}}" />
+                    <Run Text=" - " />
+                    <Run Text="{I18N {x:Static lang:SRKeys.Ui_Title}}" />
+                </TextBlock>
+            </RadioButton>
+            <RadioButton
+                Classes="config-radio"
+                GroupName="naming"
+                IsChecked="{Binding NamingStyle, Converter={StaticResource ExportNamingConv}, ConverterParameter={x:Static shared:ExportNamingStyle.TitleArtist}, Mode=TwoWay}">
+                <TextBlock>
+                    <Run Text="{I18N {x:Static lang:SRKeys.Ui_Title}}" />
+                    <Run Text=" - " />
+                    <Run Text="{I18N {x:Static lang:SRKeys.Ui_Artist}}" />
+                </TextBlock>
+            </RadioButton>
+
+            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_DirectoryGrouping}}" />
+            <RadioButton
+                Classes="config-radio"
+                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_DirNoGroup}}"
+                GroupName="grouping"
+                IsChecked="{Binding GroupStyle, Converter={StaticResource ExportGroupConv}, ConverterParameter={x:Static shared:ExportGroupStyle.None}, Mode=TwoWay}" />
+            <RadioButton
+                Classes="config-radio"
+                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_DirGroupByArtist}}"
+                GroupName="grouping"
+                IsChecked="{Binding GroupStyle, Converter={StaticResource ExportGroupConv}, ConverterParameter={x:Static shared:ExportGroupStyle.Artist}, Mode=TwoWay}" />
+            <RadioButton
+                Classes="config-radio"
+                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_DirGroupByMapper}}"
+                GroupName="grouping"
+                IsChecked="{Binding GroupStyle, Converter={StaticResource ExportGroupConv}, ConverterParameter={x:Static shared:ExportGroupStyle.Mapper}, Mode=TwoWay}" />
+            <RadioButton
+                Classes="config-radio"
+                Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_DirGroupBySource}}"
+                GroupName="grouping"
+                IsChecked="{Binding GroupStyle, Converter={StaticResource ExportGroupConv}, ConverterParameter={x:Static shared:ExportGroupStyle.Source}, Mode=TwoWay}" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

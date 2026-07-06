@@ -1,0 +1,34 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:OsuPlayer.Converters">
+    <converters:TrueToVisibleConverter x:Key="TrueToVisibleConverter" />
+    <converters:NullToHiddenConverter x:Key="NullToHiddenConverter" />
+    <converters:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
+    <converters:NullToFullOpacityConverter x:Key="NullToFullOpacityConverter" />
+    <converters:NullToBoolFalseConverter x:Key="NullToBoolFalseConverter" />
+    <converters:NegativeBooleanConverter x:Key="NegativeBooleanConverter" />
+    <converters:DateTimeConverter x:Key="DateTimeConverter" />
+    <converters:MsToStringConverter x:Key="MsToStringConverter" />
+    <converters:IndexToStringConverter x:Key="IndexToStringConverter" />
+    <converters:RoundedNumberConverter x:Key="RoundedNumberConverter" />
+    <converters:IconColorConverter x:Key="IconColorConverter" />
+    <converters:ButtonColorConverter x:Key="ButtonColorConverter" />
+    <converters:PlayingConverter x:Key="PlayingConverter" />
+    <converters:PlayModeConverter x:Key="PlayModeConverter" />
+    <converters:BoolIsFavToSvgConverter x:Key="BoolIsFavToSvgConverter" />
+    <converters:MiniWindowConverter x:Key="MiniWindowConverter" />
+    <converters:LocalizedFontFamilyConverter x:Key="LocalizedFontFamilyConverter" />
+    <converters:StarRating2ColorConverter x:Key="StarRating2ColorConverter" />
+    <converters:StarRating2ForeColorConverter x:Key="StarRating2ForeColorConverter" />
+    <converters:WindowMarginConverter x:Key="WindowMarginConverter" />
+    <converters:TitleIconConverter x:Key="TitleIconConverter" />
+    <converters:GetOutlinedTextConverter x:Key="GetOutlinedTextConverter" />
+    <converters:LyricWindowShownConverter x:Key="CvtLyricWindowShown" />
+    <converters:LyricWindowLockedConverter x:Key="CvtLyricWindowLocked" />
+    <converters:BoolTrueToVisibleConverter x:Key="BoolTrueToVisibleConverter" />
+    <converters:BoolFalseToVisibleConverter x:Key="BoolFalseToVisibleConverter" />
+    <converters:EnumDescriptionConverter x:Key="EnumDescriptionConverter" />
+    <converters:GameModeToImageConverter x:Key="GameModeToImageConverter" />
+    <converters:PathToBitmapConverter x:Key="PathToBitmapConverter" />
+</ResourceDictionary>

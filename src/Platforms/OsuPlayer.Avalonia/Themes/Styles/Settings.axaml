@@ -1,0 +1,126 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style Selector="UserControl.settings-page">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+
+    <Style Selector="UserControl.settings-page &gt; ScrollViewer &gt; StackPanel &gt; TextBlock.config-title">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="#222222" />
+        <Setter Property="Margin" Value="5,15,0,10" />
+    </Style>
+
+    <Style Selector="TextBlock.config-title">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="#222222" />
+        <Setter Property="Margin" Value="5,15,0,10" />
+    </Style>
+
+    <Style Selector="TextBlock.config-label">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="#606060" />
+        <Setter Property="Margin" Value="4" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="TextBlock.config-label-muted">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="#7A7A7A" />
+        <Setter Property="Margin" Value="5,0,0,0" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="StackPanel.config-row">
+        <Setter Property="Margin" Value="0,0,0,5" />
+        <Setter Property="Spacing" Value="6" />
+    </Style>
+
+    <Style Selector="Grid.config-grid">
+        <Setter Property="ColumnSpacing" Value="10" />
+        <Setter Property="RowSpacing" Value="6" />
+    </Style>
+
+    <Style Selector="TextBox.config-box">
+        <Setter Property="Width" Value="250" />
+        <Setter Property="MinHeight" Value="27" />
+        <Setter Property="Padding" Value="8,0" />
+        <Setter Property="Background" Value="White" />
+        <Setter Property="Foreground" Value="#303030" />
+        <Setter Property="BorderBrush" Value="#B0B0B0" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="ComboBox.config-box">
+        <Setter Property="MinHeight" Value="27" />
+        <Setter Property="Padding" Value="8,0" />
+        <Setter Property="Background" Value="White" />
+        <Setter Property="Foreground" Value="#303030" />
+        <Setter Property="BorderBrush" Value="#B0B0B0" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+    </Style>
+
+    <Style Selector="CheckBox.config-check">
+        <Setter Property="Margin" Value="8,0" />
+        <Setter Property="Foreground" Value="#303030" />
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+
+    <Style Selector="RadioButton.config-radio">
+        <Setter Property="Margin" Value="8,0" />
+        <Setter Property="Foreground" Value="#303030" />
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+
+    <Style Selector="Button.settings-button">
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="Background" Value="#FAFAFB" />
+        <Setter Property="Foreground" Value="#303030" />
+        <Setter Property="BorderBrush" Value="#DADADB" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style Selector="Button.settings-button:pointerover">
+        <Setter Property="Background" Value="#F0F0F0" />
+    </Style>
+
+    <Style Selector="Button.settings-button:pressed">
+        <Setter Property="Background" Value="#E8E8E8" />
+    </Style>
+
+    <Style Selector="Button.play-button">
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="Background" Value="#5D9CEC" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="BorderBrush" Value="#5D9CEC" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
+    <Style Selector="Button.play-button:pointerover">
+        <Setter Property="Background" Value="#6DA3EF" />
+    </Style>
+
+    <Style Selector="Button.play-button:pressed">
+        <Setter Property="Background" Value="#4D8CDC" />
+    </Style>
+
+    <Style Selector="Button.link-button">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Foreground" Value="#1E9FFF" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+    </Style>
+
+    <Style Selector="Button.link-button:pointerover">
+        <Setter Property="Foreground" Value="#646464" />
+    </Style>
+
+    <Style Selector="Button.link-button:pressed">
+        <Setter Property="Foreground" Value="#929292" />
+    </Style>
+</Styles>

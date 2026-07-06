@@ -1,0 +1,43 @@
+<UserControl
+    x:Class="OsuPlayer.Views.UserControls.DiffSelectControl"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:userControls="clr-namespace:OsuPlayer.Views.UserControls"
+    xmlns:controls="clr-namespace:OsuPlayer.Controls"
+    xmlns:vm="clr-namespace:OsuPlayer.Views.UserControls"
+    xmlns:data="clr-namespace:OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
+    x:Name="Root"
+    x:DataType="vm:DiffSelectPageViewModel">
+    <UserControl.DataContext>
+        <vm:DiffSelectPageViewModel />
+    </UserControl.DataContext>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <ItemsControl Margin="5" ItemsSource="{Binding Entries, Mode=OneWay}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="data:Beatmap">
+                    <controls:CommonButton
+                        Height="26"
+                        Margin="0,0,0,2"
+                        Padding="5,3"
+                        HorizontalContentAlignment="Left"
+                        Background="#FAFAFB"
+                        BorderThickness="0"
+                        Command="{Binding #Root.((vm:DiffSelectPageViewModel)DataContext).SelectCommand}"
+                        CommandParameter="{Binding}">
+                        <Grid HorizontalAlignment="Left">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <userControls:DifficultyBadge
+                                GameMode="{Binding GameMode}"
+                                StarRating="{Binding DiffSrNoneStandard}"
+                                Version="{Binding Version}"
+                                VersionForeground="#303030" />
+                        </Grid>
+                    </controls:CommonButton>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </ScrollViewer>
+</UserControl>

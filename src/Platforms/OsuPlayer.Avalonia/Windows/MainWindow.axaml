@@ -1,0 +1,314 @@
+<Window
+    x:Class="OsuPlayer.Windows.MainWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:OsuPlayer.Views.UserControls"
+    xmlns:data="clr-namespace:OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
+    xmlns:ui="clr-namespace:OsuPlayer.Controls"
+    xmlns:vm="clr-namespace:OsuPlayer.ViewModels"
+    Title="Osu Player"
+    Width="998"
+    Height="759"
+    MinWidth="800"
+    MinHeight="600"
+    x:DataType="vm:MainWindowViewModel"
+    ExtendClientAreaTitleBarHeightHint="40"
+    ExtendClientAreaToDecorationsHint="True"
+    Icon="avares://OsuPlayer/osuPlayer.ico"
+    WindowDecorations="{OnPlatform BorderOnly,
+                                   Windows=Full,
+                                   x:TypeArguments=WindowDecorations}"
+    WindowDecorationsTheme="{StaticResource EmptyWindowDrawnDecorationsTheme}"
+    WindowStartupLocation="CenterScreen">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <ui:CustomDialogHost
+        AutoIdentifier="MainWindowDialog"
+        CloseOnClickAway="False"
+        IsMultipleDialogsEnabled="True">
+        <Grid Margin="{Binding $parent[Window].OffScreenMargin}" RowDefinitions="Auto,*">
+            <Grid.Background>
+                <ImageBrush
+                    AlignmentX="Left"
+                    AlignmentY="Top"
+                    DestinationRect="0,0,500,500"
+                    Source="{StaticResource TextureSource1}"
+                    Stretch="None"
+                    TileMode="Tile" />
+            </Grid.Background>
+
+        <!--  标题栏  -->
+        <controls:WindowTitleBar
+            Grid.Row="0"
+            Background="Transparent"
+            LeftAreaMargin="10,0,0,0"
+            RightAreaMargin="0,0,5,0">
+            <controls:WindowTitleBar.LeftContent>
+                <Image Height="28" Source="{Binding IsNavigationCollapsed, Converter={StaticResource TitleIconConverter}}" />
+            </controls:WindowTitleBar.LeftContent>
+            <controls:WindowTitleBar.RightContent>
+                <Border
+                    Height="32"
+                    Margin="0,0,10,0"
+                    Padding="10,2"
+                    VerticalAlignment="Center"
+                    BorderBrush="#28DDDDDD"
+                    BorderThickness="1"
+                    CornerRadius="16"
+                    WindowDecorationProperties.ElementRole="User">
+                    <StackPanel Orientation="Horizontal">
+                        <Button
+                            Width="25"
+                            Height="25"
+                            Margin="3,0"
+                            Classes="titlebar-btn"
+                            Click="BtnSettings_Click"
+                            ToolTip.Tip="{I18N {x:Static lang:SRKeys.Ui_Sets}}"
+                            WindowDecorationProperties.ElementRole="User">
+                            <Viewbox Width="21" Height="21">
+                                <ContentControl Template="{StaticResource SettingsTempl}" />
+                            </Viewbox>
+                        </Button>
+                        <Button
+                            Width="25"
+                            Height="25"
+                            Margin="3,0"
+                            Classes="titlebar-btn"
+                            Click="BtnMini_Click"
+                            ToolTip.Tip="Mini"
+                            WindowDecorationProperties.ElementRole="User">
+                            <Viewbox Width="16" Height="16">
+                                <ContentControl Template="{StaticResource MiniModeTempl}" />
+                            </Viewbox>
+                        </Button>
+                    </StackPanel>
+                </Border>
+            </controls:WindowTitleBar.RightContent>
+        </controls:WindowTitleBar>
+
+        <!--  主内容区  -->
+        <Grid Grid.Row="1" RowDefinitions="*,Auto">
+
+            <!--  导航栏 + 内容区  -->
+            <Grid
+                Grid.Row="0"
+                Margin="0,0,1,0"
+                ColumnDefinitions="Auto,*">
+                <!--  侧边栏 StackPanel  -->
+                <Border
+                    x:Name="SidebarHost"
+                    Grid.Column="0"
+                    Width="170">
+                    <Border.Transitions>
+                        <Transitions>
+                            <DoubleTransition
+                                Easing="QuarticEaseInOut"
+                                Property="Width"
+                                Duration="0:0:0.3" />
+                        </Transitions>
+                    </Border.Transitions>
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <StackPanel x:Name="NavPanel">
+
+                            <!--  折叠按钮  -->
+                            <ui:CommonButton
+                                x:Name="CollapseButton"
+                                Width="28"
+                                Height="28"
+                                Margin="9,1,1,1"
+                                Padding="0"
+                                HorizontalAlignment="Left"
+                                Background="Transparent"
+                                BorderBrush="Transparent"
+                                BorderThickness="0"
+                                Click="OnCollapseClick"
+                                Foreground="White"
+                                IconMargin="0"
+                                IconSize="19"
+                                MouseDownForeground="#CC397D"
+                                MouseOverForeground="#DC498D">
+                                <ui:CommonButton.IconTemplate>
+                                    <ControlTemplate>
+                                        <Viewbox Width="19" Height="19">
+                                            <ContentControl Foreground="{TemplateBinding Foreground}" Template="{StaticResource NavigationTempl}" />
+                                        </Viewbox>
+                                    </ControlTemplate>
+                                </ui:CommonButton.IconTemplate>
+                            </ui:CommonButton>
+
+                            <!--  库 分类标题  -->
+                            <Label
+                                x:Name="LibraryHeader"
+                                Classes="nav-header"
+                                Classes.collapsed="{Binding IsNavigationCollapsed}"
+                                FontWeight="Medium">
+                                <TextBlock Margin="5,0,0,0" Text="{I18N {x:Static lang:SRKeys.Ui_Nav_Library}}" />
+                            </Label>
+
+                            <!--  搜索按钮  -->
+                            <ui:IconRadioButton
+                                x:Name="SearchNavButton"
+                                CheckedIconColor="#4050A0"
+                                Classes="nav-button"
+                                Classes.collapsed="{Binding IsNavigationCollapsed}"
+                                Click="OnNavClick"
+                                Content="{I18N {x:Static lang:SRKeys.Ui_Nav_Explore}}"
+                                GroupName="MainNav"
+                                IconTemplate="{StaticResource NavCompassTempl}"
+                                IsChecked="True"
+                                Tag="Search" />
+
+                            <!--  我的 分类标题  -->
+                            <Label
+                                x:Name="MineHeader"
+                                Classes="nav-header"
+                                Classes.collapsed="{Binding IsNavigationCollapsed}"
+                                FontWeight="Medium">
+                                <TextBlock Margin="5,0,0,0" Text="{I18N {x:Static lang:SRKeys.Ui_Nav_Mine}}" />
+                            </Label>
+
+                            <!--  最近播放  -->
+                            <ui:IconRadioButton
+                                x:Name="RecentNavButton"
+                                CheckedIconColor="#A04090"
+                                Classes="nav-button"
+                                Classes.collapsed="{Binding IsNavigationCollapsed}"
+                                Click="OnNavClick"
+                                Content="{I18N {x:Static lang:SRKeys.Ui_Nav_Recent}}"
+                                GroupName="MainNav"
+                                IconTemplate="{StaticResource NavHistoryTempl}"
+                                Tag="Recent" />
+
+                            <!--  导出  -->
+                            <ui:IconRadioButton
+                                x:Name="ExportNavButton"
+                                CheckedIconColor="#A09040"
+                                Classes="nav-button"
+                                Classes.collapsed="{Binding IsNavigationCollapsed}"
+                                Click="OnNavClick"
+                                Content="{I18N {x:Static lang:SRKeys.Ui_Nav_Export}}"
+                                GroupName="MainNav"
+                                IconTemplate="{StaticResource NavExportTempl}"
+                                Tag="Export" />
+
+                            <!--  收藏夹 标题行 (含添加按钮)  -->
+                            <Grid
+                                x:Name="CollectionHeaderPanel"
+                                Classes="nav-header-grid"
+                                Classes.collapsed="{Binding IsNavigationCollapsed}"
+                                ColumnDefinitions="*,Auto">
+                                <Label
+                                    Margin="0,10,0,0"
+                                    Classes="nav-header"
+                                    FontWeight="Medium">
+                                    <TextBlock Margin="5,0,0,0" Text="{I18N {x:Static lang:SRKeys.Ui_Nav_Collection}}" />
+                                </Label>
+                                <ui:CommonButton
+                                    x:Name="CollectionAddButton"
+                                    Grid.Column="1"
+                                    Width="20"
+                                    Height="20"
+                                    Margin="0,10,5,0"
+                                    Padding="0"
+                                    VerticalAlignment="Center"
+                                    HorizontalContentAlignment="Center"
+                                    Background="Transparent"
+                                    BorderBrush="Transparent"
+                                    BorderThickness="0"
+                                    Click="BtnAddCollection_Click"
+                                    CornerRadius="10"
+                                    Foreground="{StaticResource ExtraLightBrush}"
+                                    IconMargin="0"
+                                    IconSize="16"
+                                    MouseDownBackground="#3A3A3A"
+                                    MouseOverBackground="#353535"
+                                    ToolTip.Tip="{I18N {x:Static lang:SRKeys.Ui_AddNewCollection}}">
+                                    <ui:CommonButton.IconTemplate>
+                                        <ControlTemplate>
+                                            <Viewbox Width="14" Height="14">
+                                                <ContentControl Foreground="{TemplateBinding Foreground}" Template="{StaticResource NavAddCollectionTempl}" />
+                                            </Viewbox>
+                                        </ControlTemplate>
+                                    </ui:CommonButton.IconTemplate>
+                                </ui:CommonButton>
+                            </Grid>
+
+                            <!--  收藏夹列表  -->
+                            <ItemsControl x:Name="CollectionList" ItemsSource="{Binding Collection}">
+                                <ItemsControl.Styles>
+                                    <!--  When not collapsed: use CollectionTempl  -->
+                                    <Style Selector="ui|IconRadioButton.collection-nav-item">
+                                        <Setter Property="Height" Value="31" />
+                                        <Setter Property="Padding" Value="14,0,0,0" />
+                                        <Setter Property="IconMargin" Value="0,0,8,0" />
+                                        <Setter Property="IconTemplate" Value="{StaticResource CollectionTempl}" />
+                                        <Setter Property="IconSize" Value="18" />
+                                    </Style>
+
+                                    <!--  When collapsed: use a custom ControlTemplate that draws the letter circle  -->
+                                    <Style Selector="ui|IconRadioButton.collection-nav-item.collapsed">
+                                        <Setter Property="Margin" Value="-1,0,0,0" />
+                                        <Setter Property="Padding" Value="14,0,0,0" />
+                                        <Setter Property="IconMargin" Value="0,0,150,0" />
+                                        <Setter Property="IconSize" Value="20" />
+                                        <Setter Property="IconTemplate">
+                                            <Setter.Value>
+                                                <ControlTemplate>
+                                                    <Border
+                                                        Width="40"
+                                                        Height="40"
+                                                        Background="{TemplateBinding Foreground}"
+                                                        CornerRadius="20">
+                                                        <Label
+                                                            Margin="1,0.5,0,0"
+                                                            Padding="0"
+                                                            HorizontalAlignment="Center"
+                                                            VerticalAlignment="Center"
+                                                            x:DataType="data:Collection"
+                                                            Content="{Binding Name, Converter={StaticResource GetOutlinedTextConverter}}"
+                                                            FontSize="22"
+                                                            FontWeight="Bold"
+                                                            Foreground="#303030" />
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ItemsControl.Styles>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="data:Collection">
+                                        <ui:IconRadioButton
+                                            CheckedIconColor="#4090A0"
+                                            Classes="nav-button collection-nav-item"
+                                            Classes.collapsed="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).IsNavigationCollapsed}"
+                                            Click="OnCollectionNavClick"
+                                            Content="{Binding Name}"
+                                            GroupName="MainNav"
+                                            Tag="{Binding Id}" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+
+                <!--  内容区  -->
+                <Grid Grid.Column="1">
+                    <controls:AnimationControl x:Name="Animation" />
+                    <Border Background="#B0FFFFFF" IsVisible="{Binding Content, ElementName=MainFrame, Converter={StaticResource NullToHiddenConverter}}">
+                        <ContentControl x:Name="MainFrame" />
+                    </Border>
+                </Grid>
+            </Grid>
+
+            <!--  播放控制栏  -->
+            <controls:PlayController x:Name="PlayBarController" Grid.Row="1" />
+        </Grid>
+        </Grid>
+    </ui:CustomDialogHost>
+</Window>

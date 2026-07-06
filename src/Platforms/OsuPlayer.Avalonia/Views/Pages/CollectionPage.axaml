@@ -1,0 +1,228 @@
+<UserControl
+    x:Class="OsuPlayer.Views.Pages.CollectionPage"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
+    xmlns:core="clr-namespace:OsuPlayer.Core;assembly=OsuPlayer.Core"
+    xmlns:panelComponent="clr-namespace:OsuPlayer.Controls.PanelComponent"
+    xmlns:userControls="clr-namespace:OsuPlayer.Views.UserControls"
+    xmlns:vm="clr-namespace:OsuPlayer.ViewModels"
+    x:DataType="vm:CollectionPageViewModel">
+    <Grid RowDefinitions="Auto,Auto,*">
+        <Border
+            Grid.Row="0"
+            Margin="5"
+            Padding="10"
+            Background="#EAF9F7F8"
+            BorderBrush="#20DAA3CE"
+            BorderThickness="1"
+            CornerRadius="10">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Grid
+                    Grid.Column="0"
+                    Width="192"
+                    Height="192"
+                    Margin="10"
+                    Background="#F0F0F0">
+                    <Image
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Source="{Binding CollectionInfo.ImagePath, Converter={StaticResource PathToBitmapConverter}}"
+                        Stretch="UniformToFill" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontSize="24"
+                        Foreground="#CCC"
+                        Text="🖼" />
+                </Grid>
+                <StackPanel Grid.Column="1" Margin="10,0" Spacing="4">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontSize="18"
+                            FontWeight="SemiBold"
+                            Foreground="#303030"
+                            Text="{Binding CollectionInfo.Name}" />
+                        <Button Width="28" Height="28" Classes="settings-button" Command="{Binding DeleteCollectionCommand}">
+                            <Viewbox Width="12" Height="12">
+                                <Path Fill="#303030" Data="M2,3H12V4.5H11L10.2,13H3.8L3,4.5H2ZM5,1H9L10,2.2H12V3.2H2V2.2H4Z" />
+                            </Viewbox>
+                        </Button>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock Foreground="#303030" Text="{I18N {x:Static lang:SRKeys.Ui_CreateTime}}" />
+                        <TextBlock Foreground="#606060" Text="{Binding CollectionInfo.CreateTime, StringFormat=\{0:yyyy-MM-dd\}}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <Button
+                            Classes="play-button"
+                            Command="{Binding PlayAllCommand}"
+                            Content="{I18N {x:Static lang:SRKeys.Ui_Btn_PlayAll}}" />
+                        <Button
+                            Classes="settings-button"
+                            Command="{Binding ExportAllCommand}"
+                            Content="{I18N {x:Static lang:SRKeys.Ui_Btn_ExportAll}}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock Foreground="#303030" Text="{I18N {x:Static lang:SRKeys.Ui_BriefIntroduction}}" />
+                        <TextBlock Foreground="#606060" Text="{Binding CollectionInfo.Description}" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Grid.Column="2" Margin="10" Spacing="0">
+                    <TextBlock
+                        HorizontalAlignment="Right"
+                        Foreground="#7A7A7A"
+                        Text="{I18N {x:Static lang:SRKeys.Ui_MusicCount}}" />
+                    <TextBlock
+                        HorizontalAlignment="Right"
+                        FontWeight="Bold"
+                        Foreground="#7A7A7A"
+                        Text="{Binding Beatmaps.Count}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+        <Grid Grid.Row="1" Margin="0,5,10,0" HorizontalAlignment="Right">
+            <TextBox
+                Width="180"
+                Background="White"
+                BorderBrush="#DCDFE6"
+                BorderThickness="1"
+                PlaceholderText="{I18N {x:Static lang:SRKeys.Ui_Hint_SearchCollectionMusic3Dot}}"
+                Text="{Binding SearchText, Mode=TwoWay}" />
+        </Grid>
+        <Grid Grid.Row="2" Margin="5,10,5,5">
+            <Grid IsVisible="{Binding IsMinimalMode, Converter={StaticResource BoolTrueToVisibleConverter}}" RowDefinitions="Auto,*">
+                <Border Padding="12,8" Background="#F4F5F7" BorderBrush="#E4E6EB" BorderThickness="0,0,0,1">
+                    <Grid ColumnDefinitions="40,3*,2*,*,2*">
+                        <TextBlock FontWeight="SemiBold" Foreground="#666666" Text="#" />
+                        <TextBlock Grid.Column="1" FontWeight="SemiBold" Foreground="#666666" Text="{I18N {x:Static lang:SRKeys.Ui_Title}}" />
+                        <TextBlock Grid.Column="2" FontWeight="SemiBold" Foreground="#666666" Text="{I18N {x:Static lang:SRKeys.Ui_Artist}}" />
+                        <TextBlock Grid.Column="3" FontWeight="SemiBold" Foreground="#666666" Text="{I18N {x:Static lang:SRKeys.Ui_Creator}}" />
+                        <TextBlock Grid.Column="4" FontWeight="SemiBold" Foreground="#666666" Text="{I18N {x:Static lang:SRKeys.Ui_MapDifficulty}}" />
+                    </Grid>
+                </Border>
+                <ListBox
+                    x:Name="MapList"
+                    Grid.Row="1"
+                    Classes="beatmap-results"
+                    DoubleTapped="MapList_DoubleTapped"
+                    ItemsSource="{Binding DisplayedBeatmaps}"
+                    KeyDown="MapList_KeyDown"
+                    SelectionMode="Multiple">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="core:BeatmapDataModel">
+                            <Border
+                                Classes="beatmap-list-row"
+                                Padding="12,10"
+                                Background="#FBFBFB"
+                                BorderBrush="#E6E6E6"
+                                BorderThickness="0,0,0,1">
+                                <Border.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Click="PlayWithDifficulty_Click" Tag="{Binding}">
+                                            <MenuItem.Header>
+                                                <TextBlock><Run Text="{I18N {x:Static lang:SRKeys.Ui_Play}}" /><Run Text="... (Enter)" /></TextBlock>
+                                            </MenuItem.Header>
+                                        </MenuItem>
+                                        <Separator />
+                                        <MenuItem Click="SearchByCondition_Click" CommandParameter="Title" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchTitle}}" Tag="{Binding}" />
+                                        <MenuItem Click="SearchByCondition_Click" CommandParameter="Artist" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchArtist}}" Tag="{Binding}" />
+                                        <MenuItem Click="SearchByCondition_Click" CommandParameter="Source" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchSource}}" Tag="{Binding}" />
+                                        <MenuItem Click="SearchByCondition_Click" CommandParameter="Creator" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchCreator}}" Tag="{Binding}" />
+                                        <Separator />
+                                        <MenuItem Click="OpenFolder_Click" Tag="{Binding}">
+                                            <MenuItem.Header>
+                                                <TextBlock><Run Text="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_OpenSourceFolder}}" /><Run Text=" (Ctrl+O)" /></TextBlock>
+                                            </MenuItem.Header>
+                                        </MenuItem>
+                                        <MenuItem Click="OpenScorePage_Click" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_OpenScorePage}}" Tag="{Binding}" />
+                                        <Separator />
+                                        <MenuItem Click="SaveCollection_Click" Tag="{Binding}">
+                                            <MenuItem.Header>
+                                                <TextBlock><Run Text="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SaveTo}}" /><Run Text="... (Ctrl+S)" /></TextBlock>
+                                            </MenuItem.Header>
+                                        </MenuItem>
+                                        <MenuItem Click="ExportCard_Click" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_Export}}" Tag="{Binding}" />
+                                        <MenuItem Click="RemoveMap_Click" Tag="{Binding}">
+                                            <MenuItem.Header>
+                                                <TextBlock><Run Text="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_RemoveFromList}}" /><Run Text=" (Delete)" /></TextBlock>
+                                            </MenuItem.Header>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </Border.ContextMenu>
+                                <Grid ColumnDefinitions="40,3*,2*,*,2*">
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="#9C9C9C"
+                                        Text="{Binding Index, Converter={StaticResource IndexToStringConverter}}" />
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Foreground="#222222"
+                                        Text="{Binding AutoTitle}"
+                                        TextTrimming="CharacterEllipsis" />
+                                    <TextBlock
+                                        Grid.Column="2"
+                                        VerticalAlignment="Center"
+                                        Foreground="#9C9C9C"
+                                        Text="{Binding AutoArtist}"
+                                        TextTrimming="CharacterEllipsis" />
+                                    <TextBlock
+                                        Grid.Column="3"
+                                        VerticalAlignment="Center"
+                                        Foreground="#222222"
+                                        Text="{Binding AutoCreator}"
+                                        TextTrimming="CharacterEllipsis" />
+                                    <TextBlock
+                                        Grid.Column="4"
+                                        VerticalAlignment="Center"
+                                        Foreground="#9C9C9C"
+                                        Text="{Binding AutoVersion}"
+                                        TextTrimming="CharacterEllipsis" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+
+            <ListBox
+                x:Name="MapCardList"
+                Classes="beatmap-card-list"
+                IsVisible="{Binding IsMinimalMode, Converter={StaticResource BoolFalseToVisibleConverter}}"
+                ItemsSource="{Binding DisplayedBeatmaps}"
+                KeyDown="MapList_KeyDown"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                ScrollViewer.VerticalScrollBarVisibility="Auto"
+                SelectionMode="Multiple">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <panelComponent:VirtualizingGalleryWrapPanel
+                            ChildHeight="220"
+                            ChildWidth="160"
+                            ItemLoaded="VirtualizingGalleryWrapPanel_OnItemLoaded"
+                            Loaded="Panel_Loaded"
+                            ScrollOffset="100" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="core:BeatmapDataModel" x:CompileBindings="False">
+                        <userControls:BeatmapCard
+                            DirectPlayCommand="{Binding $parent[UserControl].DataContext.DirectPlayCommand}"
+                            ExportCommand="{Binding $parent[UserControl].DataContext.ExportCommand}"
+                            OpenScorePageCommand="{Binding $parent[UserControl].DataContext.OpenScorePageCommand}"
+                            OpenSourceFolderCommand="{Binding $parent[UserControl].DataContext.OpenSourceFolderCommand}"
+                            PlayCommand="{Binding $parent[UserControl].DataContext.PlayCommand}"
+                            RemoveCommand="{Binding $parent[UserControl].DataContext.RemoveCommand}"
+                            SaveCollectionCommand="{Binding $parent[UserControl].DataContext.SaveCollectionCommand}"
+                            SearchByConditionCommand="{Binding $parent[UserControl].DataContext.SearchByConditionCommand}"
+                            ShowDifficultyOverlay="True"
+                            ShowRemove="True" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+    </Grid>
+</UserControl>

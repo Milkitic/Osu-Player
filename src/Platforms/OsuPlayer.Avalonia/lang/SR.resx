@@ -1,0 +1,717 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Err_Beatmap_Load" xml:space="preserve">
+    <value>Error while loading beatmap</value>
+  </data>
+  <data name="Err_CollectionNotInDb" xml:space="preserve">
+    <value>The collection is not in database</value>
+  </data>
+  <data name="Err_Custom_Scan" xml:space="preserve">
+    <value>Error while scanning custom folder</value>
+  </data>
+  <data name="Err_DirNotFound" xml:space="preserve">
+    <value>目录不存在</value>
+  </data>
+  <data name="Err_MapNotInDb" xml:space="preserve">
+    <value>The beatmap is not in database</value>
+  </data>
+  <data name="Err_Osudb_Sync" xml:space="preserve">
+    <value>Error while syncing osu!db</value>
+  </data>
+  <data name="Err_Update_Check" xml:space="preserve">
+    <value>Error while checking for update</value>
+  </data>
+  <data name="ExcWin_Btn_Continue" xml:space="preserve">
+    <value>继续</value>
+  </data>
+  <data name="ExcWin_Btn_Exit" xml:space="preserve">
+    <value>退出</value>
+  </data>
+  <data name="ExcWin_ExcInfoHeader" xml:space="preserve">
+    <value>Exception Information: (Will send to developer)</value>
+  </data>
+  <data name="ExcWin_Subtitle" xml:space="preserve">
+    <value>Something went wrong.</value>
+  </data>
+  <data name="ExcWin_Subtitle_Continuable" xml:space="preserve">
+    <value>But you can still continue during this session.</value>
+  </data>
+  <data name="ExcWin_Title" xml:space="preserve">
+    <value>Oops!</value>
+  </data>
+  <data name="Language_SystemDefault" xml:space="preserve">
+    <value>系统默认</value>
+  </data>
+  <data name="Text_Error" xml:space="preserve">
+    <value>错误 </value>
+  </data>
+  <data name="Text_Info" xml:space="preserve">
+    <value>信息</value>
+  </data>
+  <data name="Text_Warn" xml:space="preserve">
+    <value>警告</value>
+  </data>
+  <data name="Ui_3dSoundEffect" xml:space="preserve">
+    <value>3D音效</value>
+  </data>
+  <data name="Ui_AddNewCollection" xml:space="preserve">
+    <value>添加新的收藏夹</value>
+  </data>
+  <data name="Ui_Artist" xml:space="preserve">
+    <value>艺术家</value>
+  </data>
+  <data name="Ui_Auto" xml:space="preserve">
+    <value>自动</value>
+  </data>
+  <data name="Ui_BalanceMode" xml:space="preserve">
+    <value>3D音效方法</value>
+  </data>
+  <data name="Ui_BriefIntroduction" xml:space="preserve">
+    <value>简介</value>
+  </data>
+  <data name="Ui_Btn_CancelScan" xml:space="preserve">
+    <value>取消扫描</value>
+  </data>
+  <data name="Ui_Btn_CheckUpdate" xml:space="preserve">
+    <value>检查更新</value>
+  </data>
+  <data name="Ui_Btn_ClearList" xml:space="preserve">
+    <value>清空列表</value>
+  </data>
+  <data name="Ui_Btn_DeleteAll" xml:space="preserve">
+    <value>全部删除</value>
+  </data>
+  <data name="Ui_Btn_EditCover" xml:space="preserve">
+    <value>编辑封面</value>
+  </data>
+  <data name="Ui_Btn_ExportAll" xml:space="preserve">
+    <value>全部导出</value>
+  </data>
+  <data name="Ui_Btn_OpenDirectory" xml:space="preserve">
+    <value>打开目录</value>
+  </data>
+  <data name="Ui_Btn_PlayAll" xml:space="preserve">
+    <value>全部播放</value>
+  </data>
+  <data name="Ui_Btn_QueueAll" xml:space="preserve">
+    <value>全部排队</value>
+  </data>
+  <data name="Ui_Btn_Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="Ui_Btn_SaveAll" xml:space="preserve">
+    <value>全部收藏</value>
+  </data>
+  <data name="Ui_Btn_ScanManually" xml:space="preserve">
+    <value>手动扫描</value>
+  </data>
+  <data name="Ui_Btn_SyncManually" xml:space="preserve">
+    <value>手动同步</value>
+  </data>
+  <data name="Ui_Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Ui_Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="Ui_CloseDesktopLyric" xml:space="preserve">
+    <value>关闭桌面歌词</value>
+  </data>
+  <data name="Ui_CollectionName" xml:space="preserve">
+    <value>收藏夹名</value>
+  </data>
+  <data name="Ui_CreateTime" xml:space="preserve">
+    <value>创建时间</value>
+  </data>
+  <data name="Ui_Creator" xml:space="preserve">
+    <value>作者</value>
+  </data>
+  <data name="Ui_CtxMenu_Export" xml:space="preserve">
+    <value>导出</value>
+  </data>
+  <data name="Ui_CtxMenu_OpenScorePage" xml:space="preserve">
+    <value>打开成绩页</value>
+  </data>
+  <data name="Ui_CtxMenu_OpenSourceFolder" xml:space="preserve">
+    <value>打开所在目录</value>
+  </data>
+  <data name="Ui_CtxMenu_RemoveFromList" xml:space="preserve">
+    <value>从列表中移除</value>
+  </data>
+  <data name="Ui_CtxMenu_SaveTo" xml:space="preserve">
+    <value>收藏至</value>
+  </data>
+  <data name="Ui_CtxMenu_SearchArtist" xml:space="preserve">
+    <value>搜索艺术家</value>
+  </data>
+  <data name="Ui_CtxMenu_SearchCreator" xml:space="preserve">
+    <value>搜索作者</value>
+  </data>
+  <data name="Ui_CtxMenu_SearchSource" xml:space="preserve">
+    <value>搜索来源</value>
+  </data>
+  <data name="Ui_CtxMenu_SearchTitle" xml:space="preserve">
+    <value>搜索标题</value>
+  </data>
+  <data name="Ui_CurrentMapOffset" xml:space="preserve">
+    <value>单曲偏移</value>
+  </data>
+  <data name="Ui_DeleteExported" xml:space="preserve">
+    <value>删除导出文件</value>
+  </data>
+  <data name="Ui_DesktopLyric" xml:space="preserve">
+    <value>桌面歌词</value>
+  </data>
+  <data name="Ui_EnsureRemoveAll" xml:space="preserve">
+    <value>真的要删除全部吗？</value>
+  </data>
+  <data name="Ui_EnsureRemoveCollection" xml:space="preserve">
+    <value>确认删除收藏夹？</value>
+  </data>
+  <data name="Ui_Exit" xml:space="preserve">
+    <value>退出</value>
+  </data>
+  <data name="Ui_ExportAgain" xml:space="preserve">
+    <value>重新导出</value>
+  </data>
+  <data name="Ui_Exported" xml:space="preserve">
+    <value>已导出</value>
+  </data>
+  <data name="Ui_Exporting" xml:space="preserve">
+    <value>正在进行</value>
+  </data>
+  <data name="Ui_ExportPath" xml:space="preserve">
+    <value>导出目录</value>
+  </data>
+  <data name="Ui_ExportTime" xml:space="preserve">
+    <value>导出时间</value>
+  </data>
+  <data name="Ui_Hint_SearchCollectionMusic3Dot" xml:space="preserve">
+    <value>搜索收藏夹音乐...</value>
+  </data>
+  <data name="Ui_Hint_SearchPageBox" xml:space="preserve">
+    <value>标题、艺术家、Mapper、来源、标签、收藏</value>
+  </data>
+  <data name="Ui_Hue" xml:space="preserve">
+    <value>色相</value>
+  </data>
+  <data name="Ui_KugouMusic" xml:space="preserve">
+    <value>酷狗音乐</value>
+  </data>
+  <data name="Ui_Lightness" xml:space="preserve">
+    <value>亮度</value>
+  </data>
+  <data name="Ui_LimiterType" xml:space="preserve">
+    <value>限频器方法</value>
+  </data>
+  <data name="Ui_LockLyric" xml:space="preserve">
+    <value>锁定歌词</value>
+  </data>
+  <data name="Ui_MapDifficulty" xml:space="preserve">
+    <value>难度</value>
+  </data>
+  <data name="Ui_Max30Char" xml:space="preserve">
+    <value>30字符以内</value>
+  </data>
+  <data name="Ui_MiniMode" xml:space="preserve">
+    <value>迷你模式</value>
+  </data>
+  <data name="Ui_MusicCount" xml:space="preserve">
+    <value>歌曲数</value>
+  </data>
+  <data name="Ui_Nav_Collection" xml:space="preserve">
+    <value>收藏夹</value>
+  </data>
+  <data name="Ui_Nav_Explore" xml:space="preserve">
+    <value>探索</value>
+  </data>
+  <data name="Ui_Nav_Export" xml:space="preserve">
+    <value>导出管理</value>
+  </data>
+  <data name="Ui_Nav_Library" xml:space="preserve">
+    <value>库</value>
+  </data>
+  <data name="Ui_Nav_Mine" xml:space="preserve">
+    <value>我的</value>
+  </data>
+  <data name="Ui_Nav_Music" xml:space="preserve">
+    <value>音乐</value>
+  </data>
+  <data name="Ui_Nav_Recent" xml:space="preserve">
+    <value>最近播放</value>
+  </data>
+  <data name="Ui_Nav_Search" xml:space="preserve">
+    <value>搜索</value>
+  </data>
+  <data name="Ui_Nav_Storyboard" xml:space="preserve">
+    <value>故事版</value>
+  </data>
+  <data name="Ui_NeteaseMusic" xml:space="preserve">
+    <value>网易云音乐</value>
+  </data>
+  <data name="Ui_Next" xml:space="preserve">
+    <value>Next Song</value>
+  </data>
+  <data name="Ui_NextMusic" xml:space="preserve">
+    <value>下一首</value>
+  </data>
+  <data name="Ui_No" xml:space="preserve">
+    <value>否</value>
+  </data>
+  <data name="Ui_None" xml:space="preserve">
+    <value>暂无</value>
+  </data>
+  <data name="Ui_Ok" xml:space="preserve">
+    <value>确定</value>
+  </data>
+  <data name="Ui_Open" xml:space="preserve">
+    <value>开启</value>
+  </data>
+  <data name="Ui_OpenDesktopLyric" xml:space="preserve">
+    <value>打开桌面歌词</value>
+  </data>
+  <data name="Ui_OpenFileFolder" xml:space="preserve">
+    <value>打开文件所在目录</value>
+  </data>
+  <data name="Ui_Pause" xml:space="preserve">
+    <value>暂停</value>
+  </data>
+  <data name="Ui_Play" xml:space="preserve">
+    <value>播放</value>
+  </data>
+  <data name="Ui_Prev" xml:space="preserve">
+    <value>Prev Song</value>
+  </data>
+  <data name="Ui_PrevMusic" xml:space="preserve">
+    <value>上一首</value>
+  </data>
+  <data name="Ui_QqMusic" xml:space="preserve">
+    <value>QQ音乐</value>
+  </data>
+  <data name="Ui_Saturation" xml:space="preserve">
+    <value>饱和度</value>
+  </data>
+  <data name="Ui_SearchCollectionMusic3Dot" xml:space="preserve">
+    <value>Search Music...</value>
+  </data>
+  <data name="Ui_Sets" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="Ui_Sets_About" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="Ui_Sets_Common" xml:space="preserve">
+    <value>Common</value>
+  </data>
+  <data name="Ui_Sets_Content_AddToFavorite" xml:space="preserve">
+    <value>添加到最喜爱的</value>
+  </data>
+  <data name="Ui_Sets_Content_AlreadyNewest" xml:space="preserve">
+    <value>已是最新版本。</value>
+  </data>
+  <data name="Ui_Sets_Content_AutoPlayOnProgramStartup" xml:space="preserve">
+    <value>程序启动时自动播放</value>
+  </data>
+  <data name="Ui_Sets_Content_BgDirectory" xml:space="preserve">
+    <value>背景目录</value>
+  </data>
+  <data name="Ui_Sets_Content_CheckUpdate" xml:space="preserve">
+    <value>检查更新</value>
+  </data>
+  <data name="Ui_Sets_Content_ClickToUpdate" xml:space="preserve">
+    <value>立刻升级</value>
+  </data>
+  <data name="Ui_Sets_Content_CurrentVersion" xml:space="preserve">
+    <value>当前版本</value>
+  </data>
+  <data name="Ui_Sets_Content_DirGroupByArtist" xml:space="preserve">
+    <value>按艺术家（Artist）分目录</value>
+  </data>
+  <data name="Ui_Sets_Content_DirGroupByMapper" xml:space="preserve">
+    <value>按作者（Mapper）分目录</value>
+  </data>
+  <data name="Ui_Sets_Content_DirGroupBySource" xml:space="preserve">
+    <value>按来源（Source）分目录</value>
+  </data>
+  <data name="Ui_Sets_Content_DirNoGroup" xml:space="preserve">
+    <value>不分目录</value>
+  </data>
+  <data name="Ui_Sets_Content_DisplayAllLyrics" xml:space="preserve">
+    <value>显示全部歌词</value>
+  </data>
+  <data name="Ui_Sets_Content_EnableDesktopLyric" xml:space="preserve">
+    <value>启用桌面歌词</value>
+  </data>
+  <data name="Ui_Sets_Content_EnableStrictMatching" xml:space="preserve">
+    <value>启用严格匹配</value>
+  </data>
+  <data name="Ui_Sets_Content_ErrorWhileCheckingUpdate" xml:space="preserve">
+    <value>检查更新时出错。</value>
+  </data>
+  <data name="Ui_Sets_Content_ExitProgram" xml:space="preserve">
+    <value>退出程序</value>
+  </data>
+  <data name="Ui_Sets_Content_Feedback" xml:space="preserve">
+    <value>意见反馈</value>
+  </data>
+  <data name="Ui_Sets_Content_HasNewVersion" xml:space="preserve">
+    <value>有新版本</value>
+  </data>
+  <data name="Ui_Sets_Content_LastCheckTime" xml:space="preserve">
+    <value>上次检查时间</value>
+  </data>
+  <data name="Ui_Sets_Content_LicenseInfo" xml:space="preserve">
+    <value>许可信息</value>
+  </data>
+  <data name="Ui_Sets_Content_MinToNotificationPanel" xml:space="preserve">
+    <value>最小化到系统托盘</value>
+  </data>
+  <data name="Ui_Sets_Content_MusicDirectory" xml:space="preserve">
+    <value>音乐目录</value>
+  </data>
+  <data name="Ui_Sets_Content_Never" xml:space="preserve">
+    <value>从未</value>
+  </data>
+  <data name="Ui_Sets_Content_NewVersion" xml:space="preserve">
+    <value>新版本</value>
+  </data>
+  <data name="Ui_Sets_Content_PreferOriginLyricNeteaseOnly" xml:space="preserve">
+    <value>偏好源歌词（仅Netease源有效）</value>
+  </data>
+  <data name="Ui_Sets_Content_PreferTranslateLyricNeteaseOnly" xml:space="preserve">
+    <value>偏好翻译歌词（仅Netease源有效）</value>
+  </data>
+  <data name="Ui_Sets_Content_PrivacyPolicy" xml:space="preserve">
+    <value>隐私政策</value>
+  </data>
+  <data name="Ui_Sets_Content_ProjectUrl" xml:space="preserve">
+    <value>项目地址</value>
+  </data>
+  <data name="Ui_Sets_Content_ReleaseNote" xml:space="preserve">
+    <value>更新说明</value>
+  </data>
+  <data name="Ui_Sets_Content_ReleasePage" xml:space="preserve">
+    <value>更新详情页</value>
+  </data>
+  <data name="Ui_Sets_Content_RemindLater" xml:space="preserve">
+    <value>稍后提醒我</value>
+  </data>
+  <data name="Ui_Sets_Content_ResumePlaylistOnProgramStartup" xml:space="preserve">
+    <value>程序启动时恢复上次播放</value>
+  </data>
+  <data name="Ui_Sets_Content_RunOnStartup" xml:space="preserve">
+    <value>开机自动运行</value>
+  </data>
+  <data name="Ui_Sets_Content_Scanning3Dot" xml:space="preserve">
+    <value>正在扫描...</value>
+  </data>
+  <data name="Ui_Sets_Content_SetAsDefaultOptions" xml:space="preserve">
+    <value>设置默认选项</value>
+  </data>
+  <data name="Ui_Sets_Content_SkipVersion" xml:space="preserve">
+    <value>跳过此版本</value>
+  </data>
+  <data name="Ui_Sets_Content_SystemDefault" xml:space="preserve">
+    <value>系统默认</value>
+  </data>
+  <data name="Ui_Sets_Export" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="Ui_Sets_HotKey" xml:space="preserve">
+    <value>HotKey</value>
+  </data>
+  <data name="Ui_Sets_Interface" xml:space="preserve">
+    <value>Interface</value>
+  </data>
+  <data name="Ui_Sets_Lyric" xml:space="preserve">
+    <value>Lyric</value>
+  </data>
+  <data name="Ui_Sets_Nav_About" xml:space="preserve">
+    <value>关于</value>
+  </data>
+  <data name="Ui_Sets_Nav_Common" xml:space="preserve">
+    <value>常规</value>
+  </data>
+  <data name="Ui_Sets_Nav_Export" xml:space="preserve">
+    <value>导出</value>
+  </data>
+  <data name="Ui_Sets_Nav_HotKey" xml:space="preserve">
+    <value>热键</value>
+  </data>
+  <data name="Ui_Sets_Nav_Interface" xml:space="preserve">
+    <value>界面</value>
+  </data>
+  <data name="Ui_Sets_Nav_Lyric" xml:space="preserve">
+    <value>歌词</value>
+  </data>
+  <data name="Ui_Sets_Nav_Playing" xml:space="preserve">
+    <value>播放</value>
+  </data>
+  <data name="Ui_Sets_Playing" xml:space="preserve">
+    <value>Play</value>
+  </data>
+  <data name="Ui_Sets_Title_AudioPlayDevice" xml:space="preserve">
+    <value>音频播放设备</value>
+  </data>
+  <data name="Ui_Sets_Title_AutoPlay" xml:space="preserve">
+    <value>自动播放</value>
+  </data>
+  <data name="Ui_Sets_Title_CloseWindow" xml:space="preserve">
+    <value>关闭窗体</value>
+  </data>
+  <data name="Ui_Sets_Title_CustomSongPath" xml:space="preserve">
+    <value>自定义曲库路径</value>
+  </data>
+  <data name="Ui_Sets_Title_DesktopLyric" xml:space="preserve">
+    <value>桌面歌词</value>
+  </data>
+  <data name="Ui_Sets_Title_DirectoryGrouping" xml:space="preserve">
+    <value>目录分类</value>
+  </data>
+  <data name="Ui_Sets_Title_ExportPath" xml:space="preserve">
+    <value>导出目录</value>
+  </data>
+  <data name="Ui_Sets_Title_FileNamingFormat" xml:space="preserve">
+    <value>文件命名格式</value>
+  </data>
+  <data name="Ui_Sets_Title_GlobalHitsoundDelay" xml:space="preserve">
+    <value>全局音效延迟</value>
+  </data>
+  <data name="Ui_Sets_Title_HotKeySettings" xml:space="preserve">
+    <value>热键设置</value>
+  </data>
+  <data name="Ui_Sets_Title_Language" xml:space="preserve">
+    <value>语言</value>
+  </data>
+  <data name="Ui_Sets_Title_LyricSource" xml:space="preserve">
+    <value>歌词源</value>
+  </data>
+  <data name="Ui_Sets_Title_MatchMode" xml:space="preserve">
+    <value>匹配模式</value>
+  </data>
+  <data name="Ui_Sets_Title_MinimalEffectMode" xml:space="preserve">
+    <value>低配模式</value>
+  </data>
+  <data name="Ui_Sets_Title_OsuDbLocation" xml:space="preserve">
+    <value>osu!db位置</value>
+  </data>
+  <data name="Ui_Sets_Title_PlayProgress" xml:space="preserve">
+    <value>播放进度</value>
+  </data>
+  <data name="Ui_Sets_Title_SoftwareUpdate" xml:space="preserve">
+    <value>软件更新</value>
+  </data>
+  <data name="Ui_Sets_Title_Startup" xml:space="preserve">
+    <value>启动</value>
+  </data>
+  <data name="Ui_Sets_Title_Translation" xml:space="preserve">
+    <value>翻译</value>
+  </data>
+  <data name="Ui_Size" xml:space="preserve">
+    <value>大小</value>
+  </data>
+  <data name="Ui_SongsClassifier" xml:space="preserve">
+    <value>首</value>
+  </data>
+  <data name="Ui_StartScan" xml:space="preserve">
+    <value>开始扫描 !</value>
+  </data>
+  <data name="Ui_Storyboard" xml:space="preserve">
+    <value>故事板</value>
+  </data>
+  <data name="Ui_Switch" xml:space="preserve">
+    <value>切换</value>
+  </data>
+  <data name="Ui_SwitchOff" xml:space="preserve">
+    <value>关</value>
+  </data>
+  <data name="Ui_SwitchOn" xml:space="preserve">
+    <value>开</value>
+  </data>
+  <data name="Ui_Tab_MusicList" xml:space="preserve">
+    <value>音乐列表</value>
+  </data>
+  <data name="Ui_Tab_MyCollection" xml:space="preserve">
+    <value>我的收藏</value>
+  </data>
+  <data name="Ui_Title" xml:space="preserve">
+    <value>标题</value>
+  </data>
+  <data name="Ui_Total" xml:space="preserve">
+    <value>共</value>
+  </data>
+  <data name="Ui_UnlockLyric" xml:space="preserve">
+    <value>解锁歌词</value>
+  </data>
+  <data name="Ui_VolumeDown" xml:space="preserve">
+    <value>音量-</value>
+  </data>
+  <data name="Ui_VolumeMaster" xml:space="preserve">
+    <value>总体</value>
+  </data>
+  <data name="Ui_VolumeMusic" xml:space="preserve">
+    <value>音乐</value>
+  </data>
+  <data name="Ui_VolumeSample" xml:space="preserve">
+    <value>音轨</value>
+  </data>
+  <data name="Ui_VolumeSound" xml:space="preserve">
+    <value>音效</value>
+  </data>
+  <data name="Ui_VolumeUp" xml:space="preserve">
+    <value>音量+</value>
+  </data>
+  <data name="Ui_Welcome_SelectDb" xml:space="preserve">
+    <value>选择osu!db,同步曲库</value>
+  </data>
+  <data name="Ui_Welcome_Skip" xml:space="preserve">
+    <value>跳过此步</value>
+  </data>
+  <data name="Ui_Welcome_Subtitle" xml:space="preserve">
+    <value>选择以下项目,开启精彩音乐世界</value>
+  </data>
+  <data name="Ui_Welcome_Title" xml:space="preserve">
+    <value>欢迎</value>
+  </data>
+  <data name="Ui_Wenable_Watcher" xml:space="preserve">
+    <value>开启曲库目录监听服务,减少同步与扫描时间</value>
+  </data>
+  <data name="Ui_Win_Closing" xml:space="preserve">
+    <value>关闭确认</value>
+  </data>
+  <data name="Ui_Win_EditCollection" xml:space="preserve">
+    <value>编辑收藏</value>
+  </data>
+  <data name="Ui_Win_NewCollection" xml:space="preserve">
+    <value>新建收藏</value>
+  </data>
+  <data name="Ui_Win_SelectCollection" xml:space="preserve">
+    <value>选择收藏</value>
+  </data>
+  <data name="Ui_Win_SelectDifficulty" xml:space="preserve">
+    <value>选择难度</value>
+  </data>
+  <data name="Ui_Win_Sets" xml:space="preserve">
+    <value>播放器设置</value>
+  </data>
+  <data name="Ui_Yes" xml:space="preserve">
+    <value>是</value>
+  </data>
+</root>

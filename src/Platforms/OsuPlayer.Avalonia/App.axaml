@@ -1,0 +1,54 @@
+<Application
+    x:Class="OsuPlayer.App"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+    xmlns:local="clr-namespace:OsuPlayer"
+    xmlns:smoothScroll="clr-namespace:SmoothScroll.Avalonia.Controls;assembly=SmoothScroll.Avalonia.Controls"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    RequestedThemeVariant="Light">
+
+    <Application.DataTemplates>
+        <local:ViewLocator />
+    </Application.DataTemplates>
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://OsuPlayer/Assets/Brushes.axaml" />
+                <ResourceInclude Source="avares://OsuPlayer/Assets/Fonts/FontDictionary.axaml" />
+                <ResourceInclude Source="avares://OsuPlayer/Converters/ConverterDictionary.axaml" />
+                <ResourceInclude Source="avares://OsuPlayer/Assets/Icons.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme>
+            <FluentTheme.Palettes>
+                <ColorPaletteResources x:Key="Light" Accent="#FFFD629A" />
+                <ColorPaletteResources x:Key="Dark" Accent="#FFFD629A" />
+            </FluentTheme.Palettes>
+        </FluentTheme>
+        <dialogHostAvalonia:DialogHostStyles />
+
+        <!--  Global Font Styling  -->
+        <Style Selector="Window">
+            <Setter Property="FontFamily" Value="{StaticResource SspRegular}" />
+        </Style>
+        <Style Selector="ContextMenu">
+            <Setter Property="FontFamily" Value="{StaticResource SspRegular}" />
+        </Style>
+        <Style Selector="ToolTip">
+            <Setter Property="FontFamily" Value="{StaticResource SspRegular}" />
+        </Style>
+
+        <StyleInclude Source="avares://OsuPlayer/Themes/Index.axaml" />
+
+        <smoothScroll:ScrollViewerSmoothTheme />
+        <materialIcons:MaterialIconStyles />
+    </Application.Styles>
+
+    <!-- 托盘图标在 App.axaml.cs 中通过 TrayIcons 集合程序化创建并附加。
+         Avalonia 12 的 TrayIcons 是附加属性,TrayIcon 必须直接放在 <TrayIcons> 集合中。-->
+</Application>

@@ -1,0 +1,20 @@
+<UserControl
+    x:Class="OsuPlayer.Views.UserControls.AddCollectionControl"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:OsuPlayer.Controls"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang">
+    <Grid>
+        <controls:CommonTextBox
+            x:Name="CollectionName"
+            Width="260"
+            Height="40"
+            Margin="5,10,5,0"
+            Padding="3"
+            VerticalAlignment="Top"
+            FontSize="14"
+            Hint="{I18N {x:Static lang:SRKeys.Ui_Max30Char}}"
+            MaxLength="30"
+            TextWrapping="Wrap" />
+    </Grid>
+</UserControl>

@@ -1,0 +1,129 @@
+<UserControl
+    x:Class="OsuPlayer.Views.UserControls.WindowTitleBar"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:OsuPlayer.Views.UserControls"
+    x:Name="Root"
+    Height="40">
+
+    <UserControl.Styles>
+        <Style Selector="Button.titlebar-btn">
+            <Setter Property="Width" Value="35" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border
+                        x:Name="PART_Border"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="{TemplateBinding CornerRadius}">
+                        <ContentPresenter
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            Content="{TemplateBinding Content}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="Button.titlebar-btn:pointerover /template/ Border#PART_Border">
+            <Setter Property="Background" Value="#20303030" />
+        </Style>
+        <Style Selector="Button.titlebar-btn:pressed /template/ Border#PART_Border">
+            <Setter Property="Background" Value="#30303030" />
+        </Style>
+        <Style Selector="Button.titlebar-btn.close:pointerover /template/ Border#PART_Border">
+            <Setter Property="Background" Value="#F0F72F2F" />
+        </Style>
+        <Style Selector="Button.titlebar-btn.close:pressed /template/ Border#PART_Border">
+            <Setter Property="Background" Value="#A0C72828" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid Background="{Binding #Root.Background}" ColumnDefinitions="*,Auto">
+        <!--  Draggable title area fills the non-interactive region.  -->
+        <Border
+            Grid.Column="0"
+            Background="Transparent"
+            WindowDecorationProperties.ElementRole="TitleBar">
+            <StackPanel
+                Margin="{Binding #Root.LeftAreaMargin}"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Orientation="Horizontal"
+                Spacing="8">
+                <ContentPresenter
+                    x:Name="PART_LeftContent"
+                    VerticalContentAlignment="Center"
+                    Content="{Binding #Root.LeftContent}" />
+                <TextBlock
+                    x:Name="PART_Title"
+                    VerticalAlignment="Center"
+                    FontWeight="SemiBold"
+                    Foreground="White"
+                    Text="{Binding #Root.Title}" />
+            </StackPanel>
+        </Border>
+
+        <StackPanel
+            Grid.Column="1"
+            Margin="{Binding #Root.RightAreaMargin}"
+            VerticalAlignment="Center"
+            Orientation="Horizontal">
+            <ContentPresenter
+                x:Name="PART_RightContent"
+                VerticalContentAlignment="Center"
+                Content="{Binding #Root.RightContent}" />
+            <Button
+                x:Name="PART_MinButton"
+                Classes="titlebar-btn"
+                Click="OnMinimizeClick"
+                IsVisible="{Binding #Root.ShowMinimize}"
+                WindowDecorationProperties.ElementRole="MinimizeButton">
+                <Viewbox
+                    Width="24"
+                    Height="24"
+                    Margin="0,8,0,0">
+                    <Canvas Width="1024" Height="1024">
+                        <Path Data="M797.291117 486.21473 224.18848 486.21473c-14.078647 0-25.469068 11.342326-25.469068 25.472138 0 14.028505 11.390421 25.471115 25.469068 25.471115l573.101613 0c14.07967 0 25.470091-11.441587 25.470091-25.471115C822.760185 497.557056 811.370787 486.21473 797.291117 486.21473z" Fill="White" />
+                    </Canvas>
+                </Viewbox>
+            </Button>
+            <Button
+                x:Name="PART_MaxButton"
+                Classes="titlebar-btn"
+                Click="OnMaximizeClick"
+                IsVisible="{Binding #Root.ShowMaximize}"
+                WindowDecorationProperties.ElementRole="MaximizeButton">
+                <Viewbox
+                    x:Name="PART_MaxIconViewbox"
+                    Width="20"
+                    Height="20">
+                    <Canvas Width="1024" Height="1024">
+                        <Path
+                            x:Name="PART_MaxIcon"
+                            Data="M204.8 256a51.2 51.2 0 0 0-51.2 51.2v409.6a51.2 51.2 0 0 0 51.2 51.2h614.4a51.2 51.2 0 0 0 51.2-51.2V307.2a51.2 51.2 0 0 0-51.2-51.2H204.8z m0-51.2h614.4a102.4 102.4 0 0 1 102.4 102.4v409.6a102.4 102.4 0 0 1-102.4 102.4H204.8a102.4 102.4 0 0 1-102.4-102.4V307.2a102.4 102.4 0 0 1 102.4-102.4z"
+                            Fill="White" />
+                    </Canvas>
+                </Viewbox>
+            </Button>
+            <Button
+                x:Name="PART_CloseButton"
+                Classes="titlebar-btn close"
+                Click="OnCloseClick"
+                IsVisible="{Binding #Root.ShowClose}"
+                WindowDecorationProperties.ElementRole="CloseButton">
+                <Viewbox Width="16" Height="16">
+                    <Canvas Width="1024" Height="1024">
+                        <Path Data="M886.592 841.344L557.248 512l329.36-329.36a32 32 0 1 0-45.264-45.232L512 466.752 182.656 137.408a32 32 0 1 0-45.264 45.232L466.752 512 137.408 841.344a32 32 0 1 0 45.232 45.264L512 557.248l329.36 329.36a32 32 0 1 0 45.232-45.264z" Fill="White" />
+                    </Canvas>
+                </Viewbox>
+            </Button>
+        </StackPanel>
+    </Grid>
+</UserControl>

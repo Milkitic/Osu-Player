@@ -1,0 +1,155 @@
+<UserControl
+    x:Class="OsuPlayer.Views.UserControls.BeatmapCard"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
+    x:Name="Self"
+    x:CompileBindings="False">
+    <Button Classes="beatmap-card-button" Click="Card_Click">
+        <Button.ContextMenu>
+            <ContextMenu>
+                <MenuItem Click="PlayWithDifficulty_Click">
+                    <MenuItem.Header>
+                        <TextBlock><Run Text="{I18N {x:Static lang:SRKeys.Ui_Play}}" /><Run Text="... (Enter)" /></TextBlock>
+                    </MenuItem.Header>
+                </MenuItem>
+                <Separator />
+                <MenuItem
+                    Click="SearchByCondition_Click"
+                    CommandParameter="Title"
+                    Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchTitle}}" />
+                <MenuItem
+                    Click="SearchByCondition_Click"
+                    CommandParameter="Artist"
+                    Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchArtist}}" />
+                <MenuItem
+                    Click="SearchByCondition_Click"
+                    CommandParameter="Source"
+                    Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchSource}}" />
+                <MenuItem
+                    Click="SearchByCondition_Click"
+                    CommandParameter="Creator"
+                    Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SearchCreator}}" />
+                <Separator />
+                <MenuItem Click="OpenFolder_Click">
+                    <MenuItem.Header>
+                        <TextBlock><Run Text="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_OpenSourceFolder}}" /><Run Text=" (Ctrl+O)" /></TextBlock>
+                    </MenuItem.Header>
+                </MenuItem>
+                <MenuItem Click="OpenScorePage_Click" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_OpenScorePage}}" />
+                <Separator />
+                <MenuItem Click="SaveCollection_Click">
+                    <MenuItem.Header>
+                        <TextBlock><Run Text="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_SaveTo}}" /><Run Text="... (Ctrl+S)" /></TextBlock>
+                    </MenuItem.Header>
+                </MenuItem>
+                <MenuItem Click="Export_Click" Header="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_Export}}" />
+                <Separator x:Name="RemoveSeparator" />
+                <MenuItem x:Name="RemoveMenuItem" Click="Remove_Click">
+                    <MenuItem.Header>
+                        <TextBlock><Run Text="{I18N {x:Static lang:SRKeys.Ui_CtxMenu_RemoveFromList}}" /><Run Text=" (Delete)" /></TextBlock>
+                    </MenuItem.Header>
+                </MenuItem>
+            </ContextMenu>
+        </Button.ContextMenu>
+        <ToolTip.Tip>
+            <Grid>
+                <Border
+                    Padding="5"
+                    Background="White"
+                    BoxShadow="0 0 5 0 #4C000000" />
+                <Border Padding="5" Background="#F8FFFFFF">
+                    <StackPanel>
+                        <Border
+                            Height="150"
+                            Margin="5"
+                            Background="#F0F0F0">
+                            <Image
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                RenderOptions.BitmapInterpolationMode="HighQuality"
+                                Source="{Binding ThumbPath, Converter={StaticResource PathToBitmapConverter}}"
+                                Stretch="UniformToFill" />
+                        </Border>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Classes="beatmap-tooltip-prefix" Text="ARTIST" />
+                            <TextBlock Margin="5,0,0,0" Text="{Binding AutoArtist}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Classes="beatmap-tooltip-prefix" Text="TITLE" />
+                            <TextBlock Margin="5,0,0,0" Text="{Binding AutoTitle}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Classes="beatmap-tooltip-prefix" Text="SOURCE" />
+                            <TextBlock Margin="5,0,0,0" Text="{Binding SongSource}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Classes="beatmap-tooltip-prefix" Text="CREATOR" />
+                            <TextBlock Margin="5,0,0,0" Text="{Binding Creator}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </ToolTip.Tip>
+        <Grid
+            Width="160"
+            Height="220"
+            Classes="beatmap-card-root">
+            <Border
+                Margin="3"
+                Background="#FBFBFB"
+                Classes="beatmap-card-shadow" />
+            <Border
+                Margin="3"
+                Background="#FBFBFB"
+                BorderBrush="#20646464"
+                BorderThickness="1"
+                Classes="beatmap-card-main">
+                <Grid RowDefinitions="Auto,Auto,Auto,*">
+                    <Border
+                        Grid.Row="0"
+                        Height="160"
+                        Margin="5"
+                        Background="#F0F0F0"
+                        ClipToBounds="True">
+                        <Grid>
+                            <Image
+                                RenderOptions.BitmapInterpolationMode="HighQuality"
+                                Source="{Binding ThumbPath, Converter={StaticResource PathToBitmapConverter}}"
+                                Stretch="UniformToFill" />
+                            <Rectangle IsVisible="{Binding ShowDifficultyOverlay, ElementName=Self}">
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                        <GradientStop Offset="0.5" Color="#00000000" />
+                                        <GradientStop Offset="1" Color="#B0000000" />
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            <TextBlock
+                                Margin="5"
+                                VerticalAlignment="Bottom"
+                                FontSize="13"
+                                FontWeight="Bold"
+                                Foreground="#F0F0F0"
+                                IsVisible="{Binding ShowDifficultyOverlay, ElementName=Self}"
+                                Text="{Binding AutoVersion}"
+                                TextTrimming="CharacterEllipsis" />
+                        </Grid>
+                    </Border>
+                    <TextBlock
+                        Grid.Row="1"
+                        Margin="5,0"
+                        Foreground="#484848"
+                        Text="{Binding AutoArtist}"
+                        TextTrimming="CharacterEllipsis" />
+                    <TextBlock
+                        Grid.Row="2"
+                        Margin="5,0,5,5"
+                        Foreground="#484848"
+                        Text="{Binding AutoTitle}"
+                        TextTrimming="CharacterEllipsis" />
+                </Grid>
+            </Border>
+        </Grid>
+    </Button>
+</UserControl>

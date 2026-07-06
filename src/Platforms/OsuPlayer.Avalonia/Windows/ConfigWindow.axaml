@@ -1,0 +1,111 @@
+<Window
+    x:Class="OsuPlayer.Windows.ConfigWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:OsuPlayer.Views.UserControls"
+    xmlns:lang="clr-namespace:OsuPlayer.Lang"
+    Title="{I18N {x:Static lang:SRKeys.Ui_Win_Sets}}"
+    Width="640"
+    Height="440"
+    MinWidth="580"
+    MinHeight="400"
+    CanMaximize="False"
+    CanMinimize="False"
+    ExtendClientAreaTitleBarHeightHint="32"
+    ExtendClientAreaToDecorationsHint="True"
+    Icon="avares://OsuPlayer/osuPlayer.ico"
+    WindowDecorations="{OnPlatform BorderOnly,
+                                   Windows=Full,
+                                   x:TypeArguments=WindowDecorations}"
+    WindowDecorationsTheme="{StaticResource EmptyWindowDrawnDecorationsTheme}"
+    WindowStartupLocation="CenterOwner">
+    <Grid
+        Margin="{Binding $parent[Window].OffScreenMargin}"
+        Background="#323232"
+        RowDefinitions="Auto,*">
+        <controls:WindowTitleBar
+            Title="{I18N {x:Static lang:SRKeys.Ui_Win_Sets}}"
+            Grid.Row="0"
+            Height="32"
+            Background="#323232"
+            LeftAreaMargin="8,0,0,0"
+            RightAreaMargin="0,0,1,0"
+            ShowMaximize="False"
+            ShowMinimize="False" />
+
+        <Grid Grid.Row="1" ColumnDefinitions="150,*">
+            <Border Grid.Column="0" Background="#2B2B2B">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="0,0,0,8">
+                        <Label Classes="nav-header">
+                            <TextBlock Margin="5,0,0,0" Text="{I18N {x:Static lang:SRKeys.Ui_Sets}}" />
+                        </Label>
+                        <RadioButton
+                            x:Name="GeneralButton"
+                            Classes="nav-button settings-nav-button"
+                            Click="OnNavClick"
+                            Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Common}}"
+                            GroupName="SettingsNav"
+                            IsChecked="True"
+                            Tag="General" />
+                        <RadioButton
+                            x:Name="PlayButton"
+                            Classes="nav-button settings-nav-button"
+                            Click="OnNavClick"
+                            Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Playing}}"
+                            GroupName="SettingsNav"
+                            Tag="Play" />
+                        <RadioButton
+                            x:Name="InterfaceButton"
+                            Classes="nav-button settings-nav-button"
+                            Click="OnNavClick"
+                            Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Interface}}"
+                            GroupName="SettingsNav"
+                            Tag="Interface" />
+                        <RadioButton
+                            x:Name="HotKeyButton"
+                            Classes="nav-button settings-nav-button"
+                            Click="OnNavClick"
+                            Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_HotKey}}"
+                            GroupName="SettingsNav"
+                            Tag="HotKey" />
+                        <RadioButton
+                            x:Name="LyricButton"
+                            Classes="nav-button settings-nav-button"
+                            Click="OnNavClick"
+                            Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Lyric}}"
+                            GroupName="SettingsNav"
+                            Tag="Lyric" />
+                        <RadioButton
+                            x:Name="ExportButton"
+                            Classes="nav-button settings-nav-button"
+                            Click="OnNavClick"
+                            Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_Export}}"
+                            GroupName="SettingsNav"
+                            Tag="Export" />
+                        <RadioButton
+                            x:Name="AboutButton"
+                            Classes="nav-button settings-nav-button"
+                            Click="OnNavClick"
+                            Content="{I18N {x:Static lang:SRKeys.Ui_Sets_Nav_About}}"
+                            GroupName="SettingsNav"
+                            Tag="About" />
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <Border Grid.Column="1" Background="#FEFEFE">
+                <Grid>
+                    <Grid.Background>
+                        <ImageBrush
+                            Opacity="0.3"
+                            Source="{StaticResource TextureSource2}"
+                            Stretch="None"
+                            TileMode="Tile" />
+                    </Grid.Background>
+                    <ContentControl x:Name="MainFrame" />
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

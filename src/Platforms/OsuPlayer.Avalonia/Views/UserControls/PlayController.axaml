@@ -1,0 +1,370 @@
+<UserControl
+    x:Class="OsuPlayer.Views.UserControls.PlayController"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:OsuPlayer.Controls"
+    xmlns:userControls="clr-namespace:OsuPlayer.Views.UserControls"
+    x:DataType="userControls:PlayControllerVm">
+    <UserControl.DataContext>
+        <userControls:PlayControllerVm />
+    </UserControl.DataContext>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://OsuPlayer/Converters/ConverterDictionary.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <UserControl.Styles>
+        <Style Selector="controls|CommonButton.transport">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="{DynamicResource TextureBrush}" />
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="BoxShadow" Value="0 1 10 0 #33000000" />
+            <Setter Property="IconMargin" Value="0" />
+            <Setter Property="IconSize" Value="24" />
+            <Setter Property="CornerRadius" Value="7" />
+            <Setter Property="MouseOverForeground" Value="White" />
+            <Setter Property="MouseDownForeground" Value="White" />
+            <Setter Property="MouseOverBackground">
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Offset="0" Color="#F05090" />
+                    <GradientStop Offset="1" Color="#E05888" />
+                </LinearGradientBrush>
+            </Setter>
+            <Setter Property="MouseDownBackground">
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Offset="0" Color="#E04070" />
+                    <GradientStop Offset="1" Color="#F05090" />
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+        <Style Selector="controls|CommonButton.transport-accent">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="{DynamicResource OsuTextureBlueBrush}" />
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="BoxShadow" Value="0 1 10 0 #335D9CEC" />
+            <Setter Property="IconMargin" Value="0" />
+            <Setter Property="IconSize" Value="24" />
+            <Setter Property="MouseOverForeground" Value="White" />
+            <Setter Property="MouseDownForeground" Value="White" />
+            <Setter Property="MouseOverBackground">
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Offset="0" Color="#5D9CEC" />
+                    <GradientStop Offset="1" Color="#4D8CDC" />
+                </LinearGradientBrush>
+            </Setter>
+            <Setter Property="MouseDownBackground">
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Offset="0" Color="#3D7CCC" />
+                    <GradientStop Offset="1" Color="#4D8CDC" />
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+        <Style Selector="controls|CommonButton.chromeless">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Height" Value="NaN" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="MouseOverBackground" Value="#80F8F8F8" />
+            <Setter Property="MouseDownBackground" Value="#80E8E8E8" />
+        </Style>
+        <Style Selector="controls|CommonButton.title-link">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Height" Value="NaN" />
+            <Setter Property="IconSize" Value="0" />
+            <Setter Property="Foreground" Value="#777777" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="MouseOverBackground" Value="#80F8F8F8" />
+            <Setter Property="MouseDownBackground" Value="#80E8E8E8" />
+        </Style>
+        <Style Selector="controls|CommonButton.playbar-icon">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Height" Value="NaN" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="IconMargin" Value="0" />
+        </Style>
+        <Style Selector="Button#ThumbButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
+        <Style Selector="Button#ThumbButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="Button#ThumbButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="Button#ThumbButton:pointerover Border#FullScrOverlay">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+    </UserControl.Styles>
+    <Grid Background="{DynamicResource TextureBrush3}" RowDefinitions="*">
+        <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+            <Button
+                x:Name="ThumbButton"
+                Grid.Column="0"
+                Width="61"
+                Height="46"
+                MinWidth="61"
+                MinHeight="46"
+                MaxWidth="61"
+                MaxHeight="46"
+                Margin="1"
+                Click="ThumbButton_Click">
+                <Grid>
+                    <Image
+                        Width="61"
+                        Height="46"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        RenderOptions.BitmapInterpolationMode="HighQuality"
+                        Source="{Binding ThumbSource}"
+                        Stretch="UniformToFill" />
+                    <Border
+                        x:Name="FullScrOverlay"
+                        Background="#40000000"
+                        Opacity="0">
+                        <Border.Transitions>
+                            <Transitions>
+                                <DoubleTransition
+                                    Easing="CubicEaseInOut"
+                                    Property="Opacity"
+                                    Duration="0:0:0.15" />
+                            </Transitions>
+                        </Border.Transitions>
+                        <Viewbox
+                            Width="30"
+                            Height="30"
+                            Stretch="Uniform">
+                            <Canvas Width="1000" Height="1000">
+                                <Path Data="M602.1 500l226.5 226.5l91.9-91.9c11.5-12.1 29.4-15.3 44.7-8.9c14.7 6.4 24.9 21.1 24.9 37.6v285.8c0 22.3-18.5 40.8-40.8 40.8H663.3c-16.6 0-31.3-10.2-37.6-25.5c-6.4-14.7-3.2-32.5 8.9-44l91.9-91.9L500 602.1L273.5 828.6l91.9 91.9c12.1 11.5 15.3 29.4 8.9 44c-6.4 15.3-21.1 25.5-37.6 25.5H50.8C28.5 990 10 971.5 10 949.2V663.3c0-16.6 10.2-31.3 25.5-37.6c14.7-6.4 32.5-3.2 44 8.9l91.9 91.9L397.9 500L171.4 273.5l-91.9 91.9c-7.7 7.7-17.9 12.1-28.7 12.1c-5.1 0-10.8-1.3-15.3-3.2C20.2 367.9 10 353.3 10 336.7V50.8C10 28.5 28.5 10 50.8 10h285.8c16.6 0 31.3 10.2 37.6 25.5c6.4 14.7 3.2 32.5-8.9 44l-91.9 91.9L500 397.9l226.5-226.5l-91.9-91.9c-12.1-11.5-15.3-29.3-8.9-44c6.4-15.3 21.1-25.5 37.6-25.5h285.8c22.3 0 40.8 18.5 40.8 40.8v285.8c0 16.6-10.2 31.3-24.9 37.6c-5.1 1.9-10.8 3.2-16 3.2c-10.8 0-21.1-4.5-28.7-12.1l-91.9-91.9L602.1 500z" Fill="{DynamicResource ExtraLightBrushF0}" />
+                            </Canvas>
+                        </Viewbox>
+                    </Border>
+                </Grid>
+            </Button>
+            <StackPanel
+                Grid.Column="1"
+                Margin="10,0,0,0"
+                VerticalAlignment="Center"
+                Orientation="Horizontal">
+                <controls:CommonButton
+                    Width="28"
+                    Height="28"
+                    Margin="8"
+                    Classes="transport"
+                    Command="{Binding PrevCommand}"
+                    CornerRadius="7"
+                    IconTemplate="{StaticResource PrevTempl}" />
+                <controls:CommonButton
+                    Width="32"
+                    Height="32"
+                    Margin="8"
+                    Classes="transport"
+                    Classes.playing="{Binding Shared.IsPlaying}"
+                    Command="{Binding PlayCommand}">
+                    <controls:CommonButton.IconTemplate>
+                        <MultiBinding Converter="{StaticResource PlayingConverter}">
+                            <Binding Path="Shared.IsPlaying" />
+                        </MultiBinding>
+                    </controls:CommonButton.IconTemplate>
+                    <controls:CommonButton.Styles>
+                        <Style Selector="controls|CommonButton:not(.playing)">
+                            <Setter Property="IconSize" Value="20" />
+                            <Setter Property="IconMargin" Value="2,0,0,0" />
+                        </Style>
+                        <Style Selector="controls|CommonButton.playing">
+                            <Setter Property="IconSize" Value="16" />
+                            <Setter Property="IconMargin" Value="0" />
+                        </Style>
+                    </controls:CommonButton.Styles>
+                </controls:CommonButton>
+                <controls:CommonButton
+                    Width="28"
+                    Height="28"
+                    Margin="8"
+                    Classes="transport"
+                    Command="{Binding NextCommand}"
+                    CornerRadius="7"
+                    IconTemplate="{StaticResource NextTempl}" />
+                <controls:CommonButton
+                    Width="28"
+                    Height="28"
+                    Margin="8"
+                    Classes="transport-accent"
+                    Command="{Binding OpenCommand}"
+                    CornerRadius="14"
+                    IconTemplate="{StaticResource OpenTempl}" />
+            </StackPanel>
+            <Border Grid.Column="2" Padding="10,0,0,0">
+                <Grid
+                    VerticalAlignment="Center"
+                    RowDefinitions="Auto,Auto"
+                    RowSpacing="-3">
+                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto">
+                        <controls:CommonButton
+                            Grid.Column="0"
+                            Margin="3,0"
+                            Classes="title-link"
+                            Click="TitleArtist_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Foreground="#777777" Text="{Binding Controller.PlayList.CurrentInfo?.BeatmapDetail?.Metadata.TitleAuto, FallbackValue=Unknown Title, Mode=OneWay}" />
+                                <TextBlock Text=" - " />
+                                <TextBlock Foreground="#AAAAAA" Text="{Binding Controller.PlayList.CurrentInfo?.BeatmapDetail?.Metadata.ArtistAuto, FallbackValue=Unknown Artist, Mode=OneWay}" />
+                            </StackPanel>
+                        </controls:CommonButton>
+                        <controls:CommonButton
+                            x:Name="BtnAsio"
+                            Grid.Column="1"
+                            Height="20"
+                            Margin="3,0"
+                            Padding="4,0"
+                            HorizontalAlignment="Right"
+                            Classes="chromeless"
+                            Command="{Binding AsioCommand}"
+                            IconSize="45"
+                            IconTemplate="{StaticResource AsioTempl}"
+                            IsVisible="{Binding AsioVisible}">
+                            <controls:CommonButton.Foreground>
+                                <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                    <GradientStop Offset="0" Color="#646464" />
+                                    <GradientStop Offset="1" Color="#484848" />
+                                </LinearGradientBrush>
+                            </controls:CommonButton.Foreground>
+                        </controls:CommonButton>
+                        <StackPanel
+                            x:Name="LblProgress"
+                            Grid.Column="2"
+                            Orientation="Horizontal">
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="#777"
+                                Text="{Binding CurrentTimeText}" />
+                            <TextBlock
+                                Margin="4,0"
+                                VerticalAlignment="Center"
+                                Foreground="#858585"
+                                Text="/" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="#AAA"
+                                Text="{Binding TotalTimeText}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Slider
+                        x:Name="PlayProgress"
+                        Grid.Row="1"
+                        Margin="-3,-13,-3,-17"
+                        VerticalAlignment="Center"
+                        Classes="osu-slider"
+                        Maximum="{Binding TotalTimeMs}"
+                        Minimum="0"
+                        Value="{Binding CurrentTimeMs, Mode=TwoWay}" />
+                </Grid>
+            </Border>
+            <Grid Grid.Column="3">
+                <StackPanel
+                    Margin="10,0,10,0"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+                    <controls:CommonButton
+                        x:Name="ModeButton"
+                        Width="24"
+                        Height="24"
+                        Margin="8"
+                        Background="Transparent"
+                        Classes="playbar-icon"
+                        Click="ModeButton_Click"
+                        IconSize="25"
+                        IconTemplate="{Binding Controller.PlayList.Mode, Converter={StaticResource PlayModeConverter}}"
+                        MouseOverBackground="Transparent" />
+                    <controls:CommonButton
+                        Width="23"
+                        Height="23"
+                        Margin="6"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        Classes="playbar-icon"
+                        Click="LikeButton_Click"
+                        IconSize="24"
+                        IconTemplate="{Binding Controller.PlayList.CurrentInfo?.BeatmapDetail?.Metadata.IsFavorite, Converter={StaticResource BoolIsFavToSvgConverter}, FallbackValue={StaticResource HeartDisabledTempl}, TargetNullValue={StaticResource HeartDisabledTempl}}"
+                        MouseOverBackground="Transparent" />
+                    <controls:CommonButton
+                        x:Name="VolumeButton"
+                        Width="23"
+                        Height="23"
+                        Margin="6"
+                        VerticalAlignment="Center"
+                        Classes="playbar-icon"
+                        Click="VolumeButton_Click"
+                        IconSize="20"
+                        IconTemplate="{StaticResource VolumeTempl}" />
+                    <controls:CommonButton
+                        x:Name="PlayListButton"
+                        Width="23"
+                        Height="23"
+                        Margin="6"
+                        VerticalAlignment="Center"
+                        Classes="playbar-icon"
+                        Click="PlayListButton_Click"
+                        IconSize="18"
+                        IconTemplate="{StaticResource PlayListTempl}" />
+                </StackPanel>
+            </Grid>
+        </Grid>
+        <Popup
+            x:Name="PopMode"
+            Width="110"
+            HorizontalOffset="-44"
+            IsLightDismissEnabled="True"
+            Placement="Top"
+            PlacementTarget="{Binding ElementName=ModeButton}">
+            <userControls:PlayModeControl CloseRequested="PlayModeControl_CloseRequested" />
+        </Popup>
+        <Popup
+            x:Name="PopPlayList"
+            Width="600"
+            Height="500"
+            HorizontalOffset="-570"
+            IsLightDismissEnabled="True"
+            Placement="Top"
+            PlacementTarget="{Binding ElementName=PlayListButton}">
+            <userControls:PlayListControl CloseRequested="PlayListControl_CloseRequested" />
+        </Popup>
+        <Popup
+            x:Name="Pop"
+            MinWidth="170"
+            IsLightDismissEnabled="True"
+            Placement="Top"
+            PlacementTarget="{Binding ElementName=VolumeButton}">
+            <userControls:VolumeControl />
+        </Popup>
+    </Grid>
+</UserControl>
