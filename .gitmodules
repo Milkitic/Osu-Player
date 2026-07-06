@@ -4,3 +4,6 @@
 [submodule "dependencies/NAudio.SDL3"]
 	path = dependencies/NAudio.SDL3
 	url = https://github.com/Milkitic/NAudio.SDL3.git
+[submodule "dependencies/ManagedSoundTouch"]
+	path = dependencies/ManagedSoundTouch
+	url = https://github.com/Milkitic/ManagedSoundTouch.git
