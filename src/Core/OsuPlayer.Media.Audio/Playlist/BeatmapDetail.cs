@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Coosu.Beatmap;
 using OsuPlayer.Data.Models;
@@ -76,6 +77,23 @@ public partial class BeatmapDetail : ObservableObject
             CS = osuFile.Difficulty.CircleSize;
             AR = osuFile.Difficulty.ApproachRate;
             OD = osuFile.Difficulty.OverallDifficulty;
+        }
+
+        /// <summary>
+        /// Applies metadata from a database-backed <see cref="Beatmap"/>. Used for
+        /// IIDX-sourced entries where no Coosu <see cref="OsuFile"/> is produced.
+        /// </summary>
+        public void ApplyFrom(Beatmap beatmap)
+        {
+            ArgumentNullException.ThrowIfNull(beatmap);
+            Artist = SafeMetaString(beatmap.Artist, beatmap.ArtistUnicode);
+            Title = SafeMetaString(beatmap.Title, beatmap.TitleUnicode);
+            BeatmapId = beatmap.BeatmapId;
+            BeatmapsetId = beatmap.BeatmapSetId;
+            Creator = beatmap.Creator;
+            Version = beatmap.Version;
+            Source = beatmap.SongSource;
+            Tags = (beatmap.SongTags ?? string.Empty).Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
         }
     }
 

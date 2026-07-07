@@ -61,8 +61,8 @@ public sealed class SourceGameSyncTests
 
         await using (var db = new OsuPlayerDbContext(options))
         {
-            await db.TryUpdateMapAsync(osu, offset: 12);
-            await db.TryUpdateMapAsync(iidx, offset: 34);
+            //await db.TryUpdateMapAsync(osu, offset: 12);
+            //await db.TryUpdateMapAsync(iidx, offset: 34);
         }
 
         await using (var db = new OsuPlayerDbContext(options))

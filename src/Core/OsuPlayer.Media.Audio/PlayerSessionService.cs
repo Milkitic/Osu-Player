@@ -389,7 +389,10 @@ public sealed class PlayerSessionService : IAsyncDisposable
         _bus.RaiseMetaLoaded(context, operationToken);
         _bus.RaiseBackgroundInfoLoaded(context, operationToken);
 
-        var player = new OsuMixPlayer(loadResult.OsuFile, loadResult.BaseFolder, _playbackEngine, _audioCacheManager, _loggerFactory.CreateLogger<OsuMixPlayer>());
+        IMixPlayer player = loadResult.OsuFile != null
+            ? new OsuMixPlayer(loadResult.OsuFile, loadResult.BaseFolder, _playbackEngine, _audioCacheManager, _loggerFactory.CreateLogger<OsuMixPlayer>())
+            : new IidxMixPlayer(loadResult, _playbackEngine, _audioCacheManager, _loggerFactory.CreateLogger<IidxMixPlayer>());
+
         var attached = false;
         try
         {

@@ -47,7 +47,16 @@ public class BeatmapContext
 
         var metadata = BeatmapDetail.Metadata;
         metadata.IsFavorite = loadResult.IsFavorite;
-        metadata.ApplyFrom(loadResult.OsuFile);
+
+        if (loadResult.OsuFile != null)
+        {
+            metadata.ApplyFrom(loadResult.OsuFile);
+        }
+        else
+        {
+            // IIDX path: no Coosu OsuFile; copy metadata from the database beatmap.
+            metadata.ApplyFrom(loadResult.Beatmap);
+        }
 
         BeatmapDetail.BaseFolder = loadResult.BaseFolder;
         BeatmapDetail.MapPath = loadResult.MapPath;

@@ -28,7 +28,7 @@ namespace OsuPlayer.Media.Audio;
 /// <c>SharedVm.Default</c> has been removed — the controller relays status
 /// through <see cref="PlayStatusChanged"/> and the UI binds directly.
 /// </remarks>
-public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
+public sealed class OsuMixPlayer : IMixPlayer
 {
     private static readonly TimeSpan PositionFeedbackInterval = TimeSpan.FromMilliseconds(16);
 

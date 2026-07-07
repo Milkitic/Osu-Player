@@ -10,6 +10,28 @@
     <Platform Name="x86" />
   </Configurations>
   <Folder Name="/Dependencies/" />
+  <Folder Name="/Dependencies/BemaniUtils.Net/">
+    <Project Path="dependencies/BemaniUtils.Net/IIDXAudioGenerator/IIDXAudioGenerator.csproj">
+      <BuildType Solution="Analysis|*" Project="Debug" />
+      <BuildType Solution="Release 4.5|*" Project="Release" />
+      <BuildType Solution="Release 4.6|*" Project="Release" />
+    </Project>
+    <Project Path="dependencies/BemaniUtils.Net/IIDXToolbox.Abstractions/IIDXToolbox.Abstractions.csproj">
+      <BuildType Solution="Analysis|*" Project="Debug" />
+      <BuildType Solution="Release 4.5|*" Project="Release" />
+      <BuildType Solution="Release 4.6|*" Project="Release" />
+    </Project>
+    <Project Path="dependencies/BemaniUtils.Net/IIDXToolbox.Readers/IIDXToolbox.Readers.csproj">
+      <BuildType Solution="Analysis|*" Project="Debug" />
+      <BuildType Solution="Release 4.5|*" Project="Release" />
+      <BuildType Solution="Release 4.6|*" Project="Release" />
+    </Project>
+    <Project Path="dependencies/BemaniUtils.Net/IIDXToolbox/IIDXToolbox.csproj">
+      <BuildType Solution="Analysis|*" Project="Debug" />
+      <BuildType Solution="Release 4.5|*" Project="Release" />
+      <BuildType Solution="Release 4.6|*" Project="Release" />
+    </Project>
+  </Folder>
   <Folder Name="/Dependencies/KeyASIO.Net/">
     <Project Path="dependencies/KeyASIO.Net/src/Core/KeyAsio.Core.Audio/KeyAsio.Core.Audio.csproj">
       <BuildType Solution="Analysis|*" Project="Debug" />

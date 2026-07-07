@@ -18,7 +18,7 @@ public sealed class PlayerEventBus : IDisposable
     private readonly IUiThreadDispatcher _dispatcher;
     private readonly ILogger<PlayerEventBus> _logger;
     private readonly IAppNotificationService _notifications;
-    private OsuMixPlayer? _player;
+    private IMixPlayer? _player;
 
     public PlayerEventBus(
         IUiThreadDispatcher dispatcher,
@@ -46,10 +46,10 @@ public sealed class PlayerEventBus : IDisposable
     public event Action<BeatmapContext, CancellationToken>? LoadFinished;
     public event Action<BeatmapContext, Exception>? LoadError;
 
-    public OsuMixPlayer? Player => _player;
+    public IMixPlayer? Player => _player;
     public bool IsPlayerReady => _player != null && _player.PlayStatus != PlayStatus.Unknown;
 
-    public void AttachPlayer(OsuMixPlayer player)
+    public void AttachPlayer(IMixPlayer player)
     {
         if (_player != null)
         {

@@ -6,6 +6,7 @@ using Coosu.Beatmap;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
+using OsuPlayer.Iidx.Abstractions;
 using OsuPlayer.Shared;
 
 using Microsoft.Extensions.Logging;
@@ -14,22 +15,26 @@ namespace OsuPlayer.Media.Audio;
 
 /// <summary>
 /// Handles beatmap data loading: file I/O, metadata parsing, path resolution,
-/// and favorite status lookup.
+/// and favorite status lookup. Dispatches to <see cref="IidxBeatmapLoader"/> for
+/// IIDX-sourced beatmaps and keeps the osu! path for <see cref="Shared.SourceGame.Osu"/>.
 /// </summary>
 public sealed class BeatmapLoader
 {
     private readonly IPlayerDataStore _playerData;
     private readonly ILogger<BeatmapLoader> _logger;
+    private readonly IidxBeatmapLoader _iidxLoader;
 
     public BeatmapLoader(IPlayerDataStore playerData, ILogger<BeatmapLoader> logger)
     {
         _playerData = playerData;
         _logger = logger;
+        _iidxLoader = new IidxBeatmapLoader(playerData, logger);
     }
 
     /// <summary>
     /// Loads beatmap data starting from a database-backed <see cref="Beatmap"/> record.
-    /// Resolves the .osu file on disk from the beatmap's folder information.
+    /// Resolves the .osu file on disk from the beatmap's folder information, or the
+    /// IIDX chart + 2dx audio when the beatmap is IIDX-sourced.
     /// </summary>
     public async Task<BeatmapLoadResult> LoadFromBeatmapAsync(
         Beatmap beatmap,
@@ -37,6 +42,12 @@ public sealed class BeatmapLoader
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
+
+        if (beatmap.SourceGame == Shared.SourceGame.Iidx)
+        {
+            return await _iidxLoader.LoadFromBeatmapAsync(beatmap, beatmapSettings, cancellationToken)
+                .ConfigureAwait(false);
+        }
 
         var folder = (beatmap.GetFolder(out var isFromDb, out var freePath) ?? string.Empty).Trim();
         if (isFromDb && string.IsNullOrWhiteSpace(folder))

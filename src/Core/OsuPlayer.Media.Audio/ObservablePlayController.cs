@@ -77,7 +77,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
 
     public PlayList PlayList { get; }
 
-    public OsuMixPlayer? Player => _bus.Player;
+    public IMixPlayer? Player => _bus.Player;
 
     public bool IsPlayerReady => _bus.IsPlayerReady;
 

@@ -14,6 +14,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\dependencies\BemaniUtils.Net\IIDXToolbox\IIDXToolbox.csproj" />
+    <ProjectReference Include="..\..\..\dependencies\BemaniUtils.Net\IIDXToolbox.Readers\IIDXToolbox.Readers.csproj" />
+    <ProjectReference Include="..\..\..\dependencies\BemaniUtils.Net\IIDXToolbox.Abstractions\IIDXToolbox.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.InteropServices.GuidAttribute">
       <_Parameter1>c1d4e5f6-1111-4aaa-bbbb-111111111111</_Parameter1>
     </AssemblyAttribute>
