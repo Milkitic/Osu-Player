@@ -40,6 +40,41 @@
                     IsEnabled="{Binding ScannerViewModel.IsScanning, Converter={StaticResource NegativeBooleanConverter}}" />
             </StackPanel>
 
+            <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_IidxMusicDataLocation}}" />
+            <StackPanel Classes="config-row" Orientation="Horizontal">
+                <TextBox
+                    Classes="config-box"
+                    Width="250"
+                    Height="27"
+                    IsReadOnly="True"
+                    Text="{Binding IidxMusicDataPath, Mode=OneWay}" />
+                <Button
+                    Classes="settings-button"
+                    Width="27"
+                    Height="27"
+                    Command="{Binding BrowseIidxMusicDataCommand}"
+                    IsEnabled="{Binding IidxViewModel.IsScanning, Converter={StaticResource NegativeBooleanConverter}}">
+                    <Viewbox Width="12" Height="12">
+                        <Path Fill="#303030" Data="M2,3H6L7.2,4.5H12.5V12.5H2Z M3.2,5.5V11.3H11.3V5.5Z" />
+                    </Viewbox>
+                </Button>
+                <Button
+                    Classes="settings-button"
+                    Command="{Binding SyncIidxNowCommand}"
+                    Content="{I18N {x:Static lang:SRKeys.Ui_Btn_SyncManually}}"
+                    IsEnabled="{Binding IidxViewModel.IsScanning, Converter={StaticResource NegativeBooleanConverter}}" />
+                <ProgressBar
+                    Width="60"
+                    Height="4"
+                    IsIndeterminate="True"
+                    IsVisible="{Binding IidxViewModel.IsScanning, Converter={StaticResource BoolTrueToVisibleConverter}}" />
+                <TextBlock
+                    Classes="config-label"
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding IidxViewModel.IsScanning, Converter={StaticResource BoolTrueToVisibleConverter}}"
+                    Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Content_Scanning3Dot}}" />
+            </StackPanel>
+
             <TextBlock Classes="config-title" Text="{I18N {x:Static lang:SRKeys.Ui_Sets_Title_CustomSongPath}}" />
             <StackPanel Classes="config-row" Orientation="Horizontal">
                 <TextBox

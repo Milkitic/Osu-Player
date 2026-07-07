@@ -8,5 +8,11 @@ namespace OsuPlayer.Iidx.Abstractions.Internal;
 /// </summary>
 internal static class SjisEncoding
 {
-    public static Encoding Instance { get; } = Encoding.GetEncoding(932);
+    public static Encoding Instance { get; } = CreateInstance();
+
+    private static Encoding CreateInstance()
+    {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        return Encoding.GetEncoding(932);
+    }
 }

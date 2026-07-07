@@ -135,6 +135,9 @@
   <data name="Err_Osudb_Sync" xml:space="preserve">
     <value>Error while syncing osu!db</value>
   </data>
+  <data name="Err_IidxMusicData_Sync" xml:space="preserve">
+    <value>Error while syncing IIDX music_data.bin</value>
+  </data>
   <data name="Err_Update_Check" xml:space="preserve">
     <value>Error while checking for update</value>
   </data>
@@ -611,6 +614,9 @@
   </data>
   <data name="Ui_Sets_Title_OsuDbLocation" xml:space="preserve">
     <value>osu!db Location</value>
+  </data>
+  <data name="Ui_Sets_Title_IidxMusicDataLocation" xml:space="preserve">
+    <value>IIDX music_data.bin Location</value>
   </data>
   <data name="Ui_Sets_Title_PlayProgress" xml:space="preserve">
     <value>Play Progress</value>

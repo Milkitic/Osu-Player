@@ -97,6 +97,15 @@ namespace OsuPlayer.Lang {
         }
         
         /// <summary>
+        ///   查找类似 Error while syncing IIDX music_data.bin 的本地化字符串。
+        /// </summary>
+        internal static string Err_IidxMusicData_Sync {
+            get {
+                return ResourceManager.GetString("Err_IidxMusicData_Sync", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 The beatmap is not in database 的本地化字符串。
         /// </summary>
         internal static string Err_MapNotInDb {
@@ -1497,6 +1506,15 @@ namespace OsuPlayer.Lang {
         internal static string Ui_Sets_Title_HotKeySettings {
             get {
                 return ResourceManager.GetString("Ui_Sets_Title_HotKeySettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 IIDX music_data.bin 位置 的本地化字符串。
+        /// </summary>
+        internal static string Ui_Sets_Title_IidxMusicDataLocation {
+            get {
+                return ResourceManager.GetString("Ui_Sets_Title_IidxMusicDataLocation", resourceCulture);
             }
         }
         

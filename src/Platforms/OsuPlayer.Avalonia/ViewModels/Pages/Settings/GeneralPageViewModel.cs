@@ -17,8 +17,10 @@ public partial class GeneralPageViewModel : ObservableObject
 {
     private readonly OsuFileScanner _osuFileScanner;
     private readonly OsuDbInst _osuDbInst;
+    private readonly IidxMusicDataInst _iidxMusicDataInst;
 
     public FileScannerViewModel ScannerViewModel => _osuFileScanner.ViewModel;
+    public IidxMusicDataInst.ViewModelClass IidxViewModel => _iidxMusicDataInst.ViewModel;
 
     public bool RunOnStartup
     {
@@ -58,6 +60,18 @@ public partial class GeneralPageViewModel : ObservableObject
         {
             if (AppSettings.Default == null || AppSettings.Default.General.DbPath == value) return;
             AppSettings.Default.General.DbPath = value;
+            OnPropertyChanged();
+            AppSettings.SaveDefault();
+        }
+    }
+
+    public string IidxMusicDataPath
+    {
+        get => AppSettings.Default?.General.IidxMusicDataPath ?? string.Empty;
+        set
+        {
+            if (AppSettings.Default == null || AppSettings.Default.General.IidxMusicDataPath == value) return;
+            AppSettings.Default.General.IidxMusicDataPath = value;
             OnPropertyChanged();
             AppSettings.SaveDefault();
         }
@@ -117,10 +131,11 @@ public partial class GeneralPageViewModel : ObservableObject
 
     public bool IsScanning => ScannerViewModel.IsScanning;
 
-    public GeneralPageViewModel(OsuFileScanner osuFileScanner, OsuDbInst osuDbInst)
+    public GeneralPageViewModel(OsuFileScanner osuFileScanner, OsuDbInst osuDbInst, IidxMusicDataInst iidxMusicDataInst)
     {
         _osuFileScanner = osuFileScanner;
         _osuDbInst = osuDbInst;
+        _iidxMusicDataInst = iidxMusicDataInst;
         ScannerViewModel.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName == nameof(FileScannerViewModel.IsScanning))
@@ -168,6 +183,50 @@ public partial class GeneralPageViewModel : ObservableObject
         catch (Exception ex)
         {
             AppNotificationService.Instance.Push($"{LocalizationService.Instance[SRKeys.Err_Custom_Scan]}: {ex.Message}");
+        }
+    }
+
+    [RelayCommand]
+    private async Task BrowseIidxMusicDataAsync()
+    {
+        var path = await StoragePickerHelper.PickSingleFileAsync(@"请选择 IIDX 目录内的""music_data.bin""", "music_data.bin");
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return;
+        }
+
+        try
+        {
+            var ok = await _iidxMusicDataInst.TrySyncMusicDataAsync(path, false);
+            if (ok)
+            {
+                IidxMusicDataPath = path;
+            }
+            else
+            {
+                AppNotificationService.Instance.Push($"{LocalizationService.Instance[SRKeys.Err_IidxMusicData_Sync]}");
+            }
+        }
+        catch (Exception ex)
+        {
+            AppNotificationService.Instance.Push($"{LocalizationService.Instance[SRKeys.Err_IidxMusicData_Sync]}: {ex.Message}");
+        }
+    }
+
+    [RelayCommand]
+    private async Task SyncIidxNowAsync()
+    {
+        try
+        {
+            var ok = await _iidxMusicDataInst.TrySyncMusicDataAsync(IidxMusicDataPath, false);
+            if (!ok)
+            {
+                AppNotificationService.Instance.Push($"{LocalizationService.Instance[SRKeys.Err_IidxMusicData_Sync]}");
+            }
+        }
+        catch (Exception ex)
+        {
+            AppNotificationService.Instance.Push($"{LocalizationService.Instance[SRKeys.Err_IidxMusicData_Sync]}: {ex.Message}");
         }
     }
 
