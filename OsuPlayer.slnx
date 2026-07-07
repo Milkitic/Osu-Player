@@ -11,11 +11,6 @@
   </Configurations>
   <Folder Name="/Dependencies/" />
   <Folder Name="/Dependencies/BemaniUtils.Net/">
-    <Project Path="dependencies/BemaniUtils.Net/IIDXAudioGenerator/IIDXAudioGenerator.csproj">
-      <BuildType Solution="Analysis|*" Project="Debug" />
-      <BuildType Solution="Release 4.5|*" Project="Release" />
-      <BuildType Solution="Release 4.6|*" Project="Release" />
-    </Project>
     <Project Path="dependencies/BemaniUtils.Net/IIDXToolbox.Abstractions/IIDXToolbox.Abstractions.csproj">
       <BuildType Solution="Analysis|*" Project="Debug" />
       <BuildType Solution="Release 4.5|*" Project="Release" />

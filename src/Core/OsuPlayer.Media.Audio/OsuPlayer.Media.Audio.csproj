@@ -12,7 +12,6 @@
     <ProjectReference Include="..\..\..\dependencies\KeyASIO.Net\src\Core\KeyAsio.Core.Audio\KeyAsio.Core.Audio.csproj" />
     <ProjectReference Include="..\..\..\dependencies\KeyASIO.Net\src\Core\KeyAsio.Core.OsuAudio\KeyAsio.Core.OsuAudio.csproj" />
     <ProjectReference Include="..\..\..\dependencies\ManagedSoundTouch\ManagedSoundTouch\ManagedSoundTouch.csproj" />
-    <ProjectReference Include="..\..\..\dependencies\BemaniUtils.Net\IIDXAudioGenerator\IIDXAudioGenerator.csproj" />
   </ItemGroup>
 
   <ItemGroup>

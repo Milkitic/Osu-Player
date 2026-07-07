@@ -1,14 +1,12 @@
 using System;
 using System.ComponentModel;
-using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
-using IIDXAudioGenerator.Services;
 using KeyAsio.Core.Audio;
 using KeyAsio.Core.Audio.Caching;
 using Microsoft.Extensions.Logging;
 using NAudio.Wave;
 using OsuPlayer.Core.Configuration;
+using OsuPlayer.Iidx.Abstractions;
 using OsuPlayer.Media.Audio.Rules;
 using OsuPlayer.Media.Audio.SoundTouch;
 using OsuPlayer.Shared;
@@ -18,18 +16,11 @@ using OsuPlayer.Shared.Models;
 namespace OsuPlayer.Media.Audio;
 
 /// <summary>
-/// IIDX playback controller. Renders the IIDX chart + 2dx audio to a single
-/// mixed WAV (via BemaniUtils <see cref="AudioRenderService"/>), then plays
-/// that WAV through the same KeyAsio <see cref="StandaloneMusicTransport"/> as
-/// the osu! path — so loop / rate / offset / volume all behave identically.
+/// IIDX playback controller. Mirrors <see cref="OsuMixPlayer"/>'s shell but
+/// delegates to <see cref="IidxBeatmapAudioSession"/>, which schedules decoded
+/// 2dx blocks in real time with the same 12-second sliding precache window the
+/// osu! path uses for hitsounds — no offline WAV render.
 /// </summary>
-/// <remarks>
-/// IIDX charts have no concept of separately-scheduled hitsound events the way
-/// osu! does: the 2dx file already contains every BGM and note sample, and the
-/// chart tells the renderer when each plays. Mixing once up-front is what the
-/// standalone <c>IIDXAudioGenerator</c> tool does, and reusing that path keeps
-/// the audio identical between render and play.
-/// </remarks>
 public sealed class IidxMixPlayer : IMixPlayer
 {
     private static readonly TimeSpan PositionFeedbackInterval = TimeSpan.FromMilliseconds(16);
@@ -41,7 +32,7 @@ public sealed class IidxMixPlayer : IMixPlayer
     private readonly SoundTouchPlaybackRateProcessorFactory _rateFactory = new();
 
     private StandaloneMusicTransport? _musicTransport;
-    private IMusicPlaybackSource? _musicSource;
+    private IidxBeatmapAudioSession? _session;
     private OsuAudioSessionOptions? _sessionOptions;
     private readonly CancellableAsyncLoop _positionPumpLoop = new();
     private PlayStatus _playStatus = PlayStatus.Unknown;
@@ -49,7 +40,6 @@ public sealed class IidxMixPlayer : IMixPlayer
     private bool _isLooping;
     private float _preservePitchRateCompensationMilliseconds =
         PlaybackRateState.DefaultPreservePitchCompensationMilliseconds;
-    private string? _renderedCachePath;
 
     public IidxMixPlayer(
         BeatmapLoadResult loadResult,
@@ -57,26 +47,29 @@ public sealed class IidxMixPlayer : IMixPlayer
         AudioCacheManager audioCacheManager,
         ILogger<IidxMixPlayer> logger)
     {
-        if (loadResult.IidxResources == null)
+        if (loadResult.IidxResources is null)
         {
             throw new ArgumentException(
                 "BeatmapLoadResult.IidxResources must be set for IidxMixPlayer.", nameof(loadResult));
         }
 
         _loadResult = loadResult;
+        _resources = loadResult.IidxResources;
         _engine = engine;
         _audioCacheManager = audioCacheManager;
         _logger = logger;
     }
 
+    private readonly IidxLoadedResources _resources;
+
     public event Action<PlayStatus>? PlayStatusChanged;
     public event Action<TimeSpan>? PositionUpdated;
 
     public IWavePlayer? Device => _engine.CurrentDevice;
-    public TimeSpan Duration => _musicTransport?.Duration ?? TimeSpan.Zero;
-    public TimeSpan Position => _musicTransport?.Position ?? TimeSpan.Zero;
-    public float PlaybackRate => _musicTransport?.RateState.Rate ?? 1f;
-    public bool KeepTune => _musicTransport?.RateState.PreservePitch ?? false;
+    public TimeSpan Duration => _session?.Duration ?? TimeSpan.Zero;
+    public TimeSpan Position => _session?.Position ?? TimeSpan.Zero;
+    public float PlaybackRate => _session?.RateState.Rate ?? 1f;
+    public bool KeepTune => _session?.RateState.PreservePitch ?? false;
 
     public float PreservePitchRateCompensationMilliseconds
     {
@@ -84,9 +77,9 @@ public sealed class IidxMixPlayer : IMixPlayer
         set
         {
             _preservePitchRateCompensationMilliseconds = value;
-            if (_sessionOptions != null)
+            if (_session != null)
             {
-                _sessionOptions.PreservePitchRateCompensationMilliseconds = value;
+                _session.PreservePitchRateCompensationMilliseconds = value;
             }
         }
     }
@@ -114,9 +107,9 @@ public sealed class IidxMixPlayer : IMixPlayer
         set
         {
             _isLooping = value;
-            if (_musicTransport?.Source is { } source)
+            if (_session != null)
             {
-                source.IsLooping = value;
+                _session.IsLooping = value;
             }
         }
     }
@@ -127,23 +120,14 @@ public sealed class IidxMixPlayer : IMixPlayer
         set
         {
             _manualOffset = value;
-            if (_sessionOptions != null)
-            {
-                _sessionOptions.ManualOffsetMilliseconds = value;
-            }
+            _session?.ManualOffsetMilliseconds = value;
         }
     }
 
     public int GeneralOffset
     {
-        get => _sessionOptions?.GeneralOffsetMilliseconds ?? 0;
-        set
-        {
-            if (_sessionOptions != null)
-            {
-                _sessionOptions.GeneralOffsetMilliseconds = value;
-            }
-        }
+        get => _session?.GeneralOffsetMilliseconds ?? 0;
+        set => _session.GeneralOffsetMilliseconds = value;
     }
 
     public async Task Initialize()
@@ -152,36 +136,17 @@ public sealed class IidxMixPlayer : IMixPlayer
         {
             StartAudioEngine();
             _musicTransport = new StandaloneMusicTransport(_engine);
+            _session = new IidxBeatmapAudioSession(
+                _engine, _musicTransport, _audioCacheManager,
+                _resources, _rateFactory,
+                _logger);
 
-            var wavPath = await RenderChartToWavAsync().ConfigureAwait(false);
-            _renderedCachePath = wavPath;
-
-            _musicSource = await AudioFileMusicPlaybackSource.CreateAsync(
-                _audioCacheManager,
-                wavPath,
-                _engine.SourceWaveFormat,
-                _rateFactory).ConfigureAwait(false);
-
-            await _musicTransport.LoadAsync(_musicSource, ownsSource: true).ConfigureAwait(false);
-            ApplyLoopingToMusicSource();
-
-            _sessionOptions = new OsuAudioSessionOptions
-            {
-                Resources = new BeatmapResources
-                {
-                    BeatmapFolder = Path.GetDirectoryName(wavPath) ?? string.Empty,
-                    BeatmapFilename = Path.GetFileName(wavPath),
-                    AudioFilename = Path.GetFileName(wavPath),
-                    DefaultHitsoundFolder = AppPaths.Current.DefaultPath,
-                    UserSkinFolder = AppPaths.Current.DefaultPath,
-                },
-                GeneralOffsetMilliseconds = AppSettings.Default?.Play?.GeneralActualOffset ?? 0,
-                ManualOffsetMilliseconds = _manualOffset,
-                PreservePitchRateCompensationMilliseconds = _preservePitchRateCompensationMilliseconds,
-            };
-
+            _session.IsLooping = _isLooping;
+            _session.Finished += Session_Finished;
+            _sessionOptions = CreateSessionOptions();
             SynchronizeVolumeSettings();
 
+            await _session.LoadAsync(_resources, _sessionOptions).ConfigureAwait(false);
             await SetPlaybackRate(
                 AppSettings.Default?.Play?.PlaybackRate ?? 1,
                 AppSettings.Default?.Play?.PlayUseTempo ?? false).ConfigureAwait(false);
@@ -202,14 +167,14 @@ public sealed class IidxMixPlayer : IMixPlayer
 
     public async Task PlayAsync()
     {
-        var transport = RequireTransport();
+        var session = RequireSession();
         if (PlayStatus == PlayStatus.Playing) return;
         if (PlayStatus == PlayStatus.Finished)
         {
             await SkipToAsync(TimeSpan.Zero).ConfigureAwait(false);
         }
 
-        await transport.PlayAsync().ConfigureAwait(false);
+        await session.PlayAsync().ConfigureAwait(false);
         StartPositionPump();
         RaisePositionUpdated(Position);
         PlayStatus = PlayStatus.Playing;
@@ -217,10 +182,10 @@ public sealed class IidxMixPlayer : IMixPlayer
 
     public async Task PauseAsync()
     {
-        var transport = RequireTransport();
         if (PlayStatus == PlayStatus.Paused) return;
+        var session = RequireSession();
         await StopPositionPumpAsync().ConfigureAwait(false);
-        await transport.PauseAsync().ConfigureAwait(false);
+        await session.PauseAsync().ConfigureAwait(false);
         RaisePositionUpdated(Position);
         PlayStatus = PlayStatus.Paused;
     }
@@ -229,9 +194,9 @@ public sealed class IidxMixPlayer : IMixPlayer
 
     private async Task StopCoreAsync()
     {
-        var transport = RequireTransport();
+        var session = RequireSession();
         await StopPositionPumpAsync().ConfigureAwait(false);
-        await transport.StopAsync().ConfigureAwait(false);
+        await session.StopAsync().ConfigureAwait(false);
         RaisePositionUpdated(TimeSpan.Zero);
         PlayStatus = PlayStatus.Paused;
     }
@@ -263,15 +228,15 @@ public sealed class IidxMixPlayer : IMixPlayer
 
     public async Task SkipToAsync(TimeSpan time)
     {
-        var transport = RequireTransport();
+        var session = RequireSession();
         var previousStatus = PlayStatus;
         PlayStatus = PlayStatus.Reposition;
-        await transport.SeekAsync(time).ConfigureAwait(false);
+        await session.SeekAsync(time).ConfigureAwait(false);
         RaisePositionUpdated(time);
 
         if (previousStatus == PlayStatus.Playing)
         {
-            await transport.PlayAsync().ConfigureAwait(false);
+            await session.PlayAsync().ConfigureAwait(false);
             StartPositionPump();
             PlayStatus = PlayStatus.Playing;
         }
@@ -295,8 +260,8 @@ public sealed class IidxMixPlayer : IMixPlayer
             playSection.PlayUseTempo = keepTune;
         }
 
-        var transport = RequireTransport();
-        await transport.SetPlaybackRateAsync(new PlaybackRateState(rate, keepTune)).ConfigureAwait(false);
+        var session = RequireSession();
+        await session.SetPlaybackRateAsync(new PlaybackRateState(rate, keepTune)).ConfigureAwait(false);
     }
 
     public async Task SetPlayMod(PlayModifier modifier)
@@ -337,6 +302,12 @@ public sealed class IidxMixPlayer : IMixPlayer
             {
                 await StopPositionPumpAsync().ConfigureAwait(false);
                 await _positionPumpLoop.DisposeAsync().ConfigureAwait(false);
+                if (_session != null)
+                {
+                    _session.Finished -= Session_Finished;
+                    await _session.DisposeAsync().ConfigureAwait(false);
+                }
+
                 if (_musicTransport != null)
                 {
                     await _musicTransport.DisposeAsync().ConfigureAwait(false);
@@ -344,51 +315,19 @@ public sealed class IidxMixPlayer : IMixPlayer
             },
             _logger,
             "Error while disposing IidxMixPlayer.").ConfigureAwait(false);
-
-        TryDeleteRenderedCache();
     }
 
-    private async Task<string> RenderChartToWavAsync()
+    private IidxBeatmapAudioSession RequireSession()
     {
-        var resources = _loadResult.IidxResources!;
-        var cacheDir = Path.Combine(AppPaths.Current.CachePath, "iidx");
-        Directory.CreateDirectory(cacheDir);
-
-        var musicId = resources.MusicId;
-        var difficulty = resources.Difficulty;
-        var cacheKey = $"{musicId:D5}-{difficulty}.wav";
-        var outputPath = Path.Combine(cacheDir, cacheKey);
-
-        if (!File.Exists(outputPath))
-        {
-            var renderService = new AudioRenderService(LoggerFactory.Create(builder => { }));
-            var bgmVolumeFactor = ComputeBgmVolumeFactor(_loadResult.Beatmap.IidxBgmVolume);
-
-            await renderService.RenderAsync(
-                resources.Chart,
-                new System.Collections.Generic.List<ReadOnlyMemory<byte>>(resources.AudioBlocks),
-                outputPath,
-                randomRange: 0,
-                sigmaFactor: 3,
-                bgmVolumeFactor: bgmVolumeFactor).ConfigureAwait(false);
-        }
-
-        return outputPath;
-    }
-
-    private static float ComputeBgmVolumeFactor(int? bgmVolume)
-    {
-        if (bgmVolume == null || bgmVolume <= 0) return 1.27f;
-        var factor = bgmVolume.Value / 100f;
-        if (factor < 0.01f) factor = 0.01f;
-        if (factor > 4f) factor = 4f;
-        return factor;
-    }
-
-    private StandaloneMusicTransport RequireTransport()
-    {
-        return _musicTransport ?? throw new InvalidOperationException(
+        return _session ?? throw new InvalidOperationException(
             $"{nameof(IidxMixPlayer)}.{nameof(Initialize)} must be called before using playback operations.");
+    }
+
+    private void Session_Finished()
+    {
+        StopPositionPump();
+        RaisePositionUpdated(Duration);
+        PlayStatus = PlayStatus.Finished;
     }
 
     private void StartAudioEngine()
@@ -397,26 +336,43 @@ public sealed class IidxMixPlayer : IMixPlayer
         _engine.LimiterType = (LimiterType)(AppSettings.Default?.Volume.LimiterType ?? LimiterTypeSetting.Master);
     }
 
+    private OsuAudioSessionOptions CreateSessionOptions()
+    {
+        var playSection = AppSettings.Default?.Play;
+        return new OsuAudioSessionOptions
+        {
+            Resources = new BeatmapResources
+            {
+                BeatmapFolder = _loadResult.BaseFolder,
+                BeatmapFilename = _loadResult.MapPath,
+                AudioFilename = _loadResult.MusicPath ?? string.Empty,
+                DefaultHitsoundFolder = AppPaths.Current.DefaultPath,
+                UserSkinFolder = AppPaths.Current.DefaultPath,
+            },
+            GeneralOffsetMilliseconds = playSection?.GeneralActualOffset ?? 0,
+            ManualOffsetMilliseconds = _manualOffset,
+            PreservePitchRateCompensationMilliseconds = _preservePitchRateCompensationMilliseconds,
+        };
+    }
+
     private void SynchronizeVolumeSettings()
     {
         var volume = AppSettings.Default?.Volume;
-        if (volume == null) return;
+        if (volume == null || _sessionOptions == null) return;
 
         _engine.MainVolume = volume.Main;
         _engine.MusicVolume = volume.Music;
         _engine.EffectVolume = 1;
         _engine.LimiterType = (LimiterType)volume.LimiterType;
+
+        _sessionOptions.HitsoundVolume = volume.Hitsound;
+        _sessionOptions.SampleVolume = volume.Sample;
+        _sessionOptions.BalanceFactor = volume.BalanceFactor / 100;
+        _sessionOptions.BalanceMode = (KeyAsio.Core.Audio.SampleProviders.BalancePans.BalanceMode)volume.BalanceMode;
+        _session?.ApplyOptions(_sessionOptions);
     }
 
     private void Volume_PropertyChanged(object? sender, PropertyChangedEventArgs? e) => SynchronizeVolumeSettings();
-
-    private void ApplyLoopingToMusicSource()
-    {
-        if (_musicTransport?.Source is { } source)
-        {
-            source.IsLooping = _isLooping;
-        }
-    }
 
     private void StartPositionPump()
     {
@@ -430,22 +386,7 @@ public sealed class IidxMixPlayer : IMixPlayer
         });
     }
 
+    private void StopPositionPump() => _positionPumpLoop.Stop();
     private ValueTask StopPositionPumpAsync() => _positionPumpLoop.StopAsync();
-
     private void RaisePositionUpdated(TimeSpan position) => PositionUpdated?.Invoke(position);
-
-    private void TryDeleteRenderedCache()
-    {
-        try
-        {
-            if (_renderedCachePath != null && File.Exists(_renderedCachePath))
-            {
-                File.Delete(_renderedCachePath);
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "Failed to delete IIDX render cache: {Path}", _renderedCachePath);
-        }
-    }
 }
