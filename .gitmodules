@@ -7,3 +7,6 @@
 [submodule "dependencies/ManagedSoundTouch"]
 	path = dependencies/ManagedSoundTouch
 	url = https://github.com/Milkitic/ManagedSoundTouch.git
+[submodule "dependencies/BemaniUtils.Net"]
+	path = dependencies/BemaniUtils.Net
+	url = https://github.com/Milkitic/BemaniUtils.Net.git
